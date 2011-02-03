@@ -17,9 +17,9 @@
 
 \graphics default
 \paperfontsize default
-\spacing onehalf
+\spacing single
 \use_hyperref false
-\papersize a4paper
+\papersize default
 \use_geometry false
 \use_amsmath 1
 \use_esint 1
@@ -43,22 +43,29 @@
 \begin_body
 
 \begin_layout Title
-M-Index: Podobnostní prohledávání v multimediálních databázích
+Metrický index
 \end_layout
 
 \begin_layout Subtitle
+Podobnostní prohledávání v multimediálních databázích
+\end_layout
+
+\begin_layout Subject
 Seminární práce z předmětu Ročníkový projekt
 \end_layout
 
 \begin_layout Author
-
-\lang english
 Karel Rank
 \end_layout
 
-\begin_layout Minisec
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
 
-\lang english
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset CommandInset toc
 LatexCommand tableofcontents
 
@@ -67,16 +74,59 @@ LatexCommand tableofcontents
 
 \end_layout
 
-\begin_layout Part
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
 
-\lang english
+
+\end_layout
+
+\begin_layout Part
 Úvod
 \end_layout
 
 \begin_layout Part
+Multimediální databáze
+\end_layout
 
-\lang english
+\begin_layout Standard
+Multimediální databáze je databázoví systém, který umožňuje spravovat multimediá
+lní data\SpecialChar \@.
+
+\begin_inset space ~
+\end_inset
+
+Multimediální data jsou nestrukturovaná data, vyznačující se velkým objemem\SpecialChar \@.
+
+\begin_inset space ~
+\end_inset
+
+Typy a použití těchto databází jsou různé, např.:
+\end_layout
+
+\begin_layout Description
+Autentifikační
+\begin_inset space ~
+\end_inset
+
+Multimediální
+\begin_inset space ~
+\end_inset
+
+Databáze Skenování oční duhovky a vyhodnocování autentičnosti.
+ Lze použít i v
+\begin_inset space ~
+\end_inset
+
+medicíně při diagnostikování nemocí
+\end_layout
+
+\begin_layout Part
 M-Index
+\end_layout
+
+\begin_layout Part
+Datové struktury
 \end_layout
 
 \end_body
