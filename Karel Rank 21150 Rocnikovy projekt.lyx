@@ -17,14 +17,14 @@
 
 \graphics default
 \paperfontsize default
-\spacing single
+\spacing onehalf
 \use_hyperref false
-\papersize default
+\papersize a4paper
 \use_geometry false
 \use_amsmath 1
 \use_esint 1
-\cite_engine basic
-\use_bibtopic false
+\cite_engine natbib_authoryear
+\use_bibtopic true
 \paperorientation portrait
 \secnumdepth 3
 \tocdepth 3
@@ -81,11 +81,31 @@ LatexCommand tableofcontents
 
 \end_layout
 
-\begin_layout Part
+\begin_layout Section
 Úvod
 \end_layout
 
-\begin_layout Part
+\begin_layout Standard
+Cílem této práce je popis metody pro indexování a vyhledávání v
+\begin_inset space ~
+\end_inset
+
+multimediálních databázích, M-index\SpecialChar \@.
+ Tato metoda byla vyvinuta na Masarykově
+ univerzitě v
+\begin_inset space ~
+\end_inset
+
+Brně týmem vědců ve složení Martin Novák a Michal Baťko\SpecialChar \@.
+ Je ve svém základu
+ založena na jiné metodě – iDistance, ale podstatných způsobem vylepšuje
+ výkon při vyhledávání použitím jiných metod rozdělení datové prostoru i
+ samotného vyhledávání pomocí základních metod range query a hledání K nejbližší
+ch sousedů (KNN search)\SpecialChar \@.
+
+\end_layout
+
+\begin_layout Section
 Multimediální databáze
 \end_layout
 
@@ -121,12 +141,109 @@ Databáze Skenování oční duhovky a vyhodnocování autentičnosti.
 medicíně při diagnostikování nemocí
 \end_layout
 
-\begin_layout Part
+\begin_layout Description
+Balistická
+\begin_inset space ~
+\end_inset
+
+databáze Porovnávání otisků na nábojnicích z
+\begin_inset space ~
+\end_inset
+
+místa činu a kohoutkem střelné zbraně, např.
+ systém Drugfire
+\begin_inset CommandInset citation
+LatexCommand citet
+key "drugfire"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Problémy spojené s
+\begin_inset space ~
+\end_inset
+
+multimediálnímy databázemi
+\end_layout
+
+\begin_layout Standard
+V
+\begin_inset space ~
+\end_inset
+
+multi.
+ dat.
+ narážíme na několik problémů odlišných od 
+\begin_inset Quotes pld
+\end_inset
+
+klasických
+\begin_inset Quotes prd
+\end_inset
+
+ RDBMs, případně oproti 
+\emph on
+key-value 
+\emph default
+databázím
+\begin_inset CommandInset citation
+LatexCommand citeauthor
+key "no-sql"
+
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Itemize
+prokletí počtu dimenzí (
+\emph on
+curse of dimenzionality
+\emph default
+)
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Bellman195706"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+multimediální soubory (objekty) jsou velké
+\end_layout
+
+\begin_layout Itemize
+datové struktury jsou pro jeden typ multimedií - zvukový záznam má jiná
+ kritéria než obraz
+\end_layout
+
+\begin_layout Itemize
+problém indexování takových objektů
+\end_layout
+
+\begin_layout Section
 M-Index
 \end_layout
 
-\begin_layout Part
+\begin_layout Section
 Datové struktury
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+btprint "btPrintCited"
+bibfiles "bibliografie-bakule"
+options "plainnat"
+
+\end_inset
+
+
 \end_layout
 
 \end_body
