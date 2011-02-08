@@ -163,8 +163,9 @@ Multimediální
 \begin_inset space ~
 \end_inset
 
-Databáze Skenování oční duhovky a vyhodnocování autentičnosti.
- Lze použít i v
+Databáze Skenování oční duhovky a vyhodnocování autentičnosti\SpecialChar \@.
+ Lze použít
+ i v
 \begin_inset space ~
 \end_inset
 
@@ -292,8 +293,141 @@ Metrický index definuje
 \emph on
 univerzální mapovací schéma
 \emph default
- z obecného metrického prostoru do domény realných čísel.
+ z obecného metrického prostoru do realných čísel\SpecialChar \@.
+ Co je nejdůležitější,
+ toto schéma zachovává blízkost dat, tedy mapuje podobné metrické objekty
+ do
+\begin_inset space ~
+\end_inset
+
+blízkých čísel\SpecialChar \@.
+ M-Index indexovací a vyhledávací mechanismus používá množinu
+ referenčních objektů a optimálně využívá všechny známé principy pro
+\begin_inset space ~
+\end_inset
+
+dělení, větvení a filtrování v
+\begin_inset space ~
+\end_inset
+
+metrickém prostoru\SpecialChar \@.
+
+\end_layout
+
+\begin_layout Standard
+Charakter mapy M-Indexu umožňuje použít dobře známé techniky jako je B
+\begin_inset Formula $^{\text{+}}$
+\end_inset
+
+-tree nebo distribuované hashovací tabulky\SpecialChar \@.
+
+\end_layout
+
+\begin_layout Subsection
+Předpoklady pro metrické vyhledávaní
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Metrický prostor 
+\emph default
+
+\begin_inset Formula $M$
+\end_inset
+
+ je pár 
+\begin_inset Formula $M=(D,d)$
+\end_inset
+
+, kde 
+\begin_inset Formula $D$
+\end_inset
+
+ je 
+\emph on
+doména
+\emph default
+ objektů a 
+\begin_inset Formula $d$
+\end_inset
+
+ je 
+\emph on
+funkce vzdálenosti
+\emph default
  
+\begin_inset Formula $d\;:\; D\times D\rightarrow\mathbb{R}$
+\end_inset
+
+ splňující následující požadavky pro všechny 
+\begin_inset Formula $o,p,q\in D$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+\begin_inset Formula $d(o,p)\geq0\hphantom{}(nezápornost)$
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+\begin_inset Formula $d(o,p)=0\qquad\textrm{iff}\qquad o=p\hphantom{}(identita)$
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+\begin_inset Formula $d(o,p)=d(p,o)\hphantom{}(symetrie)$
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+\begin_inset Formula $d(o,q)\leq d(o,p)+d(p,q)\hphantom{}(trojúhelníková\, nerovnost)$
+\end_inset
+
+\SpecialChar \@.
+
+\end_layout
+
+\begin_layout Standard
+Metrický prostor jako model podobnosti je typicky prohledáván podle vzoru
+ 
+\emph on
+example-by-query
+\emph default
+ – dotaz je vytvořen podle 
+\emph on
+objektu
+\emph default
+ 
+\begin_inset Formula $d\in D$
+\end_inset
+
+ a 
+\emph on
+omezení
+\emph default
+ na data, která mají být vybrána z
+\begin_inset space ~
+\end_inset
+
+indexované množiny
+\begin_inset Formula $X\subseteq D$
+\end_inset
+
+\SpecialChar \@.
+
 \end_layout
 
 \begin_layout Section
