@@ -90,18 +90,48 @@ Cílem této práce je popis metody pro indexování a vyhledávání v
 \begin_inset space ~
 \end_inset
 
-multimediálních databázích, M-index\SpecialChar \@.
- Tato metoda byla vyvinuta na Masarykově
- univerzitě v
+multimediálních databázích, M-index
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Novak:2009:MIE:1637863.1638184"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+\SpecialChar \@.
+ Tato metoda byla vyvinuta na Masarykově univerzitě v
 \begin_inset space ~
 \end_inset
 
-Brně týmem vědců ve složení Martin Novák a Michal Baťko\SpecialChar \@.
- Je ve svém základu
- založena na jiné metodě – iDistance, ale podstatných způsobem vylepšuje
- výkon při vyhledávání použitím jiných metod rozdělení datové prostoru i
- samotného vyhledávání pomocí základních metod range query a hledání K nejbližší
-ch sousedů (KNN search)\SpecialChar \@.
+Brně pány Martinem Novákem a Michal Baťkem\SpecialChar \@.
+ Je ve svém základu založena na
+ jiné metodě – iDistance
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Jagadish:2005:IAB:1071610.1071612"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+, ale podstatných způsobem vylepšuje výkon při vyhledávání použitím jiných
+ metod rozdělení datové prostoru i samotného vyhledávání pomocí základních
+ metod range query a hledání K nejbližších sousedů (KNN search)\SpecialChar \@.
 
 \end_layout
 
@@ -152,9 +182,18 @@ databáze Porovnávání otisků na nábojnicích z
 
 místa činu a kohoutkem střelné zbraně, např.
  systém Drugfire
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
 \begin_inset CommandInset citation
 LatexCommand citet
 key "drugfire"
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -189,9 +228,18 @@ klasických
 key-value 
 \emph default
 databázím
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
 \begin_inset CommandInset citation
 LatexCommand citeauthor
 key "no-sql"
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -204,9 +252,18 @@ prokletí počtu dimenzí (
 curse of dimenzionality
 \emph default
 )
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
 \begin_inset CommandInset citation
 LatexCommand citet
 key "Bellman195706"
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -228,6 +285,15 @@ problém indexování takových objektů
 
 \begin_layout Section
 M-Index
+\end_layout
+
+\begin_layout Standard
+Metrický index definuje 
+\emph on
+univerzální mapovací schéma
+\emph default
+ z obecného metrického prostoru do domény realných čísel.
+ 
 \end_layout
 
 \begin_layout Section
