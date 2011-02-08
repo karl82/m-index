@@ -295,14 +295,15 @@ univerzální mapovací schéma
 \emph default
  z obecného metrického prostoru do realných čísel\SpecialChar \@.
  Co je nejdůležitější,
- toto schéma zachovává blízkost dat, tedy mapuje podobné metrické objekty
+ toto schéma zachovává blízkost dat, tedy mapuje podobné metrické prvky
  do
 \begin_inset space ~
 \end_inset
 
 blízkých čísel\SpecialChar \@.
- M-Index indexovací a vyhledávací mechanismus používá množinu
- referenčních objektů a optimálně využívá všechny známé principy pro
+ Indexovací a vyhledávací mechanismus M-Index-u používá množinu
+ referenčních prvků (pivotů) a optimálně využívá všechny známé principy
+ pro
 \begin_inset space ~
 \end_inset
 
@@ -348,7 +349,7 @@ Metrický prostor
 \emph on
 doména
 \emph default
- objektů a 
+ prvků a 
 \begin_inset Formula $d$
 \end_inset
 
@@ -406,15 +407,15 @@ Metrický prostor jako model podobnosti je typicky prohledáván podle vzoru
 \emph on
 example-by-query
 \emph default
- – dotaz je vytvořen podle 
+ – dotaz je vytvořen dle 
 \emph on
-objektu
+prvku
 \emph default
  
 \begin_inset Formula $d\in D$
 \end_inset
 
- a 
+ a daného 
 \emph on
 omezení
 \emph default
@@ -424,6 +425,56 @@ omezení
 
 indexované množiny
 \begin_inset Formula $X\subseteq D$
+\end_inset
+
+\SpecialChar \@.
+ V
+\begin_inset space ~
+\end_inset
+
+této práci jsou probrány dva základní typy dotazů: 
+\emph on
+range query
+\emph default
+ 
+\begin_inset Formula $R(q,r)$
+\end_inset
+
+, který vybere všechny prvky 
+\begin_inset Formula $o\subseteq X$
+\end_inset
+
+ ve vzdálenosti 
+\begin_inset Formula $r$
+\end_inset
+
+ od 
+\begin_inset Formula $q$
+\end_inset
+
+(např.
+ 
+\begin_inset Formula $\left\{ o\subseteq X\mid d(q,o)\leq r\right\} $
+\end_inset
+
+), a 
+\emph on
+nearest neighbors query
+\emph default
+ 
+\begin_inset Formula $kNN(q,k)$
+\end_inset
+
+, který vrátí 
+\begin_inset Formula $k$
+\end_inset
+
+ nejbližších prvků od 
+\begin_inset Formula $q$
+\end_inset
+
+ z 
+\begin_inset Formula $X$
 \end_inset
 
 \SpecialChar \@.
