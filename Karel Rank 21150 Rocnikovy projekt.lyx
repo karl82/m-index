@@ -16,14 +16,14 @@
 \font_tt_scale 100
 
 \graphics default
-\paperfontsize default
+\paperfontsize 12
 \spacing onehalf
 \use_hyperref false
 \papersize a4paper
 \use_geometry false
 \use_amsmath 1
 \use_esint 1
-\cite_engine natbib_authoryear
+\cite_engine natbib_numerical
 \use_bibtopic true
 \paperorientation portrait
 \secnumdepth 3
@@ -32,7 +32,7 @@
 \defskip medskip
 \quotes_language polish
 \papercolumns 1
-\papersides 1
+\papersides 2
 \paperpagestyle default
 \tracking_changes false
 \output_changes false
@@ -59,7 +59,7 @@ Karel Rank
 \end_layout
 
 \begin_layout Standard
-\begin_inset Newpage pagebreak
+\begin_inset Newpage clearpage
 \end_inset
 
 
@@ -75,7 +75,7 @@ LatexCommand tableofcontents
 \end_layout
 
 \begin_layout Standard
-\begin_inset Newpage pagebreak
+\begin_inset Newpage newpage
 \end_inset
 
 
@@ -83,6 +83,13 @@ LatexCommand tableofcontents
 
 \begin_layout Section
 Úvod
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Úvod"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -91,18 +98,9 @@ Cílem této práce je popis metody pro indexování a vyhledávání v
 \end_inset
 
 multimediálních databázích, M-index
-\begin_inset Foot
-status open
-
-\begin_layout Plain Layout
 \begin_inset CommandInset citation
-LatexCommand citet
+LatexCommand citep
 key "Novak:2009:MIE:1637863.1638184"
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -114,18 +112,9 @@ key "Novak:2009:MIE:1637863.1638184"
 Brně pány Martinem Novákem a Michal Baťkem\SpecialChar \@.
  Je ve svém základu založena na
  jiné metodě – iDistance
-\begin_inset Foot
-status open
-
-\begin_layout Plain Layout
 \begin_inset CommandInset citation
-LatexCommand citet
+LatexCommand citep
 key "Jagadish:2005:IAB:1071610.1071612"
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -219,18 +208,9 @@ databáze Porovnávání otisků na nábojnicích z
 
 místa činu a kohoutkem střelné zbraně, např.
  systém Drugfire
-\begin_inset Foot
-status open
-
-\begin_layout Plain Layout
 \begin_inset CommandInset citation
-LatexCommand citet
+LatexCommand citep
 key "drugfire"
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -265,18 +245,9 @@ klasických
 key-value 
 \emph default
 databázím
-\begin_inset Foot
-status open
-
-\begin_layout Plain Layout
 \begin_inset CommandInset citation
-LatexCommand citeauthor
+LatexCommand citep
 key "no-sql"
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -289,18 +260,9 @@ prokletí počtu dimenzí (
 curse of dimenzionality
 \emph default
 )
-\begin_inset Foot
-status open
-
-\begin_layout Plain Layout
 \begin_inset CommandInset citation
-LatexCommand citet
+LatexCommand citep
 key "Bellman195706"
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -321,7 +283,7 @@ problém indexování takových objektů
 \end_layout
 
 \begin_layout Section
-M-Index
+Metrický prostor
 \end_layout
 
 \begin_layout Subsection
@@ -334,15 +296,15 @@ Předpoklady pro metrické vyhledávaní
 Metrický prostor 
 \emph default
 
-\begin_inset Formula $M$
+\begin_inset Formula $\mathcal{M}$
 \end_inset
 
  je pár 
-\begin_inset Formula $M=(D,d)$
+\begin_inset Formula $\mathcal{M}=(\mathcal{D},d)$
 \end_inset
 
 , kde 
-\begin_inset Formula $D$
+\begin_inset Formula $\mathcal{D}$
 \end_inset
 
  je 
@@ -358,11 +320,11 @@ doména
 funkce vzdálenosti
 \emph default
  
-\begin_inset Formula $d\;:\; D\times D\rightarrow\mathbb{R}$
+\begin_inset Formula $d\;:\;\mathcal{D}\times\mathcal{D}\rightarrow\mathbb{R}$
 \end_inset
 
  splňující následující požadavky pro všechny 
-\begin_inset Formula $o,p,q\in D$
+\begin_inset Formula $o,p,q\in\mathcal{D}$
 \end_inset
 
 :
@@ -499,6 +461,220 @@ Co s tímdle?
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+M-Indexujeme
+\end_layout
+
+\begin_layout Standard
+V
+\begin_inset space ~
+\end_inset
+
+této části je popsán a vybudován Metrický Index -- jeho principy, architektura
+ a prohledávání.
+\end_layout
+
+\begin_layout Subsection
+M-Index prvního stupně
+\end_layout
+
+\begin_layout Standard
+Jak bylo již zmíněno, koncept M-Indexu je inspirován iDistance, která je
+ indexovací metoda pro podobnostní vyhledávání ve
+\begin_inset space ~
+\end_inset
+
+vektorovém prostoru.
+ Pokud máme vzorovou množinu 
+\begin_inset Formula $S\subseteq\mathbb{\mathcal{D}}$
+\end_inset
+
+, pak iDistance rozdělí 
+\begin_inset Formula $S$
+\end_inset
+
+ na 
+\begin_inset Formula $n$
+\end_inset
+
+ skupin
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+v originále 
+\size normal
+\emph on
+cluster
+\end_layout
+
+\end_inset
+
+ a utvoří referenční bod 
+\begin_inset Formula $p_{i}$
+\end_inset
+
+pro každou skupinu 
+\begin_inset Formula $C_{i},\: i\in\left\{ 0,\ldots,n-1\right\} $
+\end_inset
+
+.
+ Každému prvku 
+\begin_inset Formula $o\in X$
+\end_inset
+
+ je pak přiřazen číselný klíč odpovídající vzdálenosti od
+\begin_inset space ~
+\end_inset
+
+referenčního prvku skupiny.
+ Pokud máme dostatečně velkou konstantu 
+\begin_inset Formula $c$
+\end_inset
+
+ pro oddělení jednotlivých skupin, pak iDistance klíč pro prvek 
+\begin_inset Formula $o\in C_{i}$
+\end_inset
+
+ je
+\begin_inset Formula \[
+iDist(o)=d(p_{i},o)+i\cdot c\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Tento vzorec mapuje všechny prvky z
+\begin_inset space ~
+\end_inset
+
+jakékoliv skupiny 
+\begin_inset Formula $C_{i}$
+\end_inset
+
+ do intervalu 
+\begin_inset Formula $[i\cdot c,(i+1)\cdot c]$
+\end_inset
+
+.
+ Datové objekty jsou poté uloženy do B
+\begin_inset Formula $^{+}$
+\end_inset
+
+-tree podle jejich 
+\emph on
+iDist 
+\emph default
+klíčů.
+ Při prohledávání je iDistance prostor procházen podle principu -- pro 
+\emph on
+range query
+\emph default
+ 
+\begin_inset Formula $R(q,r)$
+\end_inset
+
+ můžeme určit několik intervalů 
+\emph on
+iDist
+\emph default
+ klíčů, které musejí být k
+\begin_inset space ~
+\end_inset
+
+vyřízení dotazu.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename idistance.emf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+iDistance
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+M-Index zobecňuje iDistance tak, že může být použita na
+\begin_inset space ~
+\end_inset
+
+obecne metrické prostory -- ne jenom na vektorový prostod.
+ Toho je dosaženo tím, že se vybere množina 
+\begin_inset Formula $n$
+\end_inset
+
+ pivotů 
+\begin_inset Formula $p_{0},p_{1},\ldots,p_{n-1}$
+\end_inset
+
+a priori ze
+\begin_inset space ~
+\end_inset
+
+vzorový množiny 
+\begin_inset Formula $S\subseteq\mathcal{D}$
+\end_inset
+
+ a poté aplikováním Voronoi-ho dělení a rozdělení prostoru na 
+\begin_inset Formula $n$
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+skupin.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Další obrázek sem
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Více stupňový M-Index
+\end_layout
+
+\begin_layout Standard
+Aby byl M-Index škálovatelný pro
+\begin_inset space ~
+\end_inset
+
+rostoucí množství dat, budeme chtít aplikoat další rozdělování skupin.
 \end_layout
 
 \begin_layout Subsection
