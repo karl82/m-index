@@ -368,36 +368,15 @@ funkce vzdálenosti
 :
 \end_layout
 
-\begin_layout Labeling
-\labelwidthstring 00.00.0000
-\begin_inset Formula $d(o,p)\geq0\hphantom{}(nezápornost)$
+\begin_layout Standard
+\begin_inset Formula \begin{align*}
+d(o,p) & \geq0 &  & \textrm{(nezápornost)}\\
+d(o,p) & =0\Longleftrightarrow o=p &  & \textrm{(identita)}\\
+d(o,p) & =d(p,o) &  & \textrm{(symetrie)}\\
+d(o,q) & \leq d(o,p)+d(p,q) &  & \textrm{(trojúhelníková\, nerovnost)}\end{align*}
+
 \end_inset
 
-,
-\end_layout
-
-\begin_layout Labeling
-\labelwidthstring 00.00.0000
-\begin_inset Formula $d(o,p)=0\Longleftrightarrow o=p\hphantom{}(identita)$
-\end_inset
-
-,
-\end_layout
-
-\begin_layout Labeling
-\labelwidthstring 00.00.0000
-\begin_inset Formula $d(o,p)=d(p,o)\hphantom{}(symetrie)$
-\end_inset
-
-,
-\end_layout
-
-\begin_layout Labeling
-\labelwidthstring 00.00.0000
-\begin_inset Formula $d(o,q)\leq d(o,p)+d(p,q)\hphantom{}(trojúhelníková\, nerovnost)$
-\end_inset
-
-\SpecialChar \@.
 
 \end_layout
 
