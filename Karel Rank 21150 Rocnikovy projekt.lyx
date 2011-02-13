@@ -1554,7 +1554,7 @@ reference "eq:M-Index-key-max-level"
 \begin_inset Quotes pld
 \end_inset
 
-půjčen
+vypůjčen
 \begin_inset Quotes prd
 \end_inset
 
@@ -1596,8 +1596,121 @@ Pivot Filtering?
 Architektura M-Indexu
 \end_layout
 
+\begin_layout Standard
+V
+\begin_inset space ~
+\end_inset
+
+předchozích sekcích byly uvedeny algoritmy a mechanismy, které nutí k
+\begin_inset space ~
+\end_inset
+
+použítí různých specifických datových struktur\SpecialChar \@.
+ Obecně, datové prvky mohou
+ být uloženy v
+\begin_inset space ~
+\end_inset
+
+jakékoliv struktuře, která je indexuje podle jejich M-Index klíčů.
+ Ideální je efektivní vyhodnocování přes intervalové dotazy -- B
+\begin_inset Formula $^{\text{+}}$
+\end_inset
+
+-tree
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Cormen:2001:IA:580470"
+
+\end_inset
+
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+detailní popis B
+\begin_inset Formula $^{\text{+}}$
+\end_inset
+
+-tree viz 
+\begin_inset CommandInset ref
+LatexCommand prettyref
+reference "sub:B-plus-tree"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ je typickým představitelem takovéto struktury\SpecialChar \@.
+
+\end_layout
+
+\begin_layout Standard
+Implementace stromu skupin je jednoduchá\SpecialChar \@.
+ Záznam pro skupinu 
+\begin_inset Formula $C_{i_{0},\ldots,i_{l-1}}$
+\end_inset
+
+ je z: 
+\begin_inset Formula $l$
+\end_inset
+
+, pole 
+\begin_inset Formula $\left\langle i_{0},\ldots,i_{l-1}\right\rangle $
+\end_inset
+
+ a buď ukazatelů na podstromy 
+\begin_inset Formula $\left\langle sub_{0},\ldots,sub_{n-1}\right\rangle $
+\end_inset
+
+ v
+\begin_inset space ~
+\end_inset
+
+případě vnitřního uzlu nebo 
+\begin_inset Formula $r_{min},\, r_{max}$
+\end_inset
+
+ pro záznam listu\SpecialChar \@.
+ Strom skupin je předpokládán udržovat v
+\begin_inset space ~
+\end_inset
+
+hlavní paměti\SpecialChar \@.
+
+\end_layout
+
 \begin_layout Section
 Datové struktury
+\end_layout
+
+\begin_layout Subsection
+B-Tree
+\end_layout
+
+\begin_layout Subsection
+B
+\begin_inset Formula $^{\text{+}}$
+\end_inset
+
+-tree
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:B-plus-tree"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
