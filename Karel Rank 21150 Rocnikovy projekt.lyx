@@ -59,7 +59,27 @@ Karel Rank
 \end_layout
 
 \begin_layout Standard
-\begin_inset Newpage clearpage
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Abstract
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Abstract here
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
 \end_inset
 
 
@@ -111,14 +131,14 @@ key "Novak:2009:MIE:1637863.1638184"
 
 Brně pány Martinem Novákem a Michal Baťkem\SpecialChar \@.
  Je ve svém základu založena na
- jiné metodě – iDistance
+ jiné metodě -- iDistance
 \begin_inset CommandInset citation
 LatexCommand citep
 key "Jagadish:2005:IAB:1071610.1071612"
 
 \end_inset
 
-, ale podstatných způsobem vylepšuje výkon při vyhledávání použitím jiných
+, ale podstatných způsobem vylepšuje výkon při vyhledávání, použitím jiných
  metod rozdělení datové prostoru i samotného vyhledávání pomocí základních
  metod range query a hledání K nejbližších sousedů (KNN search)\SpecialChar \@.
 
@@ -139,11 +159,7 @@ univerzální mapovací schéma
 blízkých čísel\SpecialChar \@.
  Indexovací a vyhledávací mechanismus M-Index-u používá množinu
  referenčních prvků (pivotů) a optimálně využívá všechny známé principy
- pro
-\begin_inset space ~
-\end_inset
-
-dělení, větvení a filtrování v
+ pro dělení, větvení a filtrování v
 \begin_inset space ~
 \end_inset
 
@@ -156,7 +172,14 @@ Charakter mapy M-Indexu umožňuje použít dobře známé techniky jako je B
 \begin_inset Formula $^{\text{+}}$
 \end_inset
 
--tree nebo distribuované hashovací tabulky\SpecialChar \@.
+-tree
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Cormen:2001:IA:580470"
+
+\end_inset
+
+ nebo distribuované hashovací tabulky\SpecialChar \@.
 
 \end_layout
 
@@ -335,7 +358,7 @@ funkce vzdálenosti
 d(o,p) & \geq0 &  & \textrm{(nezápornost)}\\
 d(o,p) & =0\Longleftrightarrow o=p &  & \textrm{(identita)}\\
 d(o,p) & =d(p,o) &  & \textrm{(symetrie)}\\
-d(o,q) & \leq d(o,p)+d(p,q) &  & \textrm{(trojúhelníková\, nerovnost)}\end{align*}
+d(o,q) & \leq d(o,p)+d(p,q) &  & \textrm{(trojúhelníková nerovnost)}\end{align*}
 
 \end_inset
 
@@ -375,9 +398,17 @@ indexované množiny
 \SpecialChar \@.
  Nejjednodušší jsou dva typy dotazů: 
 \emph on
-range query
+range
+\begin_inset space ~
+\end_inset
+
+query
 \emph default
- 
+
+\begin_inset space ~
+\end_inset
+
+
 \begin_inset Formula $R(q,r)$
 \end_inset
 
@@ -387,10 +418,7 @@ status open
 
 \begin_layout Plain Layout
 Range Query je podrobně popsán viz.
-\begin_inset space ~
-\end_inset
-
-
+ 
 \begin_inset CommandInset ref
 LatexCommand vref
 reference "sub:Range-Query"
@@ -410,11 +438,19 @@ reference "sub:Range-Query"
 \begin_inset Formula $r$
 \end_inset
 
- od 
+
+\begin_inset space ~
+\end_inset
+
+od
+\begin_inset space ~
+\end_inset
+
+
 \begin_inset Formula $q$
 \end_inset
 
-(např.
+ (např.
  
 \begin_inset Formula $\left\{ o\subseteq X\mid d(q,o)\leq r\right\} $
 \end_inset
@@ -431,11 +467,23 @@ nearest neighbors query
 \begin_inset Formula $k$
 \end_inset
 
- nejbližších prvků od 
+
+\begin_inset space ~
+\end_inset
+
+nejbližších prvků od 
 \begin_inset Formula $q$
 \end_inset
 
- z 
+
+\begin_inset space ~
+\end_inset
+
+z
+\begin_inset space ~
+\end_inset
+
+
 \begin_inset Formula $X$
 \end_inset
 
@@ -464,7 +512,7 @@ Co s tímdle?
 \end_layout
 
 \begin_layout Section
-M-Indexujeme
+M-Indexu
 \end_layout
 
 \begin_layout Standard
@@ -473,7 +521,8 @@ V
 \end_inset
 
 této části je popsán a vybudován Metrický Index -- jeho principy, architektura
- a prohledávání.
+ a prohledávání\SpecialChar \@.
+
 \end_layout
 
 \begin_layout Subsection
@@ -482,12 +531,9 @@ M-Index prvního stupně
 
 \begin_layout Standard
 Jak bylo již zmíněno, koncept M-Indexu je inspirován iDistance, která je
- indexovací metoda pro podobnostní vyhledávání ve
-\begin_inset space ~
-\end_inset
-
-vektorovém prostoru.
- Pokud máme vzorovou množinu 
+ indexovací metoda pro podobnostní vyhledávání ve vektorovém prostoru\SpecialChar \@.
+ Pokud
+ máme vzorovou množinu 
 \begin_inset Formula $S\subseteq\mathbb{\mathcal{D}}$
 \end_inset
 
@@ -499,7 +545,11 @@ vektorovém prostoru.
 \begin_inset Formula $n$
 \end_inset
 
- skupin
+
+\begin_inset space ~
+\end_inset
+
+skupin
 \begin_inset Foot
 status open
 
@@ -525,11 +575,8 @@ pro každou skupinu
 \begin_inset Formula $o\in X$
 \end_inset
 
- je pak přiřazen číselný klíč odpovídající vzdálenosti od
-\begin_inset space ~
-\end_inset
-
-referenčního prvku skupiny.
+ je pak přiřazen číselný klíč odpovídající vzdálenosti od referenčního prvku
+ skupiny.
  Pokud máme dostatečně velkou konstantu 
 \begin_inset Formula $c$
 \end_inset
@@ -560,7 +607,14 @@ jakékoliv skupiny
 \begin_inset Formula $[i\cdot c,(i+1)\cdot c]$
 \end_inset
 
-.
+ -- viz 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:iDistance"
+
+\end_inset
+
+\SpecialChar \@.
  Datové objekty jsou poté uloženy do B
 \begin_inset Formula $^{+}$
 \end_inset
@@ -586,7 +640,8 @@ iDist
 \begin_inset space ~
 \end_inset
 
-vyřízení dotazu.
+vyřízení dotazu\SpecialChar \@.
+
 \end_layout
 
 \begin_layout Standard
@@ -610,6 +665,13 @@ status open
 
 \begin_layout Plain Layout
 iDistance
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:iDistance"
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -627,20 +689,21 @@ M-Index zobecňuje iDistance tak, že může být použita na
 \begin_inset space ~
 \end_inset
 
-obecne metrické prostory -- ne jenom na vektorový prostod.
- Toho je dosaženo tím, že se vybere množina 
+obecne metrické prostory -- ne jenom na vektorový prostod\SpecialChar \@.
+ Toho je dosaženo
+ tím, že se vybere množina 
 \begin_inset Formula $n$
 \end_inset
 
- pivotů 
-\begin_inset Formula $p_{0},p_{1},\ldots,p_{n-1}$
-\end_inset
 
-a priori ze
 \begin_inset space ~
 \end_inset
 
-vzorový množiny 
+pivotů 
+\begin_inset Formula $p_{0},p_{1},\ldots,p_{n-1}$
+\end_inset
+
+ a priori ze vzorový množiny 
 \begin_inset Formula $S\subseteq\mathcal{D}$
 \end_inset
 
@@ -653,11 +716,59 @@ vzorový množiny
 \end_inset
 
 skupin.
-\begin_inset Note Note
+ 
+\begin_inset CommandInset ref
+LatexCommand prettyref
+reference "fig:M-Index-level-one"
+
+\end_inset
+
+ukazuje příklad takového rozdělení ve 2D pro 4 pivoty (
+\begin_inset Formula $n=4)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
 status open
 
 \begin_layout Plain Layout
-Další obrázek sem
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename m-index-level-one.emf
+	scale 50
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+M-Index prvního stupně
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:M-Index-level-one"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
 \end_layout
 
 \end_inset
@@ -666,7 +777,7 @@ Další obrázek sem
 \end_layout
 
 \begin_layout Subsection
-Více stupňový M-Index
+Více-stupňový M-Index
 \end_layout
 
 \begin_layout Standard
@@ -674,7 +785,534 @@ Aby byl M-Index škálovatelný pro
 \begin_inset space ~
 \end_inset
 
-rostoucí množství dat, budeme chtít aplikoat další rozdělování skupin.
+rostoucí množství dat, budeme chtít aplikovat další rozdělování skupin.
+ Pro
+\begin_inset space ~
+\end_inset
+
+danou skupinu 
+\begin_inset Formula $n$
+\end_inset
+
+ pivotů 
+\begin_inset Formula $\{p_{0},p_{1},\ldots,p_{n-1}\}$
+\end_inset
+
+ a prvek 
+\begin_inset Formula $o\in\mathcal{D}$
+\end_inset
+
+, platí
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+(\cdot)_{o}\,:\,\{0,1,\ldots,n-1\}\rightarrow\{0,1,\ldots,n-1\}\]
+
+\end_inset
+
+je permutace indexů tak, že
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+d(p_{(0)_{o}},o)\leq d(p_{(1)_{o}},o)\leq\cdots\leq d(p_{(n-1)_{o}},o)\]
+
+\end_inset
+
+Jinak: řada 
+\begin_inset Formula $p_{(0)_{o}},p_{(1)_{o}},\ldots,p_{(n-1)_{o}}$
+\end_inset
+
+ je seřazena podle vzdáleností mezi pivotama a prvkem 
+\begin_inset Formula $o$
+\end_inset
+
+\SpecialChar \@.
+
+\end_layout
+
+\begin_layout Standard
+M-Index s
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset Formula $l$
+\end_inset
+
+ stupni, kde 
+\begin_inset Formula $l$
+\end_inset
+
+ je celé číslo 
+\begin_inset Formula $1\leq l\leq n$
+\end_inset
+
+, rozděluje prostor 
+\begin_inset Formula $\mathcal{D}$
+\end_inset
+
+ do 
+\begin_inset Formula $n\cdot(n-1)\cdot\cdots\cdot(n-l+1)$
+\end_inset
+
+ skupin za použítí rekursivního Voronoi-ho dělení: Na prvním stupni, každý
+ prvek 
+\begin_inset Formula $o\in\mathcal{D}$
+\end_inset
+
+ je přiřazen k
+\begin_inset space ~
+\end_inset
+
+jeho nejbližšímu pivotu 
+\begin_inset Formula $p_{(0)_{o}}$
+\end_inset
+
+-- takto se utvoří skupiny 
+\begin_inset Formula $C_{i}$
+\end_inset
+
+\SpecialChar \@.
+ Na druhém stupni se každá skupina 
+\begin_inset Formula $C_{i}$
+\end_inset
+
+ rozdělí na 
+\begin_inset Formula $n-1$
+\end_inset
+
+ skupin tou samou procedůrou použitím 
+\begin_inset Formula $n-1$
+\end_inset
+
+ pivotů 
+\begin_inset Formula $\{p_{1},\ldots,p_{i-1},p_{i+1},\ldots,p_{n}\}$
+\end_inset
+
+ a vytvořením skupin 
+\begin_inset Formula $C_{i,j}$
+\end_inset
+
+\SpecialChar \@.
+ Jinými slovy, skupina 
+\begin_inset Formula $C_{i,j}$
+\end_inset
+
+je tvořena prvky 
+\begin_inset Formula $o\in X$
+\end_inset
+
+, pro které pivot 
+\begin_inset Formula $p_{i}$
+\end_inset
+
+ je nebližší a 
+\begin_inset Formula $p_{j}$
+\end_inset
+
+ je druhý nejbližší: 
+\begin_inset Formula $(0)_{o}=i$
+\end_inset
+
+ a 
+\begin_inset Formula $(1)_{o}=j$
+\end_inset
+
+\SpecialChar \@.
+ Tento postup je zoopakován 
+\begin_inset Formula $l$
+\end_inset
+
+-krát\SpecialChar \@.
+ 
+\begin_inset CommandInset ref
+LatexCommand prettyref
+reference "fig:M-Index-level-two"
+
+\end_inset
+
+ ukazuje příklad M-Indexu pro 
+\begin_inset Formula $l=2$
+\end_inset
+
+\SpecialChar \@.
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename m-index-level-two.emf
+	scale 50
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+M-Index druhého stupně 
+\begin_inset Formula $(l=2)$
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:M-Index-level-two"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Mapovací klíč M-Indexu je definován 
+\begin_inset Formula $key_{l}\,:\,\mathcal{D\rightarrow\mathbb{R}}$
+\end_inset
+
+\SpecialChar \@.
+ Nechť 
+\begin_inset Formula $o\in\mathcal{D}$
+\end_inset
+
+ patří do skupiny 
+\begin_inset Formula $C_{i_{0},i_{1},\ldots,i_{l-1}}$
+\end_inset
+
+\SpecialChar \@.
+ Celočíselná část klíče 
+\begin_inset Formula $key_{l}(o)$
+\end_inset
+
+ identifikuje skupinu: je rovna číslu 
+\begin_inset Quotes pld
+\end_inset
+
+
+\begin_inset Formula $i_{0}i_{1}\ldots i_{l-1}$
+\end_inset
+
+
+\begin_inset Quotes prd
+\end_inset
+
+\SpecialChar \@.
+ Desetinná část klíče 
+\begin_inset Formula $key_{l}(o)$
+\end_inset
+
+ je vzdálenost mezi prvkem 
+\begin_inset Formula $o$
+\end_inset
+
+a jeho nebližším pivotem 
+\begin_inset Formula $d(p_{(0)_{o}},o)$
+\end_inset
+
+\SpecialChar \@.
+ Celé mapování M-Indexu vyjádříme následujícím vztahem
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+key_{l}=d(p_{(0)_{o}},o)+\sum_{i\text{=0}}^{l-1}(i)_{o}\cdot n{}^{(l-1-i)}\label{eq:M-Index-key}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset ref
+LatexCommand prettyref
+reference "fig:M-Index-level-two"
+
+\end_inset
+
+zobrazuje mapování pro dvou stupňový M-Index 
+\begin_inset Formula $(l=2)$
+\end_inset
+
+\SpecialChar \@.
+ Velikost domény je 
+\begin_inset Formula $4^{2}=16$
+\end_inset
+
+ a prvky ze skupiny 
+\begin_inset Formula $C_{i,j}$
+\end_inset
+
+ jsou mapovány do intervalu 
+\begin_inset Formula $[i\cdot n+j,i\cdot n+j+1]$
+\end_inset
+
+\SpecialChar \@.
+
+\end_layout
+
+\begin_layout Subsection
+M-Index s
+\begin_inset space ~
+\end_inset
+
+dynamickými stupni
+\end_layout
+
+\begin_layout Standard
+Více-stupňový M-Index zlepšuje dělící schopnosti oproti jedno stupňovému
+ M-Indexu seskupováním/shromažďováním blízkých prvků do menších skupin\SpecialChar \@.
+ Teoretick
+y, čím více stupňů M-Index má, tím více je vyhledávání efektivnější\SpecialChar \@.
+ Na druhou
+ stranu, velké množství malých skupin vede k
+\begin_inset space ~
+\end_inset
+
+větší fragmentaci dat při dotazu a větší náročnosti při provádení dotazu\SpecialChar \@.
+
+ V
+\begin_inset space ~
+\end_inset
+
+praxi to vede ke ztrátě výhody z
+\begin_inset space ~
+\end_inset
+
+více stupňovosti\SpecialChar \@.
+
+\end_layout
+
+\begin_layout Standard
+Koncept M-Indexu může být rozšířen o
+\begin_inset space ~
+\end_inset
+
+
+\emph on
+dynamický počet stupňů
+\emph default
+, který umožní 
+\begin_inset CommandInset ref
+LatexCommand prettyref
+reference "eq:M-Index-key"
+
+\end_inset
+
+ dynamicky zvětšovat (prohlubovat) pouze pro velké skupiny, zatím co 
+\begin_inset CommandInset ref
+LatexCommand prettyref
+reference "eq:M-Index-key-max-level"
+
+\end_inset
+
+ požaduje pouze lokální změny klíčů M-Indexu.
+ Toto vylepšení vyžaduje následující modifikace:
+\end_layout
+
+\begin_layout Itemize
+je vybrán fixní 
+\begin_inset Quotes pld
+\end_inset
+
+maximální stupeň M-Indexu
+\begin_inset Quotes prd
+\end_inset
+
+ 
+\begin_inset Formula $1\leq l_{max}\leq n$
+\end_inset
+
+ a doména pro
+\begin_inset space ~
+\end_inset
+
+tento maximální stupeň 
+\begin_inset Formula $n^{l_{max}}$
+\end_inset
+
+ je alokována
+\end_layout
+
+\begin_layout Itemize
+rovnice 
+\begin_inset CommandInset ref
+LatexCommand prettyref
+reference "eq:M-Index-key"
+
+\end_inset
+
+ pro 
+\begin_inset Formula $key_{l}$
+\end_inset
+
+ stupně 
+\begin_inset Formula $l,\,1\leq l\leq l_{max}$
+\end_inset
+
+ je změněna na:
+\begin_inset Formula \begin{equation}
+key_{l}=d(p_{(0)_{o}},o)+\sum_{i\text{=0}}^{l-1}(i)_{o}\cdot n{}^{(l_{max}-1-i)}\label{eq:M-Index-key-max-level}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+je vytvořen dynamický 
+\emph on
+strom skupin
+\emph default
+, který určuje aktuální hloubku pro dané M-Index skupiny
+\end_layout
+
+\begin_layout Standard
+Jak vypadá taková stromová struktura pro 
+\begin_inset Formula $l_{max}=3$
+\end_inset
+
+ je zobrazeno v
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand prettyref
+reference "fig:Dynamic-Cluster-Tree"
+
+\end_inset
+
+\SpecialChar \@.
+ Prvky mají přiřazeny klíče v
+\begin_inset space ~
+\end_inset
+
+nejnižších patrech (listech).
+ Typicky se nastaví limit na možný počet prvků/dat uložených ve skupině
+ a zvýší se stupeň skupiny při jejím zaplnění.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Dynamic-Cluster-Tree"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Rozdělení skupiny o
+\begin_inset space ~
+\end_inset
+
+jeden stupeň znamená lokální přetřídění prvků patřící do skupiny\SpecialChar \@.
+ Pokud zarovnáme
+ počet pivotů
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset Formula $n$
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+na násobky 2, pak každý stupeň 
+\begin_inset Formula $key_{l},\,1\leq l\leq l_{max}$
+\end_inset
+
+ definuje určítý počet bitů integrální části 
+\begin_inset Formula $key_{l_{max}}$
+\end_inset
+
+\SpecialChar \@.
+ Toto přiřazení je velmi podobné 
+\emph on
+extensible hashing
+\emph default
+
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Fagin:1979:EHF:320083.320092"
+
+\end_inset
+
+ a rozdělení takové skupiny znamená zohlednění dalších bitů z
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset Formula $key_{l_{max}}$
+\end_inset
+
+\SpecialChar \@.
+ V
+\begin_inset space ~
+\end_inset
+
+praxi je 
+\begin_inset Formula $l_{max}$
+\end_inset
+
+ limitován pouze 
+\begin_inset Formula $n$
+\end_inset
+
+, případně rozsahem číselné reprezentace 
+\begin_inset Formula $key$
+\end_inset
+
+ \SpecialChar \@.
+
 \end_layout
 
 \begin_layout Subsection
