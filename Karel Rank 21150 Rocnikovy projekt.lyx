@@ -32,7 +32,7 @@
 \defskip medskip
 \quotes_language polish
 \papercolumns 1
-\papersides 2
+\papersides 1
 \paperpagestyle default
 \tracking_changes false
 \output_changes false
@@ -921,7 +921,7 @@ je tvořena prvky
 \end_inset
 
 \SpecialChar \@.
- Tento postup je zoopakován 
+ Tento postup je zopakován 
 \begin_inset Formula $l$
 \end_inset
 
@@ -1081,7 +1081,7 @@ dynamickými stupni
 \end_layout
 
 \begin_layout Standard
-Více-stupňový M-Index zlepšuje dělící schopnosti oproti jedno stupňovému
+Více-stupňový M-Index zlepšuje dělící schopnosti oproti jedno-stupňovému
  M-Indexu seskupováním/shromažďováním blízkých prvků do menších skupin\SpecialChar \@.
  Teoretick
 y, čím více stupňů M-Index má, tím více je vyhledávání efektivnější\SpecialChar \@.
@@ -1316,10 +1316,6 @@ praxi je
 \end_layout
 
 \begin_layout Subsection
-Naplnění M-Indexu
-\end_layout
-
-\begin_layout Subsection
 Range Query
 \begin_inset CommandInset label
 LatexCommand label
@@ -1328,6 +1324,276 @@ name "sub:Range-Query"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Zde popíšeme alogitmus 
+\emph on
+range
+\begin_inset space ~
+\end_inset
+
+query
+\begin_inset space ~
+\end_inset
+
+
+\emph default
+
+\begin_inset Formula $R(q,r)$
+\end_inset
+
+ jako základní dotaz podobnosti.
+\end_layout
+
+\begin_layout Standard
+V
+\begin_inset space ~
+\end_inset
+
+prvním kroku se spočítají vzdálenosti 
+\begin_inset Formula $d(p_{i},q),\, i=1,\ldots,n$
+\end_inset
+
+, všech 
+\begin_inset Formula $n$
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+pivotů k
+\begin_inset space ~
+\end_inset
+
+dotazovanému prvku (objektu)\SpecialChar \@.
+ Algoritmus bere v
+\begin_inset space ~
+\end_inset
+
+potaz všechny skupiny na stupních 
+\begin_inset Formula $1,\ldots,l$
+\end_inset
+
+ (pro fixní M-Index) nebo projde celý strom skupin (
+\emph on
+cluster
+\begin_inset space ~
+\end_inset
+
+tree
+\emph default
+)\SpecialChar \@.
+ Díky opakovanému Voronoi-ovu dělení a podle 
+\emph on
+Double-Pivot Distance Constraint
+\emph default
+
+\begin_inset CommandInset citation
+LatexCommand citep
+key "similaritysearch2006"
+
+\end_inset
+
+, skupina 
+\begin_inset Formula $C_{i}$
+\end_inset
+
+ může být vynechána, pokud
+\begin_inset Formula \[
+d(p_{i},q)-d(p_{(0)_{q}},q)>2\cdot r\]
+
+\end_inset
+
+kde 
+\begin_inset Formula $p_{(0)_{q}}$
+\end_inset
+
+ je pivot nejbližší ke
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset Formula $q$
+\end_inset
+
+\SpecialChar \@.
+ Protože Voronoi-ovo dělení je opakováno 
+\begin_inset Formula $l$
+\end_inset
+
+-krát pro stupeň 
+\begin_inset Formula $l$
+\end_inset
+
+, toto pravidlo může být opakováno 
+\begin_inset Formula $l$
+\end_inset
+
+-krát pro skupinu 
+\begin_inset Formula $C_{i_{0},\ldots,i_{l-1}}$
+\end_inset
+
+\SpecialChar \@.
+ Na každém stupni 
+\begin_inset Formula $j,\,1\leq l\leq l$
+\end_inset
+
+ jsou pivoty 
+\begin_inset Formula $p_{i_{0},\ldots,i_{j-2}}$
+\end_inset
+
+ ignorovány omezovacím mechanismem, protože byly vynechány Voronoi-vým dělením
+ na stupni 
+\begin_inset Formula $l$
+\end_inset
+
+\SpecialChar \@.
+
+\end_layout
+
+\begin_layout Standard
+Znalostí minimální a maximální vzdáleností mezi pivoty ve skupině (které
+ jsou uloženy v
+\begin_inset space ~
+\end_inset
+
+listech stromu), můžeme uplatnit 
+\emph on
+RangePivot Distance Constraint
+\emph default
+
+\begin_inset CommandInset citation
+LatexCommand citep
+key "similaritysearch2006"
+
+\end_inset
+
+ a nemusíme přistupovat ke skupině 
+\begin_inset Formula $C_{p,*}$
+\end_inset
+
+ pokud
+\begin_inset Formula \begin{alignat*}{2}
+d(p,q)+r<r_{min} & \textrm{nebo} & d(p,q)-r>r_{max}\end{alignat*}
+
+\end_inset
+
+kde 
+\begin_inset Formula $r_{min}$
+\end_inset
+
+ a 
+\begin_inset Formula $r_{max}$
+\end_inset
+
+ je minimální a maximální vzdálenost prvků v
+\begin_inset space ~
+\end_inset
+
+dané skupině\SpecialChar \@.
+
+\end_layout
+
+\begin_layout Standard
+Pokud žádný z
+\begin_inset space ~
+\end_inset
+
+výše uvedených filtrujícíh mechanismů neodfiltruje skupinu 
+\begin_inset Formula $C_{i_{0},\ldots,i_{l-1}}$
+\end_inset
+
+na úrovní listů, pak můžeme určit interval pro 
+\begin_inset Formula $key$
+\end_inset
+
+ domény, která má být prohledán v
+\begin_inset space ~
+\end_inset
+
+této skupině:
+\begin_inset Formula \[
+[d(p_{i_{0},}q)-r,d(p_{i_{0}},q)+r]\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+kde obě limity jsou posunuty o
+\begin_inset space ~
+\end_inset
+
+celočíselnou část klíčů skupiny 
+\begin_inset Formula $C_{i_{0},\ldots,i_{l-1}}$
+\end_inset
+
+podle 
+\begin_inset Formula $key_{l}$
+\end_inset
+
+ rovnic 
+\begin_inset CommandInset ref
+LatexCommand prettyref
+reference "eq:M-Index-key"
+
+\end_inset
+
+ nebo 
+\begin_inset CommandInset ref
+LatexCommand prettyref
+reference "eq:M-Index-key-max-level"
+
+\end_inset
+
+\SpecialChar \@.
+ Tento mechanismus je 
+\begin_inset Quotes pld
+\end_inset
+
+půjčen
+\begin_inset Quotes prd
+\end_inset
+
+ z
+\begin_inset space ~
+\end_inset
+
+iDistance a je přímou aplikací 
+\emph on
+Object-Pivot Distance Constraint
+\emph default
+
+\begin_inset CommandInset citation
+LatexCommand citep
+key "similaritysearch2006"
+
+\end_inset
+
+\SpecialChar \@.
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Přidat 
+\emph on
+Pivot Filtering?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Architektura M-Indexu
 \end_layout
 
 \begin_layout Section
