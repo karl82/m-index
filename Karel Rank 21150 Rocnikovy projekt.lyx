@@ -549,24 +549,11 @@ Jak bylo již zmíněno, koncept M-Indexu je inspirován iDistance, která je
 \begin_inset space ~
 \end_inset
 
-skupin
-\begin_inset Foot
-status open
-
-\begin_layout Plain Layout
-v originále 
-\size normal
-\emph on
-cluster
-\end_layout
-
-\end_inset
-
- a utvoří referenční bod 
+clusterů a utvoří referenční bod 
 \begin_inset Formula $p_{i}$
 \end_inset
 
-pro každou skupinu 
+pro každý cluster 
 \begin_inset Formula $C_{i},\: i\in\left\{ 0,\ldots,n-1\right\} $
 \end_inset
 
@@ -576,12 +563,12 @@ pro každou skupinu
 \end_inset
 
  je pak přiřazen číselný klíč odpovídající vzdálenosti od referenčního prvku
- skupiny.
+ clusteru.
  Pokud máme dostatečně velkou konstantu 
 \begin_inset Formula $c$
 \end_inset
 
- pro oddělení jednotlivých skupin, pak iDistance klíč pro prvek 
+ pro oddělení jednotlivých clusterů, pak iDistance klíč pro prvek 
 \begin_inset Formula $o\in C_{i}$
 \end_inset
 
@@ -599,7 +586,7 @@ Tento vzorec mapuje všechny prvky z
 \begin_inset space ~
 \end_inset
 
-jakékoliv skupiny 
+jakéhokoliv clusteru 
 \begin_inset Formula $C_{i}$
 \end_inset
 
@@ -715,7 +702,7 @@ pivotů
 \begin_inset space ~
 \end_inset
 
-skupin.
+clusterů.
  
 \begin_inset CommandInset ref
 LatexCommand prettyref
@@ -785,16 +772,20 @@ Aby byl M-Index škálovatelný pro
 \begin_inset space ~
 \end_inset
 
-rostoucí množství dat, budeme chtít aplikovat další rozdělování skupin.
+rostoucí množství dat, budeme chtít aplikovat další rozdělování clusterů.
  Pro
 \begin_inset space ~
 \end_inset
 
-danou skupinu 
+daný cluster 
 \begin_inset Formula $n$
 \end_inset
 
- pivotů 
+
+\begin_inset space ~
+\end_inset
+
+pivotů 
 \begin_inset Formula $\{p_{0},p_{1},\ldots,p_{n-1}\}$
 \end_inset
 
@@ -857,7 +848,7 @@ M-Index s
 \begin_inset Formula $n\cdot(n-1)\cdot\cdots\cdot(n-l+1)$
 \end_inset
 
- skupin za použítí rekursivního Voronoi-ho dělení: Na prvním stupni, každý
+ clusterů za použítí rekursivního Voronoi-ho dělení: Na prvním stupni, každý
  prvek 
 \begin_inset Formula $o\in\mathcal{D}$
 \end_inset
@@ -870,12 +861,12 @@ jeho nejbližšímu pivotu
 \begin_inset Formula $p_{(0)_{o}}$
 \end_inset
 
--- takto se utvoří skupiny 
+-- takto se utvoří clustery 
 \begin_inset Formula $C_{i}$
 \end_inset
 
 \SpecialChar \@.
- Na druhém stupni se každá skupina 
+ Na druhém stupni se každý cluster 
 \begin_inset Formula $C_{i}$
 \end_inset
 
@@ -883,7 +874,7 @@ jeho nejbližšímu pivotu
 \begin_inset Formula $n-1$
 \end_inset
 
- skupin tou samou procedůrou použitím 
+ clusterů tou samou procedůrou použitím 
 \begin_inset Formula $n-1$
 \end_inset
 
@@ -891,16 +882,16 @@ jeho nejbližšímu pivotu
 \begin_inset Formula $\{p_{1},\ldots,p_{i-1},p_{i+1},\ldots,p_{n}\}$
 \end_inset
 
- a vytvořením skupin 
+ a vytvořením clusterů 
 \begin_inset Formula $C_{i,j}$
 \end_inset
 
 \SpecialChar \@.
- Jinými slovy, skupina 
+ Jinými slovy, cluster 
 \begin_inset Formula $C_{i,j}$
 \end_inset
 
-je tvořena prvky 
+je tvořen prvky 
 \begin_inset Formula $o\in X$
 \end_inset
 
@@ -997,7 +988,7 @@ Mapovací klíč M-Indexu je definován
 \begin_inset Formula $o\in\mathcal{D}$
 \end_inset
 
- patří do skupiny 
+ patří do clusteru 
 \begin_inset Formula $C_{i_{0},i_{1},\ldots,i_{l-1}}$
 \end_inset
 
@@ -1006,7 +997,7 @@ Mapovací klíč M-Indexu je definován
 \begin_inset Formula $key_{l}(o)$
 \end_inset
 
- identifikuje skupinu: je rovna číslu 
+ identifikuje cluster: je rovna číslu 
 \begin_inset Quotes pld
 \end_inset
 
@@ -1027,7 +1018,7 @@ Mapovací klíč M-Indexu je definován
 \begin_inset Formula $o$
 \end_inset
 
-a jeho nebližším pivotem 
+ a jeho nebližším pivotem 
 \begin_inset Formula $d(p_{(0)_{o}},o)$
 \end_inset
 
@@ -1051,7 +1042,7 @@ reference "fig:M-Index-level-two"
 
 \end_inset
 
-zobrazuje mapování pro dvou stupňový M-Index 
+zobrazuje mapování pro dvou-stupňový M-Index 
 \begin_inset Formula $(l=2)$
 \end_inset
 
@@ -1060,7 +1051,11 @@ zobrazuje mapování pro dvou stupňový M-Index
 \begin_inset Formula $4^{2}=16$
 \end_inset
 
- a prvky ze skupiny 
+ a prvky z
+\begin_inset space ~
+\end_inset
+
+clusteru 
 \begin_inset Formula $C_{i,j}$
 \end_inset
 
@@ -1082,11 +1077,11 @@ dynamickými stupni
 
 \begin_layout Standard
 Více-stupňový M-Index zlepšuje dělící schopnosti oproti jedno-stupňovému
- M-Indexu seskupováním/shromažďováním blízkých prvků do menších skupin\SpecialChar \@.
- Teoretick
-y, čím více stupňů M-Index má, tím více je vyhledávání efektivnější\SpecialChar \@.
- Na druhou
- stranu, velké množství malých skupin vede k
+ M-Indexu seskupováním/shromažďováním blízkých prvků do menších clusterů\SpecialChar \@.
+
+ Teoreticky, čím více stupňů M-Index má, tím více je vyhledávání efektivnější\SpecialChar \@.
+
+ Na druhou stranu, velké množství malých clusterů vede k
 \begin_inset space ~
 \end_inset
 
@@ -1100,7 +1095,7 @@ praxi to vede ke ztrátě výhody z
 \begin_inset space ~
 \end_inset
 
-více stupňovosti\SpecialChar \@.
+více-stupňovosti\SpecialChar \@.
 
 \end_layout
 
@@ -1120,7 +1115,7 @@ reference "eq:M-Index-key"
 
 \end_inset
 
- dynamicky zvětšovat (prohlubovat) pouze pro velké skupiny, zatím co 
+ dynamicky zvětšovat (prohlubovat) pouze pro velké clustery, zatím co 
 \begin_inset CommandInset ref
 LatexCommand prettyref
 reference "eq:M-Index-key-max-level"
@@ -1183,9 +1178,9 @@ key_{l}=d(p_{(0)_{o}},o)+\sum_{i\text{=0}}^{l-1}(i)_{o}\cdot n{}^{(l_{max}-1-i)}
 \begin_layout Itemize
 je vytvořen dynamický 
 \emph on
-strom skupin
+cluster tree
 \emph default
-, který určuje aktuální hloubku pro dané M-Index skupiny
+, který určuje aktuální hloubku pro dané M-Index clustery
 \end_layout
 
 \begin_layout Standard
@@ -1210,8 +1205,11 @@ reference "fig:Dynamic-Cluster-Tree"
 \end_inset
 
 nejnižších patrech (listech).
- Typicky se nastaví limit na možný počet prvků/dat uložených ve skupině
- a zvýší se stupeň skupiny při jejím zaplnění.
+ Typicky se nastaví limit na možný počet prvků/dat uložených v
+\begin_inset space ~
+\end_inset
+
+clusteru a zvýší se stupeň clustery při jejím zaplnění.
 \end_layout
 
 \begin_layout Standard
@@ -1248,13 +1246,13 @@ name "fig:Dynamic-Cluster-Tree"
 \end_layout
 
 \begin_layout Standard
-Rozdělení skupiny o
+Rozdělení clusteru o
 \begin_inset space ~
 \end_inset
 
-jeden stupeň znamená lokální přetřídění prvků patřící do skupiny\SpecialChar \@.
- Pokud zarovnáme
- počet pivotů
+jeden stupeň znamená lokální přetřídění prvků patřící do clusteru\SpecialChar \@.
+ Pokud
+ zarovnáme počet pivotů
 \begin_inset space ~
 \end_inset
 
@@ -1262,11 +1260,7 @@ jeden stupeň znamená lokální přetřídění prvků patřící do skupiny\Sp
 \begin_inset Formula $n$
 \end_inset
 
-
-\begin_inset space ~
-\end_inset
-
-na násobky 2, pak každý stupeň 
+ na násobky 2, pak každý stupeň 
 \begin_inset Formula $key_{l},\,1\leq l\leq l_{max}$
 \end_inset
 
@@ -1286,7 +1280,7 @@ key "Fagin:1979:EHF:320083.320092"
 
 \end_inset
 
- a rozdělení takové skupiny znamená zohlednění dalších bitů z
+ a rozdělení takového clusteru znamená zohlednění dalších bitů z
 \begin_inset space ~
 \end_inset
 
@@ -1372,11 +1366,11 @@ dotazovanému prvku (objektu)\SpecialChar \@.
 \begin_inset space ~
 \end_inset
 
-potaz všechny skupiny na stupních 
+potaz všechny clustery na stupních 
 \begin_inset Formula $1,\ldots,l$
 \end_inset
 
- (pro fixní M-Index) nebo projde celý strom skupin (
+ (pro fixní M-Index) nebo projde celý strom clusterů (
 \emph on
 cluster
 \begin_inset space ~
@@ -1396,11 +1390,11 @@ key "similaritysearch2006"
 
 \end_inset
 
-, skupina 
+, cluster 
 \begin_inset Formula $C_{i}$
 \end_inset
 
- může být vynechána, pokud
+ může být vynechán, pokud
 \begin_inset Formula \[
 d(p_{i},q)-d(p_{(0)_{q}},q)>2\cdot r\]
 
@@ -1431,7 +1425,7 @@ kde
 \begin_inset Formula $l$
 \end_inset
 
--krát pro skupinu 
+-krát pro cluster 
 \begin_inset Formula $C_{i_{0},\ldots,i_{l-1}}$
 \end_inset
 
@@ -1454,8 +1448,11 @@ kde
 \end_layout
 
 \begin_layout Standard
-Znalostí minimální a maximální vzdáleností mezi pivoty ve skupině (které
- jsou uloženy v
+Znalostí minimální a maximální vzdáleností mezi pivoty v
+\begin_inset space ~
+\end_inset
+
+clusteru (který jsou uloženy v
 \begin_inset space ~
 \end_inset
 
@@ -1470,7 +1467,7 @@ key "similaritysearch2006"
 
 \end_inset
 
- a nemusíme přistupovat ke skupině 
+ a nemusíme přistupovat ke clusteru 
 \begin_inset Formula $C_{p,*}$
 \end_inset
 
@@ -1492,7 +1489,7 @@ kde
 \begin_inset space ~
 \end_inset
 
-dané skupině\SpecialChar \@.
+daném clusteru\SpecialChar \@.
 
 \end_layout
 
@@ -1501,7 +1498,7 @@ Pokud žádný z
 \begin_inset space ~
 \end_inset
 
-výše uvedených filtrujícíh mechanismů neodfiltruje skupinu 
+výše uvedených filtrujícíh mechanismů neodfiltruje cluster 
 \begin_inset Formula $C_{i_{0},\ldots,i_{l-1}}$
 \end_inset
 
@@ -1509,11 +1506,11 @@ na úrovní listů, pak můžeme určit interval pro
 \begin_inset Formula $key$
 \end_inset
 
- domény, která má být prohledán v
+ domény, která mají být prohledány v
 \begin_inset space ~
 \end_inset
 
-této skupině:
+tomto clusteru:
 \begin_inset Formula \[
 [d(p_{i_{0},}q)-r,d(p_{i_{0}},q)+r]\]
 
@@ -1527,7 +1524,7 @@ kde obě limity jsou posunuty o
 \begin_inset space ~
 \end_inset
 
-celočíselnou část klíčů skupiny 
+celočíselnou část klíčů clusteru 
 \begin_inset Formula $C_{i_{0},\ldots,i_{l-1}}$
 \end_inset
 
@@ -1649,8 +1646,12 @@ reference "sub:B-plus-tree"
 \end_layout
 
 \begin_layout Standard
-Implementace stromu skupin je jednoduchá\SpecialChar \@.
- Záznam pro skupinu 
+Implementace stromu clusterů (
+\emph on
+cluster tree
+\emph default
+) je jednoduchá\SpecialChar \@.
+ Záznam pro cluster 
 \begin_inset Formula $C_{i_{0},\ldots,i_{l-1}}$
 \end_inset
 
@@ -1675,7 +1676,7 @@ případě vnitřního uzlu nebo
 \end_inset
 
  pro záznam listu\SpecialChar \@.
- Strom skupin je předpokládán udržovat v
+ Strom clusterů je udržovám v
 \begin_inset space ~
 \end_inset
 
