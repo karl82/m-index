@@ -1676,7 +1676,7 @@ případě vnitřního uzlu nebo
 \end_inset
 
  pro záznam listu\SpecialChar \@.
- Strom clusterů je udržovám v
+ Strom clusterů by měl být udržovám v
 \begin_inset space ~
 \end_inset
 
@@ -1689,7 +1689,351 @@ Datové struktury
 \end_layout
 
 \begin_layout Subsection
-B-Tree
+B-tree
+\end_layout
+
+\begin_layout Standard
+B-tree je zobecnělý binární strom s
+\begin_inset space ~
+\end_inset
+
+možností mít více jak 2 potomky.
+ Jeho optimalizován pro čtení a zápis velkého objemu dat, takže je se hojně
+ používá v
+\begin_inset space ~
+\end_inset
+
+databázích a souborových systémech.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Obrázek B-tree
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Definice
+\end_layout
+
+\begin_layout Standard
+B-tree 
+\begin_inset Formula $T$
+\end_inset
+
+ je kořenový strom (s kořenem 
+\begin_inset Formula $root[T]$
+\end_inset
+
+) s
+\begin_inset space ~
+\end_inset
+
+následujícími vlastnostmi:
+\end_layout
+
+\begin_layout Enumerate
+Každý uzel 
+\begin_inset Formula $x$
+\end_inset
+
+ obsahuje následující prvky:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+\begin_inset Formula $n[x]$
+\end_inset
+
+ - počet klíčů uložených v
+\begin_inset space ~
+\end_inset
+
+uzlu 
+\begin_inset Formula $x$
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $n[x]$
+\end_inset
+
+ samotných klíčů, uložených v
+\begin_inset space ~
+\end_inset
+
+neklesajícím pořadí, tedy 
+\begin_inset Formula $key_{1}[x]\leq key_{2}[x]\leq\cdots\leq key_{n[x]}[x]$
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $leaf[x]$
+\end_inset
+
+ typu boolean, který je TRUE pokud 
+\begin_inset Formula $x$
+\end_inset
+
+ je list a FALSE pokud je 
+\begin_inset Formula $x$
+\end_inset
+
+ interní uzel\SpecialChar \@.
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Každý vnitřní uzel 
+\begin_inset Formula $x$
+\end_inset
+
+ obsahuje 
+\begin_inset Formula $n[x]+1$
+\end_inset
+
+ ukazatelů
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+v
+\begin_inset space ~
+\end_inset
+
+případě jazyka Java 
+\emph on
+referencí
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Formula $c_{1}[x],c_{2}[x],\ldots,c_{n[x]+1}[x]$
+\end_inset
+
+ na jeho potomky (
+\emph on
+children
+\emph default
+).
+ Uzly listů nemají žádné potomky -- jejich 
+\begin_inset Formula $c_{i}$
+\end_inset
+
+ prvky jsou nedefinovány\SpecialChar \@.
+
+\end_layout
+
+\begin_layout Enumerate
+Klíče 
+\begin_inset Formula $key_{i}[x]$
+\end_inset
+
+ oddělují rozsahy klíčů uložených v
+\begin_inset space ~
+\end_inset
+
+každém podstromu: pokud 
+\begin_inset Formula $k_{i}$
+\end_inset
+
+ je libovolný klíč uložený v
+\begin_inset space ~
+\end_inset
+
+podstromu s
+\begin_inset space ~
+\end_inset
+
+kořenem 
+\begin_inset Formula $c_{i}[x]$
+\end_inset
+
+, pak
+\begin_inset Formula \[
+k_{1}\leq key_{1}[x]\leq k_{2}\leq key_{2}[x]\leq\cdots\leq key_{n[x]}[x]\leq k_{n[x]+1}.\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Všechny listy mají stejnou hloubku, která se nazývá výška stromu 
+\begin_inset Formula $h$
+\end_inset
+
+\SpecialChar \@.
+
+\end_layout
+
+\begin_layout Enumerate
+Jsou definovány spodní a horní hranice na množství klíčů, které může uzel
+ obsahovat.
+ Tyto hranice můžou být vyjádřeny pomocí fixního čísla 
+\begin_inset Formula $t\geq2$
+\end_inset
+
+ zvaného 
+\emph on
+minimální stupeň
+\emph default
+ B-tree:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Každý uzel jiný než kořen musí mít aspoň 
+\begin_inset Formula $t-1$
+\end_inset
+
+ klíčů.
+ Každý interní uzel jiný než kořen proto má aspoň 
+\begin_inset Formula $t$
+\end_inset
+
+ potomků.
+ Pokud není strom prázdný, potom kořen má aspoň jeden klíč\SpecialChar \@.
+
+\end_layout
+
+\begin_layout Enumerate
+Každý uzel obsahuje nanejvýš 
+\begin_inset Formula $2t-1$
+\end_inset
+
+ klíčů.
+ Proto interní uzel může mít nejvýše 
+\begin_inset Formula $2t$
+\end_inset
+
+ potomků.
+ Řekneme, že uzel je plný, pokud obsahuje přesně 
+\begin_inset Formula $2t-1$
+\end_inset
+
+ klíčů\SpecialChar \@.
+
+\end_layout
+
+\end_deeper
+\begin_layout Subsubsection
+Asymptotická složitost
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="2">
+<features>
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Operace
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Asymptotická složitost
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+INSERT
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathcal{O}(\log n)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+DELETE
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathcal{O}(\log n)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+SEARCH
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathcal{O}(\log n)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -1701,6 +2045,164 @@ B
 \begin_inset CommandInset label
 LatexCommand label
 name "sub:B-plus-tree"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+B
+\begin_inset Formula $^{\text{+}}$
+\end_inset
+
+-tree je varianta B-tree, která ukládá hodnoty až do listů stromu.
+ Do interních uzlů ukládá pouze informace o
+\begin_inset space ~
+\end_inset
+
+klíčích a ukazatelých na potomky.
+ Tento typ maximalizuje větvení interních uzlů.
+\end_layout
+
+\begin_layout Standard
+Je použit v
+\begin_inset space ~
+\end_inset
+
+souborových systémech, např.
+ NTFS, ReiserFS, JFS.
+ Dále v
+\begin_inset space ~
+\end_inset
+
+databázích PostgreSQL, MySQL, Firebird, Oracle etc\SpecialChar \ldots{}
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Citace
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Obrázek B+-tree
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Asymptotická složitost
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="2">
+<features>
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Operace
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Asymptotická složitost
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+INSERT
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathcal{O}(\log n)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+DELETE
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathcal{O}(\log n)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+SEARCH
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathcal{O}(\log n)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
 
 \end_inset
 
