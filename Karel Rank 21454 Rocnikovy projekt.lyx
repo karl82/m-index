@@ -9,7 +9,7 @@
 \font_roman default
 \font_sans default
 \font_typewriter default
-\font_default_family default
+\font_default_family rmdefault
 \font_sc false
 \font_osf false
 \font_sf_scale 100
@@ -641,6 +641,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename idistance.emf
+	scale 70
 
 \end_inset
 
@@ -1223,6 +1224,14 @@ status open
 \end_layout
 
 \begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename m-index-dynamic-cluster.emf
+	scale 50
+
+\end_inset
+
+
 \begin_inset Caption
 
 \begin_layout Plain Layout
@@ -1707,11 +1716,29 @@ databázích a souborových systémech.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
+\begin_inset Float figure
+wide false
+sideways false
 status open
 
 \begin_layout Plain Layout
-Obrázek B-tree
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+B-tree
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
 \end_layout
 
 \end_inset
@@ -2037,7 +2064,7 @@ DELETE
 \end_layout
 
 \begin_layout Subsubsection
-Prohledávání B-tree (B-tree SEARCH)
+Prohledávání B-tree (B-Tree-Search)
 \end_layout
 
 \begin_layout Standard
@@ -2208,7 +2235,7 @@ while (i <= n[x] and k > key_i[x]
 
 \begin_layout Plain Layout
 
-	do i = i + 1
+	do i = i+1
 \end_layout
 
 \begin_layout Plain Layout
@@ -2260,6 +2287,264 @@ B-Tree-Search
 
 \begin_layout Subsubsection
 Operace INSERT
+\end_layout
+
+\begin_layout Standard
+Vkládání do B-tree je výrazně složitější než stejná operace pro binární
+ strom\SpecialChar \@.
+ Podobně jako u
+\begin_inset space ~
+\end_inset
+
+binárního stromu, hledáme pozici listu, kde uložíme klíč.
+ Bohužel u
+\begin_inset space ~
+\end_inset
+
+B-tree nemůžeme jednoduše vytvořit nový uzel pro list a ten vložit, protože
+ výsledný strom by nebyl validní B-tree\SpecialChar \@.
+ Místo toho se vloží klíč už do existujíc
+ího listu\SpecialChar \@.
+ Protože nelze vložít klíč do plného listu, zavedeme operaci rozdělení
+ (
+\emph on
+split
+\emph default
+) plného uzlu 
+\begin_inset Formula $y$
+\end_inset
+
+ (s
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset Formula $2t-1$
+\end_inset
+
+ klíči) okolo svého 
+\emph on
+mediánu klíčů
+\emph default
+ 
+\begin_inset Formula $key_{t}[y]$
+\end_inset
+
+ na dva uzly, každý mající 
+\begin_inset Formula $t-1$
+\end_inset
+
+ klíčů\SpecialChar \@.
+ 
+\emph on
+Medián klíč
+\emph default
+ se přesune do rodiče 
+\begin_inset Formula $y$
+\end_inset
+
+ k
+\begin_inset space ~
+\end_inset
+
+identifikaci dělícího bodu mezi dvěma novými stromy\SpecialChar \@.
+ Pokud je rodič 
+\begin_inset Formula $y$
+\end_inset
+
+ také plný, musí být nejdříve rozdělen před vložením nového klíče.
+ Dělení plných uzlů může tedy vypropagovat celým stromem nahoru.
+\end_layout
+
+\begin_layout Paragraph
+Rozdělení uzlu v
+\begin_inset space ~
+\end_inset
+
+B-tree
+\end_layout
+
+\begin_layout Standard
+Vstupem pro proceduru B-Tree-Split-Child je neplný vnitřní uzel 
+\begin_inset Formula $x$
+\end_inset
+
+, index 
+\begin_inset Formula $i$
+\end_inset
+
+ a uzel 
+\begin_inset Formula $y$
+\end_inset
+
+, tak že 
+\begin_inset Formula $y=c_{i}[x]$
+\end_inset
+
+ je plným potomkem 
+\begin_inset Formula $x$
+\end_inset
+
+\SpecialChar \@.
+ Procedura poté rozdělí potomka na dva a upraví 
+\begin_inset Formula $x$
+\end_inset
+
+ tak, že má dalšího potomka.
+\end_layout
+
+\begin_layout Standard
+Složitost je 
+\begin_inset Formula $\Theta(t)$
+\end_inset
+
+\SpecialChar \@.
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Rozdělení (
+\emph on
+split
+\emph default
+) uzlu
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+B-Tree-Split-Child(x, i, y)
+\end_layout
+
+\begin_layout Plain Layout
+
+z = Allocate-Node
+\end_layout
+
+\begin_layout Plain Layout
+
+leaf[z] = leaf[y]
+\end_layout
+
+\begin_layout Plain Layout
+
+n[z] = t-1
+\end_layout
+
+\begin_layout Plain Layout
+
+for j = 1 to t-1
+\end_layout
+
+\begin_layout Plain Layout
+
+	do key_j[z] = key_(j+t)[y]
+\end_layout
+
+\begin_layout Plain Layout
+
+if not leaf[y]
+\end_layout
+
+\begin_layout Plain Layout
+
+	then for j = 1 to t
+\end_layout
+
+\begin_layout Plain Layout
+
+		do c_j[z] = key_(j+t)[y]
+\end_layout
+
+\begin_layout Plain Layout
+
+n[y] = t-1
+\end_layout
+
+\begin_layout Plain Layout
+
+for j = n[x]+1 downto i+1
+\end_layout
+
+\begin_layout Plain Layout
+
+	do c_(j+1)[x] = c_j[x]
+\end_layout
+
+\begin_layout Plain Layout
+
+c_(i+1)[x] = z
+\end_layout
+
+\begin_layout Plain Layout
+
+for j = n[x] downto i
+\end_layout
+
+\begin_layout Plain Layout
+
+	do key_(j+1)[x] = key_j[x]
+\end_layout
+
+\begin_layout Plain Layout
+
+key_i[x] = key_t[y]
+\end_layout
+
+\begin_layout Plain Layout
+
+n[x] = n[x]+1
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+B-Tree-Split-Child
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
@@ -2339,11 +2624,25 @@ Citace
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
+\begin_inset Float figure
+wide false
+sideways false
 status open
 
 \begin_layout Plain Layout
-Obrázek B+-tree
+\begin_inset Caption
+
+\begin_layout Plain Layout
+B+-tree
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
 \end_layout
 
 \end_inset
@@ -2455,6 +2754,10 @@ DELETE
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Voronoi rozdělení
 \end_layout
 
 \begin_layout Standard
