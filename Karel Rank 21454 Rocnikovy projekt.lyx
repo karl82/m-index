@@ -43,15 +43,15 @@
 \begin_body
 
 \begin_layout Title
-Metrický index
+Implementace a srovnání výkonu implementací DB indexu v C++, NETu a Javě
 \end_layout
 
 \begin_layout Subtitle
-Podobnostní prohledávání v multimediálních databázích
+Podobnostní prohledávání v multimediálních databázích pomocí M-Index
 \end_layout
 
 \begin_layout Subject
-Seminární práce z předmětu Ročníkový projekt
+Bakalářská práce
 \end_layout
 
 \begin_layout Author
@@ -76,6 +76,17 @@ Abstract here
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+klíčová slova:
 \end_layout
 
 \begin_layout Standard
@@ -2547,6 +2558,282 @@ B-Tree-Split-Child
 
 \end_layout
 
+\begin_layout Paragraph
+Vložení klíčů do B-tree jedním průchodem stromem
+\end_layout
+
+\begin_layout Standard
+K
+\begin_inset space ~
+\end_inset
+
+vložení klíče 
+\begin_inset Formula $k$
+\end_inset
+
+ do B-tree 
+\begin_inset Formula $T$
+\end_inset
+
+ o
+\begin_inset space ~
+\end_inset
+
+výšce 
+\begin_inset Formula $h$
+\end_inset
+
+ jedním průchodem potřebujeme 
+\begin_inset Formula $O(th)=O(t\log_{t}n)$
+\end_inset
+
+\SpecialChar \@.
+ B-Tree-Insert používá B-Tree-Split-Child k
+\begin_inset space ~
+\end_inset
+
+zajištění toho, že rekurse nikdy nedojde k
+\begin_inset space ~
+\end_inset
+
+plnému uzlu\SpecialChar \@.
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+B-Tree-Insert(T,k)
+\end_layout
+
+\begin_layout Plain Layout
+
+r = root[T]
+\end_layout
+
+\begin_layout Plain Layout
+
+if n[r] = 2t-1
+\end_layout
+
+\begin_layout Plain Layout
+
+	then s = AllocateNode
+\end_layout
+
+\begin_layout Plain Layout
+
+		root[T] = s
+\end_layout
+
+\begin_layout Plain Layout
+
+		leaf[s] = FALSE
+\end_layout
+
+\begin_layout Plain Layout
+
+		n[s] = 0
+\end_layout
+
+\begin_layout Plain Layout
+
+		c_1[s] = r
+\end_layout
+
+\begin_layout Plain Layout
+
+		B-Tree-Split-Child(s, 1, r)
+\end_layout
+
+\begin_layout Plain Layout
+
+		B-Tree-Insert-Nonfull(s,k)
+\end_layout
+
+\begin_layout Plain Layout
+
+	else B-Tree-Insert-Nonfull(s,k)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+B-Tree-Insert
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Procedura B-Tree-Insert-Nonfull se vnořuje podle potřeby do stromu, v
+\begin_inset space ~
+\end_inset
+
+každém okamžiku garantující, že uzel do kterého se vnořila, není plný díky
+ volání B-Tree-Split-Child\SpecialChar \@.
+
+\end_layout
+
+\begin_layout Standard
+Rekursivní procedura B-Tree-Insert-Nonfull vloží klíč 
+\begin_inset Formula $k$
+\end_inset
+
+ do uzlu 
+\begin_inset Formula $x$
+\end_inset
+
+, který je předpokládán neplný v
+\begin_inset space ~
+\end_inset
+
+okamžiku volání procedůry\SpecialChar \@.
+ Díky B-Tree-Insert a rekursivní B-Tree-Insert-Nonfull
+ je tento předpoklad zajištěn\SpecialChar \@.
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+B-Tree-Insert-Nonfull(x,k)
+\end_layout
+
+\begin_layout Plain Layout
+
+i = n[x]
+\end_layout
+
+\begin_layout Plain Layout
+
+if leaf[x]
+\end_layout
+
+\begin_layout Plain Layout
+
+	then while i >= 1 and k < key_i[x]
+\end_layout
+
+\begin_layout Plain Layout
+
+			do key_(i+1)[x] = key_i[x]
+\end_layout
+
+\begin_layout Plain Layout
+
+				i = i-1
+\end_layout
+
+\begin_layout Plain Layout
+
+		key_(i+1)[x] = k
+\end_layout
+
+\begin_layout Plain Layout
+
+		n[x] = n[x]+1
+\end_layout
+
+\begin_layout Plain Layout
+
+	else while i >= 1 and k < key_i[x]
+\end_layout
+
+\begin_layout Plain Layout
+
+			do i = i-1
+\end_layout
+
+\begin_layout Plain Layout
+
+		i = i+1
+\end_layout
+
+\begin_layout Plain Layout
+
+		if n[c_i[x]] = 2t-1
+\end_layout
+
+\begin_layout Plain Layout
+
+			then B-Tree-Split-Child(x,i,c_i[x])
+\end_layout
+
+\begin_layout Plain Layout
+
+				if k > key_i[x]
+\end_layout
+
+\begin_layout Plain Layout
+
+					then i = i+1
+\end_layout
+
+\begin_layout Plain Layout
+
+		B-Tree-Insert-Nonfull(c_i[x],k)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+B-Tree-Insert-Nonfull
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsubsection
 Operace DELETE
 \end_layout
@@ -2641,10 +2928,6 @@ B+-tree
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
@@ -2721,6 +3004,10 @@ INSERT
 \end_inset
 
 
+\begin_inset space ~
+\end_inset
+
+jk
 \end_layout
 
 \end_inset
@@ -2760,6 +3047,22 @@ DELETE
 Voronoi rozdělení
 \end_layout
 
+\begin_layout Section
+M-Index implementace v
+\begin_inset space ~
+\end_inset
+
+jazyce Java
+\end_layout
+
+\begin_layout Subsection
+Výhody jazyka Java
+\end_layout
+
+\begin_layout Standard
+Jazyk Java je
+\end_layout
+
 \begin_layout Standard
 \begin_inset Newpage newpage
 \end_inset
@@ -2788,6 +3091,21 @@ options "plainnat"
 
 \begin_layout Standard
 \begin_inset FloatList figure
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FloatList algorithm
 
 \end_inset
 
