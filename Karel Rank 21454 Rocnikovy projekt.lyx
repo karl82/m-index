@@ -74,16 +74,7 @@ Karel Rank
 \end_layout
 
 \begin_layout Abstract
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
 Abstract here
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -93,8 +84,9 @@ Abstract here
 
 \end_layout
 
-\begin_layout Standard
-klíčová slova:
+\begin_layout Lowertitleback
+klíčová slova: m-index, multimediální databáze, Java, B-tree, výkonnost,
+ metrický prostor
 \end_layout
 
 \begin_layout Standard
@@ -168,7 +160,7 @@ Metrický index definuje
 \emph on
 univerzální mapovací schéma
 \emph default
- z obecného metrického prostoru do realných čísel\SpecialChar \@.
+ z obecného metrického prostoru do reálných čísel\SpecialChar \@.
  Co je nejdůležitější,
  toto schéma zachovává blízkost dat, tedy mapuje podobné metrické prvky
  do
@@ -198,7 +190,7 @@ key "Cormen:2001:IA:580470"
 
 \end_inset
 
- nebo distribuované hashovací tabulky\SpecialChar \@.
+ nebo distribuované hašovací tabulky\SpecialChar \@.
 
 \end_layout
 
@@ -221,30 +213,25 @@ Multimediální data jsou nestrukturovaná data, vyznačující se velkým objem
 Typy a použití těchto databází jsou různé, např.:
 \end_layout
 
-\begin_layout Description
-Autentifikační
-\begin_inset space ~
-\end_inset
+\begin_layout Paragraph
+Autentifikační Multimediální Databáze
+\end_layout
 
-Multimediální
-\begin_inset space ~
-\end_inset
-
-Databáze Skenování oční duhovky a vyhodnocování autentičnosti\SpecialChar \@.
- Lze použít
- i v
+\begin_layout Standard
+Skenování oční duhovky a vyhodnocování autentičnosti\SpecialChar \@.
+ Lze použít i v
 \begin_inset space ~
 \end_inset
 
 medicíně při diagnostikování nemocí
 \end_layout
 
-\begin_layout Description
-Balistická
-\begin_inset space ~
-\end_inset
+\begin_layout Paragraph
+Balistická databáze 
+\end_layout
 
-databáze Porovnávání otisků na nábojnicích z
+\begin_layout Standard
+Porovnávání otisků na nábojnicích z
 \begin_inset space ~
 \end_inset
 
@@ -259,12 +246,27 @@ key "drugfire"
 
 \end_layout
 
+\begin_layout Paragraph
+\SpecialChar \ldots{}
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Doplnit další multimediální databáze
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Problémy spojené s
 \begin_inset space ~
 \end_inset
 
-multimediálnímy databázemi
+multimediálníma databázemi
 \end_layout
 
 \begin_layout Standard
@@ -282,7 +284,7 @@ klasických
 \begin_inset Quotes prd
 \end_inset
 
- RDBMs, případně oproti 
+ RDBMS, případně oproti 
 \emph on
 key-value 
 \emph default
@@ -299,7 +301,7 @@ key "no-sql"
 \begin_layout Itemize
 prokletí počtu dimenzí (
 \emph on
-curse of dimenzionality
+curse of dimensionality
 \emph default
 )
 \begin_inset CommandInset citation
@@ -316,7 +318,7 @@ multimediální soubory (objekty) jsou velké
 \end_layout
 
 \begin_layout Itemize
-datové struktury jsou pro jeden typ multimedií - zvukový záznam má jiná
+datové struktury jsou pro jeden typ multimédií - zvukový záznam má jiná
  kritéria než obraz
 \end_layout
 
@@ -512,8 +514,8 @@ z
 
 \begin_layout Standard
 M-Index využívá několika struktur\SpecialChar \@.
- V následujících částí se budeme zabívat
- popisem pravidel (alogoritmu), které jsou zapotřebí k
+ V následujících částí se budeme zabývat
+ popisem pravidel (algoritmů), které jsou zapotřebí k
 \begin_inset space ~
 \end_inset
 
@@ -522,7 +524,7 @@ utvoření a správného používání M-Indexu.
 status open
 
 \begin_layout Plain Layout
-Co s tímdle?
+Co s tímhle?
 \end_layout
 
 \end_inset
@@ -696,7 +698,7 @@ M-Index zobecňuje iDistance tak, že může být použita na
 \begin_inset space ~
 \end_inset
 
-obecne metrické prostory -- ne jenom na vektorový prostod\SpecialChar \@.
+obecné metrické prostory -- ne jenom na vektorový prostor\SpecialChar \@.
  Toho je dosaženo
  tím, že se vybere množina 
 \begin_inset Formula $n$
@@ -710,7 +712,7 @@ pivotů
 \begin_inset Formula $p_{0},p_{1},\ldots,p_{n-1}$
 \end_inset
 
- a priori ze vzorový množiny 
+ a apriori ze vzorový množiny 
 \begin_inset Formula $S\subseteq\mathcal{D}$
 \end_inset
 
@@ -868,7 +870,7 @@ M-Index s
 \begin_inset Formula $n\cdot(n-1)\cdot\cdots\cdot(n-l+1)$
 \end_inset
 
- clusterů za použítí rekursivního Voronoi-ho dělení: Na prvním stupni, každý
+ clusterů za použití rekursivního Voronoi-ho dělení: Na prvním stupni, každý
  prvek 
 \begin_inset Formula $o\in\mathcal{D}$
 \end_inset
@@ -894,7 +896,7 @@ jeho nejbližšímu pivotu
 \begin_inset Formula $n-1$
 \end_inset
 
- clusterů tou samou procedůrou použitím 
+ clusterů tou samou procedurou použitím 
 \begin_inset Formula $n-1$
 \end_inset
 
@@ -919,7 +921,7 @@ je tvořen prvky
 \begin_inset Formula $p_{i}$
 \end_inset
 
- je nebližší a 
+ je nejbližší a 
 \begin_inset Formula $p_{j}$
 \end_inset
 
@@ -1038,7 +1040,7 @@ Mapovací klíč M-Indexu je definován
 \begin_inset Formula $o$
 \end_inset
 
- a jeho nebližším pivotem 
+ a jeho nejbližším pivotem 
 \begin_inset Formula $d(p_{(0)_{o}},o)$
 \end_inset
 
@@ -1105,7 +1107,7 @@ Více-stupňový M-Index zlepšuje dělící schopnosti oproti jedno-stupňovém
 \begin_inset space ~
 \end_inset
 
-větší fragmentaci dat při dotazu a větší náročnosti při provádení dotazu\SpecialChar \@.
+větší fragmentaci dat při dotazu a větší náročnosti při provádění dotazu\SpecialChar \@.
 
  V
 \begin_inset space ~
@@ -1292,7 +1294,7 @@ jeden stupeň znamená lokální přetřídění prvků patřící do clusteru\S
 \begin_inset Formula $key_{l},\,1\leq l\leq l_{max}$
 \end_inset
 
- definuje určítý počet bitů integrální části 
+ definuje určitý počet bitů integrální části 
 \begin_inset Formula $key_{l_{max}}$
 \end_inset
 
@@ -1349,7 +1351,7 @@ name "sub:Range-Query"
 \end_layout
 
 \begin_layout Standard
-Zde popíšeme alogitmus 
+Zde popíšeme algoritmus 
 \emph on
 range
 \begin_inset space ~
@@ -1526,7 +1528,7 @@ Pokud žádný z
 \begin_inset space ~
 \end_inset
 
-výše uvedených filtrujícíh mechanismů neodfiltruje cluster 
+výše uvedených filtrujících mechanismů neodfiltruje cluster 
 \begin_inset Formula $C_{i_{0},\ldots,i_{l-1}}$
 \end_inset
 
@@ -1630,7 +1632,7 @@ předchozích sekcích byly uvedeny algoritmy a mechanismy, které nutí k
 \begin_inset space ~
 \end_inset
 
-použítí různých specifických datových struktur\SpecialChar \@.
+použití různých specifických datových struktur\SpecialChar \@.
  Obecně, datové prvky mohou
  být uloženy v
 \begin_inset space ~
@@ -1704,7 +1706,7 @@ případě vnitřního uzlu nebo
 \end_inset
 
  pro záznam listu\SpecialChar \@.
- Strom clusterů by měl být udržovám v
+ Strom clusterů by měl být udržován v
 \begin_inset space ~
 \end_inset
 
@@ -2087,9 +2089,9 @@ Prohledávání B-tree (B-Tree-Search)
 \end_layout
 
 \begin_layout Standard
-Prohledávání B-tree je velmi podobné jako prohledávání binarního stromu\SpecialChar \@.
+Prohledávání B-tree je velmi podobné jako prohledávání binárního stromu\SpecialChar \@.
 
- Pouze místo binarního větvení v
+ Pouze místo binárního větvení v
 \begin_inset space ~
 \end_inset
 
@@ -2166,7 +2168,7 @@ key "Cormen:2001:IA:580470"
 \end_inset
 
  NIL, jenže obecně vracení NIL, NULL a 0 ukazatelů/referencí komplikuje
- pozdější prácí s
+ pozdější práci s
 \begin_inset space ~
 \end_inset
 
@@ -2209,14 +2211,14 @@ V
 \begin_inset space ~
 \end_inset
 
-praxi dost často dochází ke zneužívání navratové hodnoty v
+praxi dost často dochází ke zneužívání návratové hodnoty v
 \begin_inset space ~
 \end_inset
 
 podobě NULL, jako dalšího stavu.
  Místo předpokladu na existující objekt, je nutno dělat kontrolu na neexistující
  objekt.
- Jaký je rozdíl mezi vrácením prazdné kolekce/kontejneru nebo nulového ukazatele
+ Jaký je rozdíl mezi vrácením prázdné kolekce/kontejneru nebo nulového ukazatele
 ?
 \end_layout
 
@@ -2324,7 +2326,7 @@ B-tree nemůžeme jednoduše vytvořit nový uzel pro list a ten vložit, proto�
  výsledný strom by nebyl validní B-tree\SpecialChar \@.
  Místo toho se vloží klíč už do existujíc
 ího listu\SpecialChar \@.
- Protože nelze vložít klíč do plného listu, zavedeme operaci rozdělení
+ Protože nelze vložit klíč do plného listu, zavedeme operaci rozdělení
  (
 \emph on
 split
@@ -2372,7 +2374,7 @@ identifikaci dělícího bodu mezi dvěma novými stromy\SpecialChar \@.
 \end_inset
 
  také plný, musí být nejdříve rozdělen před vložením nového klíče.
- Dělení plných uzlů může tedy vypropagovat celým stromem nahoru.
+ Dělení plných uzlů může tedy vy-propagovat celým stromem nahoru.
 \end_layout
 
 \begin_layout Paragraph
@@ -2719,7 +2721,7 @@ Rekursivní procedura B-Tree-Insert-Nonfull vloží klíč
 \begin_inset space ~
 \end_inset
 
-okamžiku volání procedůry\SpecialChar \@.
+okamžiku volání procedury\SpecialChar \@.
  Díky B-Tree-Insert a rekursivní B-Tree-Insert-Nonfull
  je tento předpoklad zajištěn\SpecialChar \@.
 
@@ -2885,7 +2887,7 @@ B
 \begin_inset space ~
 \end_inset
 
-klíčích a ukazatelých na potomky.
+klíčích a ukazatelích na potomky.
  Tento typ maximalizuje větvení interních uzlů.
 \end_layout
 
@@ -2895,7 +2897,7 @@ Je použit v
 \end_inset
 
 souborových systémech, např.
- NTFS, ReiserFS, JFS.
+ NTFS, Reiser FS, JFS.
  Dále v
 \begin_inset space ~
 \end_inset
@@ -3320,7 +3322,7 @@ odkaz na HotSpot, JRockit a jiné
  Samozřejmostí je optimalizace při několika průchodech kódem\SpecialChar \@.
  Toto je velmi
  důležitá vlastnost, která při špatné interpretaci zásadním způsobem ovlivní
- případná měření výkonosti\SpecialChar \@.
+ případná měření výkonnosti\SpecialChar \@.
  Proto je nutné několikrát spustit test během
  jednoho běhu JVM (více viz.
 \begin_inset space ~
@@ -3352,7 +3354,7 @@ Java je dodávána s
 
 rozsáhlou knihovnou JDK\SpecialChar \@.
  Obsahuje vše nutné pro práci se síťovou komunikací,
- prácí s
+ práci s
 \begin_inset space ~
 \end_inset
 
@@ -3419,7 +3421,7 @@ name "sub:Měření-výkonu-vJava"
 \end_layout
 
 \begin_layout Subsection
-Návrh
+Návrh a UML
 \end_layout
 
 \begin_layout Section
