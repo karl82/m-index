@@ -42,6 +42,14 @@
 
 \begin_body
 
+\begin_layout Titlehead
+Vysoká Škola Finanční a Správní v
+\begin_inset space ~
+\end_inset
+
+Praze
+\end_layout
+
 \begin_layout Title
 Implementace a srovnání výkonu implementací DB indexu v C++, NETu a Javě
 \end_layout
@@ -1713,7 +1721,14 @@ B-tree
 \end_layout
 
 \begin_layout Standard
-B-tree je zobecnělý binární strom s
+B-tree
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Cormen:2001:IA:580470"
+
+\end_inset
+
+ je zobecnělý binární strom s
 \begin_inset space ~
 \end_inset
 
@@ -1733,10 +1748,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
+\align center
 \begin_inset Caption
 
 \begin_layout Plain Layout
@@ -1745,10 +1757,6 @@ B-tree
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -2085,7 +2093,7 @@ Prohledávání B-tree je velmi podobné jako prohledávání binarního stromu\
 \begin_inset space ~
 \end_inset
 
-každém uzlu, se provádí více cestné větvení podle počtu potomků uzlu\SpecialChar \@.
+každém uzlu, se provádí vícecestné větvení podle počtu potomků uzlu\SpecialChar \@.
 
 \end_layout
 
@@ -2825,10 +2833,6 @@ B-Tree-Insert-Nonfull
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
@@ -3004,10 +3008,6 @@ INSERT
 \end_inset
 
 
-\begin_inset space ~
-\end_inset
-
-jk
 \end_layout
 
 \end_inset
@@ -3060,7 +3060,382 @@ Výhody jazyka Java
 \end_layout
 
 \begin_layout Standard
-Jazyk Java je
+Jazyk Java je silně typovaný jazyk\SpecialChar \@.
+ Tento jazyk není interpretovaný, výsledkem
+ překladu je 
+\emph on
+bytecode
+\emph default
+\SpecialChar \@.
+ Tento 
+\emph on
+bytecode
+\emph default
+ běží v
+\begin_inset space ~
+\end_inset
+
+tzv.
+ Java Virtual Machine (JVM
+\begin_inset CommandInset nomenclature
+LatexCommand nomenclature
+symbol "JVM"
+description "Java Virtual Machine"
+
+\end_inset
+
+)\SpecialChar \@.
+ Díky JVM může kód psaný 
+\emph on
+
+\begin_inset Quotes pld
+\end_inset
+
+write once, run anywhere
+\begin_inset Quotes prd
+\end_inset
+
+
+\emph default
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+citace z java.com
+\end_layout
+
+\end_inset
+
+\SpecialChar \@.
+
+\end_layout
+
+\begin_layout Standard
+Hlavní klíčové vlastnosti, jak jazyka Java, JVM a JDK
+\begin_inset CommandInset nomenclature
+LatexCommand nomenclature
+symbol "JDK"
+description "Java Development Kit"
+
+\end_inset
+
+ jsou tyto: automatická alokace a dealokace paměti, objektovost, generika,
+ kompilace 
+\emph on
+bytecode
+\emph default
+ do nativních instrukcí procesoru, bohatá knihovna tříd v
+\begin_inset space ~
+\end_inset
+
+základním JDK\SpecialChar \ldots{}
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+doplnit další vlastnosti
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Automatická alokace a dealokace paměti
+\end_layout
+
+\begin_layout Standard
+V jazyce Java neexistují ukazatele, pouze reference.
+ V
+\begin_inset space ~
+\end_inset
+
+jazycích C/C++ se musí vývojář starat o
+\begin_inset space ~
+\end_inset
+
+správu paměti pomocí funkcí 
+\emph on
+malloc
+\emph default
+, 
+\emph on
+free
+\emph default
+ (jazyk C a C++), resp.
+ operátorů 
+\emph on
+new
+\emph default
+ a 
+\emph on
+delete
+\emph default
+ (jazyk C++)\SpecialChar \@.
+ V
+\begin_inset space ~
+\end_inset
+
+jazyce Java tuto starost přebírá tzv.
+ 
+\emph on
+garbage collector
+\emph default
+ (GC
+\begin_inset CommandInset nomenclature
+LatexCommand nomenclature
+symbol "GC"
+description "garbage collector"
+
+\end_inset
+
+), který počítá reference na jednotlivé objekty v
+\begin_inset space ~
+\end_inset
+
+paměti JVM.
+ Pokud GC zjistí, že počet referencí je 0, uvolní daný objekt
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Podobná technika/pattern bude součástí C++0x pomocí 
+\emph on
+shared_ptr
+\emph default
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+odkaz na C++0x
+\end_layout
+
+\end_inset
+
+.
+ Již existují vzorové implementace, např.
+ v
+\begin_inset space ~
+\end_inset
+
+knihovně boost
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+odkaz na boost.org
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+\SpecialChar \@.
+ Díky automatické správě paměti je vývoj výrazně rychlejší a výsledný kód
+ bezpečnější (nehrozí buffer overflow nebo underflow
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+je to správně?
+\end_layout
+
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Paragraph
+Generika
+\end_layout
+
+\begin_layout Standard
+Obdobně jako v
+\begin_inset space ~
+\end_inset
+
+C++ jsou 
+\emph on
+templates
+\emph default
+, jazyk Java má 
+\emph on
+generics
+\emph default
+.
+ Jsou zde rozdíly
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+doplnit přesné rozdíly
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Kompilace 
+\emph on
+bytecode
+\emph default
+ do nativních instrukcí procesoru
+\end_layout
+
+\begin_layout Standard
+JVM je v
+\begin_inset space ~
+\end_inset
+
+heap procesor.
+ Kvůli emulaci a virtualizaci procesoru je běh samotného 
+\emph on
+bytecode
+\emph default
+ pomalý.
+ JVM proto umožňuje překompilovat za běhu 
+\emph on
+bytecode
+\emph default
+ do nativních instrukcí procesoru, nad kterým JVM běží
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+odkaz na HotSpot, JRockit a jiné
+\end_layout
+
+\end_inset
+
+\SpecialChar \@.
+ Samozřejmostí je optimalizace při několika průchodech kódem\SpecialChar \@.
+ Toto je velmi
+ důležitá vlastnost, která při špatné interpretaci zásadním způsobem ovlivní
+ případná měření výkonosti\SpecialChar \@.
+ Proto je nutné několikrát spustit test během
+ jednoho běhu JVM (více viz.
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand prettyref
+reference "sub:Měření-výkonu-vJava"
+
+\end_inset
+
+)\SpecialChar \@.
+
+\end_layout
+
+\begin_layout Paragraph
+Bohatá knihovna tříd v
+\begin_inset space ~
+\end_inset
+
+základním JDK
+\end_layout
+
+\begin_layout Standard
+Java je dodávána s
+\begin_inset space ~
+\end_inset
+
+rozsáhlou knihovnou JDK\SpecialChar \@.
+ Obsahuje vše nutné pro práci se síťovou komunikací,
+ prácí s
+\begin_inset space ~
+\end_inset
+
+textem -- regulární výrazy, XML, RPC
+\begin_inset CommandInset nomenclature
+LatexCommand nomenclature
+symbol "RPC"
+description "Remote Procedure Call"
+
+\end_inset
+
+, soubory a souborový systém a také velmi propracovanou knihovnou kontejnerů
+ -- 
+\emph on
+Collections library
+\emph default
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+V
+\begin_inset space ~
+\end_inset
+
+jazyce Java se používá pro termín
+\emph on
+ container
+\emph default
+ (C++) termín 
+\emph on
+collection
+\emph default
+ 
+\end_layout
+
+\end_inset
+
+\SpecialChar \@.
+ Její rozhraní (
+\emph on
+interfaces
+\emph default
+) a jejich implementace jsou použity při implementaci B-tree, 
+\emph on
+cluster tree
+\emph default
+.
+\end_layout
+
+\begin_layout Subsection
+Měření výkonu v
+\begin_inset space ~
+\end_inset
+
+Java
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Měření-výkonu-vJava"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Návrh
+\end_layout
+
+\begin_layout Section
+Výsledky testů
+\end_layout
+
+\begin_layout Section
+Srovnání výkonu implementací v
+\begin_inset space ~
+\end_inset
+
+C++, C# a Java
+\end_layout
+
+\begin_layout Section
+Závěr
 \end_layout
 
 \begin_layout Standard
@@ -3083,22 +3458,14 @@ options "plainnat"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Newpage newpage
+\begin_inset CommandInset nomencl_print
+LatexCommand printnomenclature
+
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
 \begin_inset FloatList figure
 
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Newpage newpage
 \end_inset
 
 
