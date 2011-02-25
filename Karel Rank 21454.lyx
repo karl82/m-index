@@ -3369,9 +3369,17 @@ description "Remote Procedure Call"
 , soubory a souborový systém a také velmi propracovanou knihovnou kontejnerů
  -- 
 \emph on
-Collections library
+Java Collections Framework 
 \emph default
+(JFC
+\begin_inset CommandInset nomenclature
+LatexCommand nomenclature
+symbol "JFC"
+description "Java Collections Framework"
 
+\end_inset
+
+)
 \begin_inset Foot
 status open
 
