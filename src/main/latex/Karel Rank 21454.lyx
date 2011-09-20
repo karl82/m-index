@@ -1,4 +1,4 @@
-#LyX 1.6.8 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.9 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -124,11 +124,57 @@ name "sec:Úvod"
 \end_layout
 
 \begin_layout Standard
-Cílem této práce je popis metody pro indexování a vyhledávání v
+V
 \begin_inset space ~
 \end_inset
 
-multimediálních databázích, M-index
+posledních několika dekádách došlo ke
+\begin_inset space ~
+\end_inset
+
+změně v
+\begin_inset space ~
+\end_inset
+
+potřebách vyhledávání.
+ Už se nepožaduje/nestačí pouze exaktní nebo přibližné vyhledání textu v
+\begin_inset space ~
+\end_inset
+
+textu.
+ S
+\begin_inset space ~
+\end_inset
+
+příchodem masivního ukládání obrázků, zvukových záznamů a videí nelze používat
+ 
+\begin_inset Quotes pld
+\end_inset
+
+klasické
+\begin_inset Quotes prd
+\end_inset
+
+ postupy pro indexování a následné vyhledávání, ale musí se používat podobnostní
+ vyhledávání.
+ Praktické použití je např.
+\begin_inset space ~
+\end_inset
+
+rozpoznávání řeči, rozpoznávání tváří, atd\SpecialChar \ldots{}
+
+\end_layout
+
+\begin_layout Standard
+Jednou z
+\begin_inset space ~
+\end_inset
+
+metod pro indexování a vyhledávání v
+\begin_inset space ~
+\end_inset
+
+multimediálních databázích je M-Index
 \begin_inset CommandInset citation
 LatexCommand citep
 key "Novak:2009:MIE:1637863.1638184"
@@ -136,22 +182,26 @@ key "Novak:2009:MIE:1637863.1638184"
 \end_inset
 
 \SpecialChar \@.
- Tato metoda byla vyvinuta na Masarykově univerzitě v
+ Autoři této metody , která vychází z
 \begin_inset space ~
 \end_inset
 
-Brně pány Martinem Novákem a Michal Baťkem\SpecialChar \@.
- Je ve svém základu založena na
- jiné metodě -- iDistance
+jiné indexovací metody iDistance
 \begin_inset CommandInset citation
 LatexCommand citep
 key "Jagadish:2005:IAB:1071610.1071612"
 
 \end_inset
 
-, ale podstatných způsobem vylepšuje výkon při vyhledávání, použitím jiných
- metod rozdělení datové prostoru i samotného vyhledávání pomocí základních
- metod range query a hledání K nejbližších sousedů (KNN search)\SpecialChar \@.
+, jsou Martin Novák a Michal Baťko z
+\begin_inset space ~
+\end_inset
+
+Masarykovi univerzity Brno\SpecialChar \@.
+ M-index podstatných způsobem vylepšuje výkon
+ při vyhledávání, použitím jiných metod rozdělení datové prostoru i samotného
+ vyhledávání pomocí základních metod range query a hledání K nejbližších
+ sousedů (KNN search)\SpecialChar \@.
 
 \end_layout
 
@@ -194,12 +244,28 @@ key "Cormen:2001:IA:580470"
 
 \end_layout
 
+\begin_layout Standard
+V
+\begin_inset space ~
+\end_inset
+
+této práci detailně vysvětluji principy M-Index-u, jeho implementaci v
+\begin_inset space ~
+\end_inset
+
+jazyce Java a porovnávám výkonnost implementací M-Index v
+\begin_inset space ~
+\end_inset
+
+jazycích Java, C++ a C#.
+\end_layout
+
 \begin_layout Section
 Multimediální databáze
 \end_layout
 
 \begin_layout Standard
-Multimediální databáze je databázoví systém, který umožňuje spravovat multimediá
+Multimediální databáze je databázový systém, který umožňuje spravovat multimediá
 lní data\SpecialChar \@.
 
 \begin_inset space ~
@@ -274,9 +340,7 @@ V
 \begin_inset space ~
 \end_inset
 
-multi.
- dat.
- narážíme na několik problémů odlišných od 
+multimediální databázi narážíme na několik problémů odlišných od 
 \begin_inset Quotes pld
 \end_inset
 
@@ -2374,7 +2438,7 @@ identifikaci dělícího bodu mezi dvěma novými stromy\SpecialChar \@.
 \end_inset
 
  také plný, musí být nejdříve rozdělen před vložením nového klíče.
- Dělení plných uzlů může tedy vy-propagovat celým stromem nahoru.
+ Dělení plných uzlů může tedy vypropagovat celým stromem nahoru.
 \end_layout
 
 \begin_layout Paragraph
@@ -2503,7 +2567,7 @@ if not leaf[y]
 
 \begin_layout Plain Layout
 
-		do c_j[z] = key_(j+t)[y]
+		do c_j[z] = c_(j+t)[y]
 \end_layout
 
 \begin_layout Plain Layout
@@ -2673,7 +2737,7 @@ if n[r] = 2t-1
 
 \begin_layout Plain Layout
 
-	else B-Tree-Insert-Nonfull(s,k)
+	else B-Tree-Insert-Nonfull(r,k)
 \end_layout
 
 \end_inset
