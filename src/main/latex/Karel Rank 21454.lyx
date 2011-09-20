@@ -258,6 +258,32 @@ jazyce Java a porovnávám výkonnost implementací M-Index v
 \end_inset
 
 jazycích Java, C++ a C#.
+ Předpokladem je, že na stejném stroji a na stejné množině dat, implementace
+ v
+\begin_inset space ~
+\end_inset
+
+C++ zpracuje požadavky v
+\begin_inset space ~
+\end_inset
+
+nejkratším čase.
+ Následována implementací v
+\begin_inset space ~
+\end_inset
+
+C# nebo v
+\begin_inset space ~
+\end_inset
+
+Java.
+ Podle mého názoru, lze zrychlit běh programu v
+\begin_inset space ~
+\end_inset
+
+jazyce Java tím, že se dodatečně povolí optimalizace kompilování JVM byte-code
+ do nativních instrukcí běhové architektury.
+ Toto zkoumám na závěr této práce.
 \end_layout
 
 \begin_layout Section
