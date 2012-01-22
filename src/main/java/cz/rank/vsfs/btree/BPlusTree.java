@@ -5,12 +5,12 @@ package cz.rank.vsfs.btree;
 
 /**
  * @author rank
- * 
+ *
  */
-public class BPlusTree {
-    public static void splitChild(final Node node, final int index, final Node fullNode) {
+public class BPlusTree<T extends Comparable<T>> {
+    public static <T extends Comparable<T>> void splitChild(final Node<T> node, final int index, final Node<T> fullNode) {
         int nodeDegree = fullNode.getDegree();
-        Node z = new Node(nodeDegree);
+        Node<T> z = new Node<T>(nodeDegree);
 
         z.leaf = fullNode.leaf;
         z.setKeysCount(nodeDegree - 1);
@@ -42,7 +42,7 @@ public class BPlusTree {
         node.setKeysCount(node.getKeysCount() + 1);
     }
 
-    private Node root;
+    private Node<T> root;
 
     private final int degree;
 
@@ -65,11 +65,11 @@ public class BPlusTree {
     /**
      * @param d
      */
-    public void insert(final double key) {
-        Node r = root;
+    public void insert(final T key) {
+        Node<T> r = root;
 
         if (r.isFull()) {
-            Node s = new Node(getDegree());
+            Node<T> s = new Node<T>(getDegree());
 
             root = s;
             s.setLeaf(false);
@@ -88,11 +88,11 @@ public class BPlusTree {
      * @param s
      * @param key
      */
-    private void insertNonFull(final Node s, final double key) {
+    private void insertNonFull(final Node<T> s, final T key) {
         int i = s.getKeysCount() - 1;
 
         if (s.isLeaf()) {
-            while (i >= 0 && key < s.getKey(i)) {
+            while (i >= 0 && key.compareTo(s.getKey(i)) < 0) {
                 s.setKey(i + 1, s.getKey(i));
                 i--;
             }
@@ -100,7 +100,7 @@ public class BPlusTree {
             s.setKey(i + 1, key);
             s.setKeysCount(s.getKeysCount() + 1);
         } else {
-            while (i >= 0 && key < s.getKey(i)) {
+            while (i >= 0 && key.compareTo(s.getKey(i)) < 0) {
                 i--;
             }
 
@@ -108,7 +108,7 @@ public class BPlusTree {
 
             if (s.getChild(i).isFull()) {
                 splitChild(s, i, s.getChild(i));
-                if (key > s.getKey(i)) {
+                if (key.compareTo(s.getKey(i)) > 0) {
                     i++;
                 }
             }
@@ -121,7 +121,7 @@ public class BPlusTree {
      * @param d
      * @return
      */
-    public double search(final double d) {
+    public T search(final T d) {
         return searchNode(root, d);
     }
 
@@ -130,21 +130,30 @@ public class BPlusTree {
      * @param d
      * @return
      */
-    private double searchNode(final Node node, final double d) {
+    private T searchNode(final Node<T> node, final T d) {
         int i = 0;
-        while (i < node.getKeysCount() && d > node.getKey(i)) {
+        while (i < node.getKeysCount() && d.compareTo(node.getKey(i)) > 0) {
             i++;
         }
 
-        if (i < node.getKeysCount() && d == node.getKey(i)) {
+        if (i < node.getKeysCount() && d.equals(node.getKey(i))) {
             return node.getKey(i);
         }
 
         if (node.isLeaf()) {
-            return 0;
+            return null;
         } else {
             return searchNode(node.getChild(i), d);
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return root.toString();
+    }
 }
