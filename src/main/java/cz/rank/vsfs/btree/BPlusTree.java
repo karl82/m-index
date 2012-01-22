@@ -27,13 +27,13 @@ public class BPlusTree<T extends Comparable<T>> {
 
         fullNode.setKeysCount(nodeDegree - 1);
 
-        for (int j = node.getKeysCount(); j > index + 1; j--) {
+        for (int j = node.getKeysCount(); j >= index + 1; j--) {
             node.setChild(j + 1, node.getChild(j));
         }
 
         node.setChild(index + 1, z);
 
-        for (int j = node.getKeysCount() - 1; j > index; j--) {
+        for (int j = node.getKeysCount() - 1; j >= index; j--) {
             node.setKey(j + 1, node.getKey(j));
         }
 
@@ -149,7 +149,7 @@ public class BPlusTree<T extends Comparable<T>> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
