@@ -1,9 +1,8 @@
 package cz.rank.vsfs.mindex;
 
+import org.testng.annotations.Test;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-
-import org.junit.Test;
+import static org.hamcrest.MatcherAssert.*;
 
 public class PointTest {
 

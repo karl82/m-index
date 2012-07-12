@@ -1,12 +1,19 @@
 apply plugin: 'java'
 
-sourceCompatibility = '7'
+description = 'M-Index implementation in Java'
+version = '0.2'
+
+sourceCompatibility = '1.7'
 
 
 repositories {
     mavenCentral()
 }
 dependencies {
-    testCompile "junit:junit:4.+"
+    testCompile "org.testng:testng:6.+"
     testCompile "org.hamcrest:hamcrest-all:1.+"
+}
+
+test {
+    useTestNG()
 }

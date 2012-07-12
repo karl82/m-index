@@ -1,18 +1,17 @@
 package cz.rank.vsfs.mindex;
 
-import java.util.ArrayList;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.Test;
+import org.testng.annotations.BeforeMethod;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map.Entry;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 public class VoronoiQuickDividerTest {
-    private final Collection<Point> pivots = new ArrayList<>();
-    private final Collection<Point> points = new ArrayList<>();
+    private final Collection<Point> pivots = new HashSet<>();
+    private final Collection<Point> points = new HashSet<>();
 
-    @Before
+    @BeforeMethod
     public void setUp() {
         for (int i = -1; i <= 1; i++) {
             pivots.add(new Point(i, 0));
@@ -24,7 +23,7 @@ public class VoronoiQuickDividerTest {
         }
     }
 
-    @After
+    @AfterMethod
     public void tearDown() {
         points.clear();
         pivots.clear();

@@ -3,29 +3,30 @@
  */
 package cz.rank.vsfs.btree;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 /**
  * @author rank
- *
+ * 
  */
 public class BPlusTreeTest {
 
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeMethod
     public void setUp() throws Exception {
     }
 
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterMethod
     public void tearDown() throws Exception {
     }
 
@@ -39,7 +40,7 @@ public class BPlusTreeTest {
         tree.insert(2.2d);
         tree.insert(5.2d);
 
-        assertEquals(0.2d, tree.search(0.2d), 0.01d);
+        assertThat(tree.search(0.2d), is(0.2d));
     }
 
     @Test
@@ -51,7 +52,7 @@ public class BPlusTreeTest {
         }
 
         for (int d = 6000; d > 6000; d--) {
-            assertEquals((Integer) d, tree.search(d));
+            assertThat(tree.search(d), is(d));
         }
 
     }
@@ -68,15 +69,15 @@ public class BPlusTreeTest {
         tree.insert(1);
         tree.insert(0);
 
-        assertEquals(Integer.valueOf(2), tree.search(2));
+        assertThat(tree.search(2), is(2));
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expectedExceptions = IllegalArgumentException.class)
     public void testMinimalDegree0() {
         new BPlusTree<Integer>(0);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expectedExceptions = IllegalArgumentException.class)
     public void testMinimalDegree1() {
         new BPlusTree<Integer>(1);
     }
@@ -89,7 +90,7 @@ public class BPlusTreeTest {
             tree.insert(d);
         }
 
-        assertNull(tree.search(31));
+        assertThat(tree.search(31), is(nullValue()));
     }
 
     @Test
@@ -101,7 +102,7 @@ public class BPlusTreeTest {
         }
 
         for (int d = -30; d < 30; d++) {
-            assertEquals((Integer) d, tree.search(d));
+            assertThat(tree.search(d), is(d));
         }
     }
 
@@ -114,7 +115,7 @@ public class BPlusTreeTest {
         }
 
         for (int d = 30; d > -30; d--) {
-            assertEquals((Integer) d, tree.search(d));
+            assertThat(tree.search(d), is(d));
         }
     }
 
@@ -128,7 +129,7 @@ public class BPlusTreeTest {
         fullNode.setKeysCount(3);
         fullNode.setLeaf(true);
 
-        assertTrue(fullNode.isFull());
+        assertThat(fullNode.isFull(), is(true));
 
         Node<Integer> newNode = new Node<Integer>(fullNode.getDegree());
 
@@ -147,12 +148,12 @@ public class BPlusTreeTest {
 
         BPlusTree.splitChild(newNode, 0, fullNode);
 
-        assertFalse(fullNode.isFull());
-        assertEquals(1, newNode.getChild(0).getKey(0), 0.01d);
-        assertEquals(2, newNode.getKey(0), 0.01d);
-        assertEquals(4, newNode.getKey(1), 0.01d);
-        assertEquals(3, newNode.getChild(1).getKey(0), 0.01d);
-        assertEquals(5, newNode.getChild(2).getKey(0), 0.01d);
+        assertThat(fullNode.isFull(), is(false));
+        assertThat(newNode.getChild(0).getKey(0), is(1));
+        assertThat(newNode.getKey(0), is(2));
+        assertThat(newNode.getKey(1), is(4));
+        assertThat(newNode.getChild(1).getKey(0), is(3));
+        assertThat(newNode.getChild(2).getKey(0), is(5));
     }
 
     @Test
@@ -164,7 +165,7 @@ public class BPlusTreeTest {
         fullNode.setKey(2, 1.5d);
         fullNode.setKeysCount(3);
 
-        assertTrue(fullNode.isFull());
+        assertThat(fullNode.isFull(), is(true));
 
         Node<Double> newNode = new Node<Double>(fullNode.getDegree());
 
@@ -172,9 +173,9 @@ public class BPlusTreeTest {
 
         BPlusTree.splitChild(newNode, 0, fullNode);
 
-        assertFalse(fullNode.isFull());
-        assertEquals(0.5d, newNode.getChild(0).getKey(0), 0.01d);
-        assertEquals(1.1d, newNode.getKey(0), 0.01d);
-        assertEquals(1.5d, newNode.getChild(1).getKey(0), 0.01d);
+        assertThat(fullNode.isFull(), is(false));
+        assertThat(newNode.getChild(0).getKey(0), is(0.5d));
+        assertThat(newNode.getKey(0), is(1.1d));
+        assertThat(newNode.getChild(1).getKey(0), is(1.5d));
     }
 }
