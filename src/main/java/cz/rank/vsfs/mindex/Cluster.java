@@ -1,26 +1,30 @@
 package cz.rank.vsfs.mindex;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class Cluster {
+import net.jcip.annotations.NotThreadSafe;
+
+@NotThreadSafe
+public class Cluster<D extends Distanceable<D>> {
     private final int[] indexes;
     private final int calculatedIndex;
-    private final Point basePivot;
+    private final D basePivot;
     private final int pivotsCount;
-    
-    public Cluster(Point pivot, int pivotsCount, int[] indexes) {
-        this.basePivot = pivot;
+    private final Map<D, Double> objects = new ConcurrentHashMap<>();
+    private boolean normalized = false;
+    private double maxDistance = 0.0d;
+
+    public Cluster(D basePivot, int pivotsCount, int[] indexes) {
+        this.basePivot = basePivot;
         this.pivotsCount = pivotsCount;
         this.indexes = indexes.clone();
         this.calculatedIndex = calculateIndex();
     }
 
-
     public int getIndex() {
         return calculatedIndex;
     }
-
 
     private int calculateIndex() {
         int tempIndex = 0;
@@ -30,8 +34,59 @@ public class Cluster {
         return tempIndex;
     }
 
-
-    public Point getBasePivot() {
+    /**
+     * Returns base pivot used for distance calculations
+     * 
+     * @return base pivot
+     */
+    public D getBasePivot() {
         return basePivot;
+    }
+
+    /**
+     * Adds object into cluster
+     * 
+     * @param object
+     */
+    public void add(D object) {
+        double distance = basePivot.distance(object);
+        objects.put(object, distance);
+
+        maxDistance = Math.max(maxDistance, distance);
+    }
+
+    /**
+     * Normalize distances in cluster to have range [0, 1).
+     * 
+     * Can be called only once
+     */
+    public void normalizeDistances() {
+        if (isNormalized()) {
+            throw new IllegalStateException("Cluster is already normalized: " + this);
+        }
+
+        if (maxDistance > 0d) {
+            for (Map.Entry<D, Double> entry : objects.entrySet()) {
+                objects.put(entry.getKey(), entry.getValue() / maxDistance);
+            }
+        }
+
+        normalized = true;
+    }
+
+    private boolean isNormalized() {
+        return normalized;
+    }
+
+    public double getKey(D object) {
+        if (isNotNormalized()) {
+            throw new IllegalStateException("Cluster is not yet normalized: " + this);
+        }
+
+        return objects.get(object) + getIndex();
+    }
+
+    private boolean isNotNormalized() {
+        return !isNormalized();
     }
 }
