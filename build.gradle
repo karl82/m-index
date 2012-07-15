@@ -10,7 +10,7 @@ repositories {
     mavenCentral()
 }
 dependencies {
-	runtime "net.jcip:jcip-annotations:1.0"
+	compile "net.jcip:jcip-annotations:1.0"
     testCompile "org.testng:testng:6.+"
     testCompile "org.hamcrest:hamcrest-all:1.+"
 }
