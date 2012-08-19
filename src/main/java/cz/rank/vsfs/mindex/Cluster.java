@@ -1,5 +1,6 @@
 package cz.rank.vsfs.mindex;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -9,13 +10,13 @@ import net.jcip.annotations.NotThreadSafe;
 public class Cluster<D extends Distanceable<D>> {
     private final int[] indexes;
     private final int calculatedIndex;
-    private final D basePivot;
+    private final Pivot<D> basePivot;
     private final int pivotsCount;
     private final Map<D, Double> objects = new ConcurrentHashMap<>();
     private boolean normalized = false;
     private double maxDistance = 0.0d;
 
-    public Cluster(D basePivot, int pivotsCount, int[] indexes) {
+    public Cluster(Pivot<D> basePivot, int pivotsCount, int[] indexes) {
         this.basePivot = basePivot;
         this.pivotsCount = pivotsCount;
         this.indexes = indexes.clone();
@@ -39,7 +40,7 @@ public class Cluster<D extends Distanceable<D>> {
      * 
      * @return base pivot
      */
-    public D getBasePivot() {
+    public Pivot<D> getBasePivot() {
         return basePivot;
     }
 
@@ -89,4 +90,17 @@ public class Cluster<D extends Distanceable<D>> {
     private boolean isNotNormalized() {
         return !isNormalized();
     }
+
+    public int[] getIndexes() {
+        return indexes.clone();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Cluster [indexes=").append(Arrays.toString(indexes)).append(", objects=").append(objects)
+                .append("]");
+        return builder.toString();
+    }
+
 }

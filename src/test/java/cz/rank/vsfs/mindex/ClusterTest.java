@@ -1,7 +1,7 @@
 package cz.rank.vsfs.mindex;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -30,13 +30,13 @@ public class ClusterTest {
 
     @Test(dataProvider = "clusterIndexTestData")
     public void testClusterIndex(int pivotsCount, int[] indexes, int expectedIndex) {
-        Cluster<Point> cluster = new Cluster<>(new Point(0, 0), pivotsCount, indexes);
+        Cluster<Point> cluster = new Cluster<>(new Pivot<>(0, new Point(0, 0)), pivotsCount, indexes);
         assertThat(cluster.getIndex(), is(expectedIndex));
     }
 
     @Test
     public void testAddPointIntoCluster() {
-        Cluster<Point> cluster = new Cluster<>(new Point(0, 0), 2, new int[] { 1 });
+        Cluster<Point> cluster = new Cluster<>(new Pivot<>(0, new Point(0, 0)), 2, new int[] { 1 });
         Point point = new Point(4, 3);
         cluster.add(point);
 
@@ -47,13 +47,14 @@ public class ClusterTest {
 
     @Test(expectedExceptions = { IllegalStateException.class })
     public void testCallGetKeyBeforeNormalization() {
-        Cluster<Point> cluster = new Cluster<>(new Point(0, 0), 2, new int[] { 1 });
+        Cluster<Point> cluster = new Cluster<>(new Pivot<>(0, new Point(0, 0)), 2, new int[] { 1 });
         cluster.getKey(new Point(0, 0));
     }
 
     @Test(expectedExceptions = { IllegalStateException.class })
     public void testDoubleCallNormalizeDistances() {
-        Cluster<Point> cluster = new Cluster<>(new Point(0, 0), 2, new int[] { 1 });
+        Cluster<Point> cluster = new Cluster<>(new Pivot<>(0, new Point(0, 0)), 2, new int[] { 1 });
+
         cluster.normalizeDistances();
         cluster.normalizeDistances();
     }
