@@ -10,7 +10,7 @@ package cz.rank.vsfs.btree;
 public class BPlusTree<T extends Comparable<T>> {
     public static <T extends Comparable<T>> void splitChild(final Node<T> node, final int index, final Node<T> fullNode) {
         int nodeDegree = fullNode.getDegree();
-        Node<T> z = new Node<T>(nodeDegree);
+        Node<T> z = new Node<>(nodeDegree);
 
         z.leaf = fullNode.leaf;
         z.setKeysCount(nodeDegree - 1);
@@ -63,13 +63,13 @@ public class BPlusTree<T extends Comparable<T>> {
     }
 
     /**
-     * @param d
+     * @param key
      */
     public void insert(final T key) {
         Node<T> r = root;
 
         if (r.isFull()) {
-            Node<T> s = new Node<T>(getDegree());
+            Node<T> s = new Node<>(getDegree());
 
             root = s;
             s.setLeaf(false);
@@ -126,7 +126,7 @@ public class BPlusTree<T extends Comparable<T>> {
     }
 
     /**
-     * @param root2
+     * @param node
      * @param d
      * @return
      */

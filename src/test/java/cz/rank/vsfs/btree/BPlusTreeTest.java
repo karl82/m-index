@@ -32,7 +32,7 @@ public class BPlusTreeTest {
 
     @Test
     public void testDegree2() {
-        BPlusTree<Double> tree = new BPlusTree<Double>(2);
+        BPlusTree<Double> tree = new BPlusTree<>(2);
 
         tree.insert(0.2d);
         tree.insert(1.0d);
@@ -45,7 +45,7 @@ public class BPlusTreeTest {
 
     @Test
     public void testDegree20() {
-        BPlusTree<Integer> tree = new BPlusTree<Integer>(20);
+        BPlusTree<Integer> tree = new BPlusTree<>(20);
 
         for (int d = 6000; d > -6000; d--) {
             tree.insert(d);
@@ -59,7 +59,7 @@ public class BPlusTreeTest {
 
     @Test
     public void testDescendingDegree2() {
-        BPlusTree<Integer> tree = new BPlusTree<Integer>(2);
+        BPlusTree<Integer> tree = new BPlusTree<>(2);
 
         tree.insert(6);
         tree.insert(5);
@@ -84,7 +84,7 @@ public class BPlusTreeTest {
 
     @Test
     public void testNullReturnOnSearch() {
-        BPlusTree<Integer> tree = new BPlusTree<Integer>(2);
+        BPlusTree<Integer> tree = new BPlusTree<>(2);
 
         for (int d = -30; d < 30; d++) {
             tree.insert(d);
@@ -95,7 +95,7 @@ public class BPlusTreeTest {
 
     @Test
     public void testSeveralSplitsAscendingDegree2() {
-        BPlusTree<Integer> tree = new BPlusTree<Integer>(2);
+        BPlusTree<Integer> tree = new BPlusTree<>(2);
 
         for (int d = -30; d < 30; d++) {
             tree.insert(d);
@@ -108,7 +108,7 @@ public class BPlusTreeTest {
 
     @Test
     public void testSeveralSplitsDescendingDegree2() {
-        BPlusTree<Integer> tree = new BPlusTree<Integer>(2);
+        BPlusTree<Integer> tree = new BPlusTree<>(2);
 
         for (int d = 30; d > -30; d--) {
             tree.insert(d);
@@ -121,7 +121,7 @@ public class BPlusTreeTest {
 
     @Test
     public void testSplitFullChildNode() {
-        Node<Integer> fullNode = new Node<Integer>(2);
+        Node<Integer> fullNode = new Node<>(2);
 
         fullNode.setKey(0, 1);
         fullNode.setKey(1, 2);
@@ -131,14 +131,14 @@ public class BPlusTreeTest {
 
         assertThat(fullNode.isFull(), is(true));
 
-        Node<Integer> newNode = new Node<Integer>(fullNode.getDegree());
+        Node<Integer> newNode = new Node<>(fullNode.getDegree());
 
         newNode.setKey(0, 4);
         newNode.setKeysCount(1);
         newNode.setChild(0, fullNode);
         newNode.setLeaf(false);
 
-        Node<Integer> oldNode = new Node<Integer>(fullNode.getDegree());
+        Node<Integer> oldNode = new Node<>(fullNode.getDegree());
 
         oldNode.setKey(0, 5);
         oldNode.setKeysCount(1);
@@ -158,7 +158,7 @@ public class BPlusTreeTest {
 
     @Test
     public void testSplitFullNode() {
-        Node<Double> fullNode = new Node<Double>(2);
+        Node<Double> fullNode = new Node<>(2);
 
         fullNode.setKey(0, 0.5d);
         fullNode.setKey(1, 1.1d);
@@ -167,7 +167,7 @@ public class BPlusTreeTest {
 
         assertThat(fullNode.isFull(), is(true));
 
-        Node<Double> newNode = new Node<Double>(fullNode.getDegree());
+        Node<Double> newNode = new Node<>(fullNode.getDegree());
 
         newNode.setChild(0, fullNode);
 
