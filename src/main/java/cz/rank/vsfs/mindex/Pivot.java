@@ -25,4 +25,26 @@ public class Pivot<D extends Distanceable<D>> implements Distanceable<D> {
         return this.object.distance(object);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Pivot pivot = (Pivot) o;
+
+        if (index != pivot.index) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return index;
+    }
 }
