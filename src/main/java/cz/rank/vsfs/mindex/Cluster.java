@@ -1,7 +1,6 @@
 package cz.rank.vsfs.mindex;
 
-import java.util.Arrays;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.jcip.annotations.NotThreadSafe;
@@ -15,12 +14,14 @@ public class Cluster<D extends Distanceable<D>> {
     private final Map<D, Double> objects = new ConcurrentHashMap<>();
     private boolean normalized = false;
     private double maxDistance = 0.0d;
+    private Set<Cluster<D>> subClusters;
 
     public Cluster(Pivot<D> basePivot, int pivotsCount, int[] indexes) {
         this.basePivot = basePivot;
         this.pivotsCount = pivotsCount;
         this.indexes = indexes.clone();
         this.calculatedIndex = calculateIndex();
+        subClusters = new HashSet<>(this.pivotsCount);
     }
 
     public int getIndex() {
@@ -84,7 +85,12 @@ public class Cluster<D extends Distanceable<D>> {
             throw new IllegalStateException("Cluster is not yet normalized: " + this);
         }
 
-        return objects.get(object) + getIndex();
+        Double objectDistance = objects.get(object);
+        if (objectDistance == null) {
+            throw new IllegalArgumentException("Object: " + object + " was not found in this cluster:" + this);
+        }
+
+        return objectDistance + getIndex();
     }
 
     private boolean isNotNormalized() {
@@ -103,4 +109,11 @@ public class Cluster<D extends Distanceable<D>> {
         return builder.toString();
     }
 
+    public Set<D> getObjects() {
+        return new HashSet<>(objects.keySet());
+    }
+
+    public void addSubClusters(Collection<Cluster<D>> subClusters) {
+        this.subClusters.addAll(subClusters);
+    }
 }

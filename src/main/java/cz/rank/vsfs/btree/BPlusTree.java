@@ -5,7 +5,6 @@ package cz.rank.vsfs.btree;
 
 /**
  * @author rank
- *
  */
 public class BPlusTree<T extends Comparable<T>> {
     public static <T extends Comparable<T>> void splitChild(final Node<T> node, final int index, final Node<T> fullNode) {
@@ -47,7 +46,9 @@ public class BPlusTree<T extends Comparable<T>> {
     private final int degree;
 
     /**
-     * @param i
+     * Construct B+Tree with degree
+     *
+     * @param degree
      */
     public BPlusTree(final int degree) {
         this.degree = degree;
@@ -56,6 +57,7 @@ public class BPlusTree<T extends Comparable<T>> {
     }
 
     /**
+     * Degree of this B+Tree
      * @return the degree
      */
     public int getDegree() {
