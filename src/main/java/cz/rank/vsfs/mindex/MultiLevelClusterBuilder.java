@@ -1,8 +1,6 @@
 package cz.rank.vsfs.mindex;
 
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 
 /**
@@ -13,6 +11,11 @@ public class MultiLevelClusterBuilder<D extends Distanceable<D>> {
     private Set<Pivot<D>> pivots;
     private Set<D> points;
 
+    /**
+     * Builder for multi-level cluster with level of <code>level</code>
+     *
+     * @param level of cluster. Minimum level is 1
+     */
     public MultiLevelClusterBuilder(int level) {
         if (level < 1) {
             throw new IllegalArgumentException("Cluster level must be > 0. Current level: " + level);
