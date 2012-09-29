@@ -1,14 +1,11 @@
 package cz.rank.vsfs.mindex;
 
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RecursiveAction;
 
 /**
  */
-public class SubClusterBuildTask<D extends Distanceable<D>> implements Runnable {
-    private final ExecutorService executorService;
-    private final CountDownLatch signal;
+public class SubClusterBuildTask<D extends Distanceable<D>> extends RecursiveAction {
     private final int currentLevel;
     private final int level;
     private final Cluster<D> cluster;
@@ -16,17 +13,13 @@ public class SubClusterBuildTask<D extends Distanceable<D>> implements Runnable 
     private final int originalPivotsCount;
 
     public static class Builder<D extends Distanceable<D>> {
-        private final ExecutorService executorService;
-        private final CountDownLatch signal;
         private int currentLevel;
         private int level;
         private Cluster<D> cluster;
         private Set pendingPivots;
         private int originalPivotsCount;
 
-        public Builder(ExecutorService executorService, CountDownLatch signal) {
-            this.executorService = executorService;
-            this.signal = signal;
+        public Builder() {
         }
 
         public Builder<D> levels(int currentLevel, int level) {
@@ -44,7 +37,7 @@ public class SubClusterBuildTask<D extends Distanceable<D>> implements Runnable 
 
         public Builder<D> pivots(int originalPivotsCount, Set<Pivot<D>> pendingPivots) {
             this.originalPivotsCount = originalPivotsCount;
-            this.pendingPivots = new HashSet<>(pendingPivots);
+            this.pendingPivots = pendingPivots;
 
             return this;
         }
@@ -56,8 +49,6 @@ public class SubClusterBuildTask<D extends Distanceable<D>> implements Runnable 
     }
 
     private SubClusterBuildTask(Builder builder) {
-        this.executorService = builder.executorService;
-        this.signal = builder.signal;
         this.currentLevel = builder.currentLevel;
         this.level = builder.level;
         this.cluster = builder.cluster;
@@ -66,7 +57,7 @@ public class SubClusterBuildTask<D extends Distanceable<D>> implements Runnable 
     }
 
     @Override
-    public void run() {
+    public void compute() {
         Map<Pivot<D>, Cluster<D>> subClusters = new HashMap<>(pendingPivots.size());
 
         int[] clusterIndexes = cluster.getIndexes();
@@ -83,9 +74,21 @@ public class SubClusterBuildTask<D extends Distanceable<D>> implements Runnable 
         cluster.addSubClusters(subClusters.values());
         // Check if we reach desired level of clustering
         if (currentLevel < level) {
-            new SubClusterBuildTaskSubmitter<D>(executorService, signal, currentLevel + 1, level).submit(subClusters, originalPivotsCount, pendingPivots);
-        }
+            SubClusterBuildTask.Builder<D> builder = new SubClusterBuildTask.Builder<D>().levels(currentLevel + 1,
+                                                                                                 level);
+            List<SubClusterBuildTask> buildTasks = new ArrayList<>(pendingPivots.size());
+            for (Map.Entry<Pivot<D>, Cluster<D>> entry : subClusters.entrySet()) {
+                if (!entry.getValue().getObjects().isEmpty()) {
+                    final Set<Pivot<D>> subClusterPivots = new HashSet<>(pendingPivots);
+                    subClusterPivots.remove(entry.getKey());
 
-        signal.countDown();
+
+                    buildTasks.add(builder.pivots(originalPivotsCount, subClusterPivots)
+                            .cluster(entry.getValue()).build());
+                }
+            }
+
+            invokeAll(buildTasks);
+        }
     }
 }

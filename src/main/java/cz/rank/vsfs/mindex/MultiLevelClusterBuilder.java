@@ -1,9 +1,9 @@
 package cz.rank.vsfs.mindex;
 
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 
 /**
  * Builds multilevel cluster
@@ -84,20 +84,19 @@ public class MultiLevelClusterBuilder<D extends Distanceable<D>> {
         int currentLevel = 1;
 
         if (currentLevel < level) {
-            final ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime()
-                                                                                        .availableProcessors());
+            ForkJoinPool forkJoinPool = new ForkJoinPool();
+            SubClusterBuildTask.Builder<D> builder = new SubClusterBuildTask.Builder<D>().levels(currentLevel + 1,
+                                                                                                 level);
+            for (Map.Entry<Pivot<D>, Cluster<D>> entry : clusters.entrySet()) {
+                if (!entry.getValue().getObjects().isEmpty()) {
+                    final Set<Pivot<D>> subClusterPivots = new HashSet<>(pivots);
+                    subClusterPivots.remove(entry.getKey());
 
-            final CountDownLatch signal = new CountDownLatch((int) Math.pow(pivots.size(), level));
-
-            final SubClusterBuildTaskSubmitter<D> submitter = new SubClusterBuildTaskSubmitter<>(executorService, signal,
-                                                                                            currentLevel, level);
-
-            submitter.submit(clusters, pivots.size(), pivots);
-
-            try {
-                signal.await();
-            } catch (InterruptedException e) {
+                    forkJoinPool.invoke(builder.pivots(pivots.size(), subClusterPivots)
+                                               .cluster(entry.getValue()).build());
+                }
             }
+
 
         }
 
