@@ -51,3 +51,5 @@ test-output/
 out/
 classes/
 *.iml
+*.ipr
+*.iws
