@@ -34,7 +34,20 @@ _ReSharper*/
 #Maven
 target/
 
+# Gradle
+build/
+classes/
+.gradle
+test-output/
+
 #Eclipse
 .project
 .classpath
 .settings/
+.refactorings/
+
+#IntelliJ IDEA
+.idea/
+out/
+classes/
+*.iml
