@@ -41,20 +41,20 @@ import static org.hamcrest.Matchers.*;
 
 public class MultiLevelClusterBuilderTest {
 
-    public static final int INITIAL_PIVOTS_COUNT = 500;
+    public static final int INITIAL_PIVOTS_COUNT = 50;
     public static final int INITIAL_POINTS_COUNT = 5000;
 
-    @Test(expectedExceptions = {IllegalArgumentException.class}, expectedExceptionsMessageRegExp = ".*null.*")
+    @Test(expectedExceptions = {IllegalArgumentException.class}, expectedExceptionsMessageRegExp = ".*null.*", groups = {"unit"})
     public void testNoNullPivots() {
         new MultiLevelClusterBuilder<Point>(1).withPivots(null);
     }
 
-    @Test(expectedExceptions = {IllegalArgumentException.class}, expectedExceptionsMessageRegExp = ".*one point.*")
+    @Test(expectedExceptions = {IllegalArgumentException.class}, expectedExceptionsMessageRegExp = ".*one point.*", groups = {"unit"})
     public void testEmptyPivots() {
         new MultiLevelClusterBuilder<Point>(1).fromPoints(new HashSet<Point>());
     }
 
-    @Test(expectedExceptions = {IllegalArgumentException.class}, expectedExceptionsMessageRegExp = ".*null.*")
+    @Test(expectedExceptions = {IllegalArgumentException.class}, expectedExceptionsMessageRegExp = ".*null.*", groups = {"unit"})
     public void testNullPivotsDuringBuild() {
         Set<Point> points = new HashSet<>();
         points.add(new Point(0, 0));
@@ -62,25 +62,25 @@ public class MultiLevelClusterBuilderTest {
         new MultiLevelClusterBuilder<Point>(1).fromPoints(points).build();
     }
 
-    @Test(expectedExceptions = {IllegalArgumentException.class}, expectedExceptionsMessageRegExp = ".*one pivot.*")
+    @Test(expectedExceptions = {IllegalArgumentException.class}, expectedExceptionsMessageRegExp = ".*one pivot.*", groups = {"unit"})
     public void testNoEmptyPoints() {
         new MultiLevelClusterBuilder<Point>(1).withPivots(new HashSet<Pivot<Point>>());
     }
 
-    @Test(expectedExceptions = {IllegalArgumentException.class}, expectedExceptionsMessageRegExp = ".*null.*")
+    @Test(expectedExceptions = {IllegalArgumentException.class}, expectedExceptionsMessageRegExp = ".*null.*", groups = {"unit"})
     public void testNoNullPoints() {
         new MultiLevelClusterBuilder<Point>(1).fromPoints(null);
     }
 
-    @Test(expectedExceptions = {IllegalArgumentException.class}, expectedExceptionsMessageRegExp = ".*null.*")
+    @Test(expectedExceptions = {IllegalArgumentException.class}, expectedExceptionsMessageRegExp = ".*null.*", groups = {"unit"})
     public void testNullPointsDuringBuild() {
         Set<Pivot<Point>> pivots = new HashSet<>();
-        pivots.add(new Pivot<Point>(0, new Point(0, 0)));
+        pivots.add(new Pivot<>(0, new Point(0, 0)));
 
         new MultiLevelClusterBuilder<Point>(1).withPivots(pivots).build();
     }
 
-    @Test
+    @Test(groups = {"unit"})
     public void testClusterSizeMustBeTheSameAsPivots() {
         Pivot<Point> pivot0 = new Pivot<>(0, new Point(0, 0));
         Pivot<Point> pivot1 = new Pivot<>(1, new Point(1, 0));
@@ -102,7 +102,7 @@ public class MultiLevelClusterBuilderTest {
                                                          .size(), is(pivots.size()));
     }
 
-    @Test
+    @Test(groups = {"unit"})
     public void testClustersMustBeNormalized() {
         Point point = new Point(0, 0);
         Pivot<Point> pivot0 = new Pivot<>(0, point);
@@ -121,7 +121,7 @@ public class MultiLevelClusterBuilderTest {
         assertThat(cluster.getKey(point), is(0d));
     }
 
-    @Test
+    @Test(groups = {"unit"})
     public void test4Levels() {
 
         Pivot<Point> pivot0 = new Pivot<>(0, new Point(0, 0));
@@ -173,12 +173,12 @@ public class MultiLevelClusterBuilderTest {
         };
     }
 
-    @Test(expectedExceptions = {IllegalArgumentException.class}, dataProvider = "notValidClusterLevels")
+    @Test(expectedExceptions = {IllegalArgumentException.class}, dataProvider = "notValidClusterLevels", groups = {"unit"})
     public void testNotValidClusterLevel(int level) {
         new MultiLevelClusterBuilder<Point>(level);
     }
 
-    @Test(dataProvider = "validClusterLevels")
+    @Test(dataProvider = "validClusterLevels", groups = {"unit"})
     public void testValidClusterLevel(int level) {
         assertThat(new MultiLevelClusterBuilder<Point>(level).getLevel(), is(level));
     }
@@ -190,7 +190,7 @@ public class MultiLevelClusterBuilderTest {
 
         Set<Pivot<Point>> pivots = new HashSet<>(INITIAL_PIVOTS_COUNT);
         for (int i = 0; i < INITIAL_PIVOTS_COUNT; i++) {
-            pivots.add(new Pivot<Point>(i, new Point(random.nextDouble() * 50, random.nextDouble() * 50)));
+            pivots.add(new Pivot<>(i, new Point(random.nextDouble() * 50, random.nextDouble() * 50)));
         }
 
         Set<Point> points = new HashSet<>(INITIAL_POINTS_COUNT);

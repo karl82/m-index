@@ -58,7 +58,7 @@ public class VoronoiQuickDividerTest {
         pivots.clear();
     }
 
-    @Test
+    @Test(groups = {"unit"})
     public void testOrder() {
         VoronoiQuickDivider<Point> divider = new VoronoiQuickDivider<>(pivots, points);
 

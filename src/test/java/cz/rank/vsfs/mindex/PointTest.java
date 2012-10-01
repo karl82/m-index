@@ -32,7 +32,7 @@ import static org.hamcrest.MatcherAssert.*;
 
 public class PointTest {
 
-    @Test
+    @Test(groups = {"unit"})
     public void testZeroDistance() {
         Point a = new Point(10, 10);
         Point b = new Point(10, 10);
@@ -40,7 +40,7 @@ public class PointTest {
         assertThat(a.distance(b), is(0d));
     }
 
-    @Test
+    @Test(groups = {"unit"})
     public void testAbsDistance() {
         Point a = new Point(-100, -100);
         Point b = new Point(-10, -10);

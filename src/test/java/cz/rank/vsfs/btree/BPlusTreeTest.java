@@ -56,7 +56,7 @@ public class BPlusTreeTest {
     public void tearDown() throws Exception {
     }
 
-    @Test
+    @Test(groups = {"unit"})
     public void testDegree2() {
         BPlusTree<Double> tree = new BPlusTree<>(2);
 
@@ -69,7 +69,7 @@ public class BPlusTreeTest {
         assertThat(tree.search(0.2d), is(0.2d));
     }
 
-    @Test
+    @Test(groups = {"unit"})
     public void testDegree20() {
         BPlusTree<Integer> tree = new BPlusTree<>(20);
 
@@ -83,7 +83,7 @@ public class BPlusTreeTest {
 
     }
 
-    @Test
+    @Test(groups = {"unit"})
     public void testDescendingDegree2() {
         BPlusTree<Integer> tree = new BPlusTree<>(2);
 
@@ -98,17 +98,17 @@ public class BPlusTreeTest {
         assertThat(tree.search(2), is(2));
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test(expectedExceptions = IllegalArgumentException.class, groups = {"unit"})
     public void testMinimalDegree0() {
         new BPlusTree<Integer>(0);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test(expectedExceptions = IllegalArgumentException.class, groups = {"unit"})
     public void testMinimalDegree1() {
         new BPlusTree<Integer>(1);
     }
 
-    @Test
+    @Test(groups = {"unit"})
     public void testNullReturnOnSearch() {
         BPlusTree<Integer> tree = new BPlusTree<>(2);
 
@@ -119,7 +119,7 @@ public class BPlusTreeTest {
         assertThat(tree.search(31), is(nullValue()));
     }
 
-    @Test
+    @Test(groups = {"unit"})
     public void testSeveralSplitsAscendingDegree2() {
         BPlusTree<Integer> tree = new BPlusTree<>(2);
 
@@ -132,7 +132,7 @@ public class BPlusTreeTest {
         }
     }
 
-    @Test
+    @Test(groups = {"unit"})
     public void testSeveralSplitsDescendingDegree2() {
         BPlusTree<Integer> tree = new BPlusTree<>(2);
 
@@ -145,7 +145,7 @@ public class BPlusTreeTest {
         }
     }
 
-    @Test
+    @Test(groups = {"unit"})
     public void testSplitFullChildNode() {
         Node<Integer> fullNode = new Node<>(2);
 
@@ -182,7 +182,7 @@ public class BPlusTreeTest {
         assertThat(newNode.getChild(2).getKey(0), is(5));
     }
 
-    @Test
+    @Test(groups = {"unit"})
     public void testSplitFullNode() {
         Node<Double> fullNode = new Node<>(2);
 
