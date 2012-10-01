@@ -62,11 +62,7 @@ public class Pivot<D extends Distanceable<D>> implements Distanceable<D> {
 
         Pivot pivot = (Pivot) o;
 
-        if (index != pivot.index) {
-            return false;
-        }
-
-        return true;
+        return index == pivot.index;
     }
 
     @Override

@@ -38,7 +38,7 @@ public class MultiLevelClusterBuilder<D extends Distanceable<D>> {
     private Set<D> points;
 
     /**
-     * Builder for multi-level cluster with level of <code>level</code>
+     * Builder for multi-level cluster with level of {@code level}
      *
      * @param level of cluster. Minimum level is 1
      */
@@ -104,10 +104,10 @@ public class MultiLevelClusterBuilder<D extends Distanceable<D>> {
         Map<Pivot<D>, Cluster<D>> clusters = new HashMap<>(pivots.size());
 
         for (Pivot<D> pivot : pivots) {
-            clusters.put(pivot, new Cluster<D>(pivot, pivots.size(), new int[]{pivot.getIndex()}));
+            clusters.put(pivot, new Cluster<>(pivot, pivots.size(), new int[]{pivot.getIndex()}));
         }
 
-        new PointsIntoClusterDivider<D>(clusters, pivots, points).divide();
+        new PointsIntoClusterDivider<>(clusters, pivots, points).divide();
 
 
         int currentLevel = 1;

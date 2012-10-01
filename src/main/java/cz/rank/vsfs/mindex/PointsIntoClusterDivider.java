@@ -41,7 +41,7 @@ public class PointsIntoClusterDivider<D extends Distanceable<D>> {
     }
 
     public void divide() {
-        VoronoiQuickDivider<D> divider = new VoronoiQuickDivider<D>(pivots, points);
+        VoronoiQuickDivider<D> divider = new VoronoiQuickDivider<>(pivots, points);
         Map<D, Pivot<D>> nearestPivots = divider.calculate();
 
         assignObjectsToClusters(nearestPivots);

@@ -40,7 +40,7 @@ public class Cluster<D extends Distanceable<D>> {
     private final Map<D, Double> objects = new ConcurrentHashMap<>();
     private boolean normalized = false;
     private double maxDistance = 0.0d;
-    private Set<Cluster<D>> subClusters;
+    private final Set<Cluster<D>> subClusters;
 
     public Cluster(Pivot<D> basePivot, int pivotsCount, int[] indexes) {
         this.basePivot = basePivot;

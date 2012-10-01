@@ -42,7 +42,7 @@ public class SubClusterBuildTask<D extends Distanceable<D>> extends RecursiveAct
         private int currentLevel;
         private int level;
         private Cluster<D> cluster;
-        private Set pendingPivots;
+        private Set<Pivot<D>> pendingPivots;
         private int originalPivotsCount;
 
         public Builder() {
@@ -69,7 +69,7 @@ public class SubClusterBuildTask<D extends Distanceable<D>> extends RecursiveAct
         }
 
         public SubClusterBuildTask<D> build() {
-            return new SubClusterBuildTask<D>(this);
+            return new SubClusterBuildTask<>(this);
         }
 
     }
@@ -90,12 +90,12 @@ public class SubClusterBuildTask<D extends Distanceable<D>> extends RecursiveAct
         for (Pivot<D> pivot : pendingPivots) {
             int[] index = Arrays.copyOf(clusterIndexes, clusterIndexes.length + 1);
             index[index.length - 1] = pivot.getIndex();
-            subClusters.put(pivot, new Cluster<D>(cluster.getBasePivot(), originalPivotsCount, index));
+            subClusters.put(pivot, new Cluster<>(cluster.getBasePivot(), originalPivotsCount, index));
         }
 
         Set<D> points = cluster.getObjects();
 
-        new PointsIntoClusterDivider<D>(subClusters, pendingPivots, points).divide();
+        new PointsIntoClusterDivider<>(subClusters, pendingPivots, points).divide();
 
         cluster.addSubClusters(subClusters.values());
         // Check if we reach desired level of clustering
