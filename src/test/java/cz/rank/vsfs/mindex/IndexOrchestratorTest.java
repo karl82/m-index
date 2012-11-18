@@ -26,45 +26,37 @@
 
 package cz.rank.vsfs.mindex;
 
-import cz.rank.vsfs.btree.BPlusTree;
+import cz.rank.vsfs.btree.BPlusTreeMap;
 import org.testng.annotations.Test;
 
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author Karel Rank
  */
 public class IndexOrchestratorTest {
     private static final int INITIAL_PIVOTS_COUNT = 5;
-    private static final int INITIAL_POINTS_COUNT = 10;
-    public static final int CLUSTER_MAX_LEVEL = 1;
+    private static final int INITIAL_POINTS_COUNT = 100;
+    public static final int CLUSTER_MAX_LEVEL = 2;
 
     @Test(groups = {"longRunning"})
     public void testIndexOrchestrator() throws NoSuchAlgorithmException {
 
-        final Random random = SecureRandom.getInstance("SHA1PRNG");
+        final Random random = ThreadLocalRandom.current();
 
 
         final Set<Pivot<Point>> pivots = new HashSet<>(INITIAL_PIVOTS_COUNT);
-        for (
-                int i = 0;
-                i < INITIAL_PIVOTS_COUNT; i++)
-
-        {
+        for (int i = 0; i < INITIAL_PIVOTS_COUNT; i++) {
             pivots.add(new Pivot<>(i, new Point(random.nextDouble() * 50, random.nextDouble() * 50)));
         }
 
         final Set<Point> points = new HashSet<>(INITIAL_POINTS_COUNT);
-        for (
-                int i = 0;
-                i < INITIAL_POINTS_COUNT; i++)
-
-        {
+        for (int i = 0; i < INITIAL_POINTS_COUNT; i++) {
             points.add(new Point(random.nextDouble() * 50, random.nextDouble() * 50));
         }
 
@@ -74,9 +66,9 @@ public class IndexOrchestratorTest {
 
         final Collection<Cluster<Point>> clusters = builder.build();
 
-        final IndexOrchestrator orchestrator = new IndexOrchestrator(CLUSTER_MAX_LEVEL, clusters);
+        final IndexOrchestrator<Point> orchestrator = new IndexOrchestrator<>(CLUSTER_MAX_LEVEL, clusters);
 
-        final BPlusTree<Double> btree = orchestrator.orchestrateBtree();
+        final BPlusTreeMap<Double, Point> btree = orchestrator.orchestrateBtree();
 
         System.out.println(btree);
 

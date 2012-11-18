@@ -33,7 +33,6 @@ import java.lang.reflect.Array;
 
 /**
  * @author rank
- *
  */
 public class Node<T extends Comparable<? super T>> {
 
@@ -72,7 +71,6 @@ public class Node<T extends Comparable<? super T>> {
 
     /**
      * @param i
-     * @return
      * @return
      */
     public T getKey(final int i) {
@@ -115,7 +113,6 @@ public class Node<T extends Comparable<? super T>> {
     }
 
     /**
-     * @param i
      * @param r
      */
     public void setChild(final int index, final Node<T> r) {

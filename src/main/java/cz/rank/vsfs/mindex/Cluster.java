@@ -26,10 +26,9 @@
 
 package cz.rank.vsfs.mindex;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
 import net.jcip.annotations.NotThreadSafe;
+
+import java.util.*;
 
 @NotThreadSafe
 public class Cluster<D extends Distanceable<D>> {
@@ -37,7 +36,7 @@ public class Cluster<D extends Distanceable<D>> {
     private final int calculatedIndex;
     private final Pivot<D> basePivot;
     private final int pivotsCount;
-    private final Map<D, Double> objects = new ConcurrentHashMap<>();
+    private final Map<D, Double> objects = new HashMap<>();
     private boolean normalized = false;
     private double maxDistance = 0.0d;
     private final Set<Cluster<D>> subClusters;
@@ -45,7 +44,7 @@ public class Cluster<D extends Distanceable<D>> {
     public Cluster(Pivot<D> basePivot, int pivotsCount, int[] indexes) {
         this.basePivot = basePivot;
         this.pivotsCount = pivotsCount;
-        this.indexes = indexes.clone();
+        this.indexes = indexes;
         this.calculatedIndex = calculateIndex();
         subClusters = new HashSet<>(this.pivotsCount);
     }
@@ -64,7 +63,7 @@ public class Cluster<D extends Distanceable<D>> {
 
     /**
      * Returns base pivot used for distance calculations
-     * 
+     *
      * @return base pivot
      */
     public Pivot<D> getBasePivot() {
@@ -73,7 +72,7 @@ public class Cluster<D extends Distanceable<D>> {
 
     /**
      * Adds object into cluster
-     * 
+     *
      * @param object
      */
     public void add(D object) {
@@ -85,7 +84,7 @@ public class Cluster<D extends Distanceable<D>> {
 
     /**
      * Normalize distances in cluster to have range [0, 1).
-     * 
+     * <p/>
      * Can be called only once
      */
     public void normalizeDistances() {
@@ -111,7 +110,7 @@ public class Cluster<D extends Distanceable<D>> {
             throw new IllegalStateException("Cluster is not yet normalized: " + this);
         }
 
-        Double objectDistance = objects.get(object);
+        final Double objectDistance = objects.get(object);
         if (objectDistance == null) {
             throw new IllegalArgumentException("Object: " + object + " was not found in this cluster:" + this);
         }
@@ -124,22 +123,26 @@ public class Cluster<D extends Distanceable<D>> {
     }
 
     public int[] getIndexes() {
-        return indexes.clone();
+        return indexes;
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("Cluster [indexes=").append(Arrays.toString(indexes)).append(", objects=").append(objects)
-                .append("]");
+               .append("]");
         return builder.toString();
     }
 
     public Set<D> getObjects() {
-        return new HashSet<>(objects.keySet());
+        return Collections.unmodifiableSet(objects.keySet());
     }
 
     public void addSubClusters(Collection<Cluster<D>> subClusters) {
         this.subClusters.addAll(subClusters);
+    }
+
+    public Set<Cluster<D>> getSubClusters() {
+        return subClusters;
     }
 }

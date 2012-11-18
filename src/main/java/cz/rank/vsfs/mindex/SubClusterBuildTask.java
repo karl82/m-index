@@ -84,24 +84,24 @@ public class SubClusterBuildTask<D extends Distanceable<D>> extends RecursiveAct
 
     @Override
     public void compute() {
-        Map<Pivot<D>, Cluster<D>> subClusters = new HashMap<>(pendingPivots.size());
+        final Map<Pivot<D>, Cluster<D>> subClusters = new HashMap<>(pendingPivots.size());
 
-        int[] clusterIndexes = cluster.getIndexes();
+        final int[] clusterIndexes = cluster.getIndexes();
         for (Pivot<D> pivot : pendingPivots) {
-            int[] index = Arrays.copyOf(clusterIndexes, clusterIndexes.length + 1);
+            final int[] index = Arrays.copyOf(clusterIndexes, clusterIndexes.length + 1);
             index[index.length - 1] = pivot.getIndex();
             subClusters.put(pivot, new Cluster<>(cluster.getBasePivot(), originalPivotsCount, index));
         }
 
-        Set<D> points = cluster.getObjects();
+        final Set<D> points = cluster.getObjects();
 
         new PointsIntoClusterDivider<>(subClusters, pendingPivots, points).divide();
 
         cluster.addSubClusters(subClusters.values());
         // Check if we reach desired level of clustering
         if (currentLevel < level) {
-            SubClusterBuildTask.Builder<D> builder = new SubClusterBuildTask.Builder<D>().levels(currentLevel + 1,
-                                                                                                 level);
+            final SubClusterBuildTask.Builder<D> builder = new SubClusterBuildTask.Builder<D>().levels(currentLevel + 1,
+                                                                                                       level);
             List<SubClusterBuildTask> buildTasks = new ArrayList<>(pendingPivots.size());
             for (Map.Entry<Pivot<D>, Cluster<D>> entry : subClusters.entrySet()) {
                 if (!entry.getValue().getObjects().isEmpty()) {
@@ -110,7 +110,7 @@ public class SubClusterBuildTask<D extends Distanceable<D>> extends RecursiveAct
 
 
                     buildTasks.add(builder.pivots(originalPivotsCount, subClusterPivots)
-                            .cluster(entry.getValue()).build());
+                                          .cluster(entry.getValue()).build());
                 }
             }
 

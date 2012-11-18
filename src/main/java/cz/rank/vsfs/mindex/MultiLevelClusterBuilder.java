@@ -28,6 +28,7 @@ package cz.rank.vsfs.mindex;
 
 import java.util.*;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveAction;
 
 /**
  * Builds multilevel cluster
@@ -101,7 +102,7 @@ public class MultiLevelClusterBuilder<D extends Distanceable<D>> {
     public Collection<Cluster<D>> build() {
         doChecks();
 
-        Map<Pivot<D>, Cluster<D>> clusters = new HashMap<>(pivots.size());
+        final Map<Pivot<D>, Cluster<D>> clusters = new HashMap<>(pivots.size());
 
         for (Pivot<D> pivot : pivots) {
             clusters.put(pivot, new Cluster<>(pivot, pivots.size(), new int[]{pivot.getIndex()}));
@@ -113,22 +114,27 @@ public class MultiLevelClusterBuilder<D extends Distanceable<D>> {
         int currentLevel = 1;
 
         if (currentLevel < level) {
-            ForkJoinPool forkJoinPool = new ForkJoinPool();
-            SubClusterBuildTask.Builder<D> builder = new SubClusterBuildTask.Builder<D>().levels(currentLevel + 1,
-                                                                                                 level);
+            final ForkJoinPool forkJoinPool = new ForkJoinPool();
+            final SubClusterBuildTask.Builder<D> builder = new SubClusterBuildTask.Builder<D>().levels(currentLevel + 1,
+                                                                                                       level);
+            final Collection<SubClusterBuildTask<D>> tasks = new ArrayList<>(clusters.size());
+
             for (Map.Entry<Pivot<D>, Cluster<D>> entry : clusters.entrySet()) {
                 if (!entry.getValue().getObjects().isEmpty()) {
                     final Set<Pivot<D>> subClusterPivots = new HashSet<>(pivots);
                     subClusterPivots.remove(entry.getKey());
 
-                    forkJoinPool.invoke(builder.pivots(pivots.size(), subClusterPivots)
-                                               .cluster(entry.getValue()).build());
+                    SubClusterBuildTask<D> buildTask = builder.pivots(pivots.size(), subClusterPivots)
+                                                              .cluster(entry.getValue()).build();
+                    tasks.add(buildTask);
+                    forkJoinPool.invoke(buildTask);
                 }
             }
 
-
+            for (RecursiveAction action : tasks) {
+                action.join();
+            }
         }
-
         return clusters.values();
     }
 

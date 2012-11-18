@@ -26,25 +26,25 @@
 
 package cz.rank.vsfs.mindex;
 
-import cz.rank.vsfs.btree.BPlusTree;
+import cz.rank.vsfs.btree.BPlusTreeMap;
 
 import java.util.Collection;
 
 /**
  * @author Karel Rank
  */
-public class IndexOrchestrator {
+public class IndexOrchestrator<D extends Distanceable<D>> {
     private final int clusterMaxLevel;
-    private final Collection<Cluster<Point>> clusters;
+    private final Collection<Cluster<D>> clusters;
 
-    public IndexOrchestrator(int clusterMaxLevel, Collection<Cluster<Point>> clusters) {
+    public IndexOrchestrator(int clusterMaxLevel, Collection<Cluster<D>> clusters) {
         this.clusterMaxLevel = clusterMaxLevel;
         this.clusters = clusters;
     }
 
 
-    public BPlusTree<Double> orchestrateBtree() {
-        BPlusTree<Double> tmpTree = new BPlusTree<>(5);
+    public BPlusTreeMap<Double, D> orchestrateBtree() {
+        BPlusTreeMap<Double, D> tmpTree = new BPlusTreeMap<>(5);
 
         int clusterDeepness = 1;
         traverseClusters(tmpTree, clusterDeepness, clusters);
@@ -52,11 +52,11 @@ public class IndexOrchestrator {
         return tmpTree;
     }
 
-    private void traverseClusters(BPlusTree<Double> tmpTree, int clusterDeepness, Collection<Cluster<Point>> clustersToTraverse) {
-        for (Cluster<Point> cluster : clustersToTraverse) {
+    private void traverseClusters(BPlusTreeMap<Double, D> tmpTree, int clusterDeepness, Iterable<Cluster<D>> clustersToTraverse) {
+        for (Cluster<D> cluster : clustersToTraverse) {
             if (clusterDeepness == clusterMaxLevel) {
-                for (Point point : cluster.getObjects()) {
-                    tmpTree.insert(cluster.getKey(point));
+                for (D point : cluster.getObjects()) {
+                    tmpTree.insert(cluster.getKey(point), point);
                 }
             } else {
                 traverseClusters(tmpTree, clusterDeepness + 1, cluster.getSubClusters());

@@ -84,9 +84,10 @@ public class BPlusTree<T extends Comparable<T>> {
 
     /**
      * Degree of this B+Tree
+     *
      * @return the degree
      */
-    public int getDegree() {
+    public final int getDegree() {
         return degree;
     }
 
