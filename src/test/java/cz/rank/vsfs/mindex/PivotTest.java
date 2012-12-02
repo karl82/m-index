@@ -28,8 +28,9 @@ package cz.rank.vsfs.mindex;
 
 import org.testng.annotations.Test;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 public class PivotTest {
     @Test
@@ -45,6 +46,27 @@ public class PivotTest {
         Pivot<Point> pivot2 = new Pivot<>(0, new Point(0, 0));
 
         assertThat(pivot1, is(pivot2));
+    }
+
+    @Test
+    public void testPivotIsEqualToItself() {
+        Pivot<Point> pivot1 = new Pivot<>(0, new Point(0, 0));
+
+        assertThat(pivot1, is(pivot1));
+    }
+
+    @Test
+    public void testPivotIsNotEqualToNull() {
+        Pivot<Point> pivot1 = new Pivot<>(0, new Point(0, 0));
+
+        assertThat(pivot1.equals(null), is(false));
+    }
+
+    @Test
+    public void testPivotIsNotEqualToObject() {
+        Pivot<Point> pivot1 = new Pivot<>(0, new Point(0, 0));
+
+        assertThat(pivot1.equals(new Object()), is(false));
     }
 
     @Test
