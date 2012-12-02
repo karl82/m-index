@@ -1,23 +1,35 @@
 apply plugin: 'java'
 apply plugin: 'project-report'
 apply plugin: 'idea'
+apply plugin: 'cobertura'
 
 description = 'M-Index implementation in Java'
 version = '0.2'
 
 sourceCompatibility = '1.7'
 
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.mapvine:gradle-cobertura-plugin:1.0'
+    }
+}
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
-	compile "net.jcip:jcip-annotations:1.0"
+    compile "net.jcip:jcip-annotations:1.0"
     testCompile "org.hamcrest:hamcrest-all:1.3"
     testCompile "org.hamcrest:hamcrest-core:1.3"
     testCompile "org.testng:testng:6.7"
 }
 
+
 test {
+    jvmArgs "-XX:-UseSplitVerifier"
     useTestNG()
 }
