@@ -31,5 +31,7 @@ dependencies {
 
 test {
     jvmArgs "-XX:-UseSplitVerifier"
-    useTestNG()
+    useTestNG() {
+        excludeGroups 'longRunning'
+    }
 }
