@@ -28,7 +28,13 @@ package cz.rank.vsfs.mindex;
 
 import net.jcip.annotations.NotThreadSafe;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 @NotThreadSafe
 public class Cluster<D extends Distanceable<D>> {

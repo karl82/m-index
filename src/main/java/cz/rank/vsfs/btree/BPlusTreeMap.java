@@ -35,6 +35,20 @@ import java.lang.reflect.Array;
  * @author rank
  */
 public class BPlusTreeMap<K extends Comparable<K>, V> {
+    private final int degree;
+    private Node<K, V> root;
+
+    /**
+     * Construct B+Tree with degree
+     *
+     * @param degree
+     */
+    public BPlusTreeMap(final int degree) {
+        this.degree = degree;
+
+        root = Node.allocateRoot(getDegree());
+    }
+
     public static <T extends Comparable<T>, V> void splitChild(final Node<T, V> node, final int index, final Node<T, V> fullNode) {
         final int nodeDegree = fullNode.getDegree();
         final Node<T, V> z = new Node<>(nodeDegree);
@@ -70,21 +84,6 @@ public class BPlusTreeMap<K extends Comparable<K>, V> {
         node.setValue(index, fullNode.getValue(nodeDegree - 1));
 
         node.setKeysCount(node.getKeysCount() + 1);
-    }
-
-    private Node<K, V> root;
-
-    private final int degree;
-
-    /**
-     * Construct B+Tree with degree
-     *
-     * @param degree
-     */
-    public BPlusTreeMap(final int degree) {
-        this.degree = degree;
-
-        root = Node.allocateRoot(getDegree());
     }
 
     /**
@@ -195,12 +194,12 @@ public class BPlusTreeMap<K extends Comparable<K>, V> {
 
     static class Node<T extends Comparable<? super T>, V> {
 
-        boolean leaf = false;
-        private int keysCount = 0;
         private final int degree;
         private final Node<T, V>[] children;
         private final T[] keys;
         private final V[] values;
+        boolean leaf = false;
+        private int keysCount = 0;
 
         @SuppressWarnings("unchecked")
         public Node(final int degree) {
@@ -211,6 +210,14 @@ public class BPlusTreeMap<K extends Comparable<K>, V> {
             children = new Node[maxChildren()];
             keys = (T[]) Array.newInstance(Comparable.class, maxKeys());
             values = (V[]) new Object[maxKeys()];
+        }
+
+        private static <T extends Comparable<T>, V> Node<T, V> allocateRoot(final int degree) {
+            final Node<T, V> node = new Node<>(degree);
+            node.setLeaf(true);
+            node.setKeysCount(0);
+
+            return node;
         }
 
         /**
@@ -253,6 +260,12 @@ public class BPlusTreeMap<K extends Comparable<K>, V> {
         }
 
         /**
+         */
+        public void setKeysCount(final int keysCount) {
+            this.keysCount = keysCount;
+        }
+
+        /**
          * @return
          */
         public boolean isFull() {
@@ -264,6 +277,12 @@ public class BPlusTreeMap<K extends Comparable<K>, V> {
          */
         public boolean isLeaf() {
             return leaf;
+        }
+
+        /**
+         */
+        public void setLeaf(final boolean leaf) {
+            this.leaf = leaf;
         }
 
         /**
@@ -295,18 +314,6 @@ public class BPlusTreeMap<K extends Comparable<K>, V> {
             keys[j] = key;
         }
 
-        /**
-         */
-        public void setKeysCount(final int keysCount) {
-            this.keysCount = keysCount;
-        }
-
-        /**
-         */
-        public void setLeaf(final boolean leaf) {
-            this.leaf = leaf;
-        }
-
         /*
         * (non-Javadoc)
         *
@@ -329,14 +336,6 @@ public class BPlusTreeMap<K extends Comparable<K>, V> {
             }
             builder.append("]");
             return builder.toString();
-        }
-
-        private static <T extends Comparable<T>, V> Node<T, V> allocateRoot(final int degree) {
-            final Node<T, V> node = new Node<>(degree);
-            node.setLeaf(true);
-            node.setKeysCount(0);
-
-            return node;
         }
 
         public V getValue(int i) {
