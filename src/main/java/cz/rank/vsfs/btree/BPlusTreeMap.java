@@ -29,8 +29,6 @@
  */
 package cz.rank.vsfs.btree;
 
-import java.lang.reflect.Array;
-
 /**
  * @author rank
  */
@@ -46,12 +44,13 @@ public class BPlusTreeMap<K extends Comparable<K>, V> {
     public BPlusTreeMap(final int degree) {
         this.degree = degree;
 
-        root = Node.allocateRoot(getDegree());
+        root = new LeafNode<>(degree);
     }
 
-    public static <T extends Comparable<T>, V> void splitChild(final Node<T, V> node, final int index, final Node<T, V> fullNode) {
+/*
+    public static <T extends Comparable<T>, V> void splitChild(final InternalNode<T, V> node, final int index, final InternalNode<T, V> fullNode) {
         final int nodeDegree = fullNode.getDegree();
-        final Node<T, V> z = new Node<>(nodeDegree);
+        final InternalNode<T, V> z = new InternalNode<>(nodeDegree);
 
         z.leaf = fullNode.leaf;
         z.setKeysCount(nodeDegree - 1);
@@ -85,6 +84,7 @@ public class BPlusTreeMap<K extends Comparable<K>, V> {
 
         node.setKeysCount(node.getKeysCount() + 1);
     }
+*/
 
     /**
      * Degree of this B+Tree
@@ -102,84 +102,24 @@ public class BPlusTreeMap<K extends Comparable<K>, V> {
         final Node<K, V> r = root;
 
         if (r.isFull()) {
-            final Node<K, V> s = new Node<>(getDegree());
+            final InternalNode<K, V> s = new InternalNode<>(getDegree());
 
             root = s;
-            s.setLeaf(false);
-            s.setKeysCount(0);
-
             s.setChild(0, r);
 
-            BPlusTreeMap.splitChild(s, 0, r);
-            insertNonFull(s, key, value);
+            r.splitChild(s, 0);
+            s.insertNonFull(key, value);
         } else {
-            insertNonFull(r, key, value);
+            r.insertNonFull(key, value);
         }
     }
 
     /**
-     * @param s
      * @param key
-     */
-    private void insertNonFull(final Node<K, V> s, final K key, final V value) {
-        int i = s.getKeysCount() - 1;
-
-        if (s.isLeaf()) {
-            while (i >= 0 && key.compareTo(s.getKey(i)) < 0) {
-                s.setKey(i + 1, s.getKey(i));
-                s.setValue(i + 1, s.getValue(i));
-                i--;
-            }
-
-            s.setKey(i + 1, key);
-            s.setValue(i + 1, value);
-            s.setKeysCount(s.getKeysCount() + 1);
-        } else {
-            while (i >= 0 && key.compareTo(s.getKey(i)) < 0) {
-                i--;
-            }
-
-            i++;
-
-            if (s.getChild(i).isFull()) {
-                splitChild(s, i, s.getChild(i));
-                if (key.compareTo(s.getKey(i)) > 0) {
-                    i++;
-                }
-            }
-
-            insertNonFull(s.getChild(i), key, value);
-        }
-    }
-
-    /**
-     * @param d
      * @return
      */
-    public V search(final K d) {
-        return searchNode(root, d);
-    }
-
-    /**
-     * @param node
-     * @param d
-     * @return
-     */
-    private V searchNode(final Node<K, V> node, final K d) {
-        int i = 0;
-        while (i < node.getKeysCount() && d.compareTo(node.getKey(i)) > 0) {
-            i++;
-        }
-
-        if (i < node.getKeysCount() && d.equals(node.getKey(i))) {
-            return node.getValue(i);
-        }
-
-        if (node.isLeaf()) {
-            return null;
-        } else {
-            return searchNode(node.getChild(i), d);
-        }
+    public V search(K key) {
+        return root.search(key);
     }
 
     /*
@@ -190,162 +130,6 @@ public class BPlusTreeMap<K extends Comparable<K>, V> {
     @Override
     public String toString() {
         return root.toString();
-    }
-
-    static class Node<T extends Comparable<? super T>, V> {
-
-        private final int degree;
-        private final Node<T, V>[] children;
-        private final T[] keys;
-        private final V[] values;
-        boolean leaf = false;
-        private int keysCount = 0;
-
-        @SuppressWarnings("unchecked")
-        public Node(final int degree) {
-            this.degree = degree;
-
-            doCheckDegree();
-
-            children = new Node[maxChildren()];
-            keys = (T[]) Array.newInstance(Comparable.class, maxKeys());
-            values = (V[]) new Object[maxKeys()];
-        }
-
-        private static <T extends Comparable<T>, V> Node<T, V> allocateRoot(final int degree) {
-            final Node<T, V> node = new Node<>(degree);
-            node.setLeaf(true);
-            node.setKeysCount(0);
-
-            return node;
-        }
-
-        /**
-         * @throws IllegalArgumentException if {@code degree} is less than 2
-         */
-        private void doCheckDegree() {
-            if (degree < 2) {
-                throw new IllegalArgumentException("Node degree must be at least 2. Current degree: " + degree);
-            }
-        }
-
-        /**
-         * @return
-         */
-        public int getDegree() {
-            return degree;
-        }
-
-        /**
-         * @param i
-         * @return
-         */
-        public Node<T, V> getChild(final int i) {
-            return children[i];
-        }
-
-        /**
-         * @param i
-         * @return
-         */
-        public T getKey(final int i) {
-            return keys[i];
-        }
-
-        /**
-         * @return
-         */
-        public int getKeysCount() {
-            return keysCount;
-        }
-
-        /**
-         */
-        public void setKeysCount(final int keysCount) {
-            this.keysCount = keysCount;
-        }
-
-        /**
-         * @return
-         */
-        public boolean isFull() {
-            return keysCount == maxKeys();
-        }
-
-        /**
-         * @return
-         */
-        public boolean isLeaf() {
-            return leaf;
-        }
-
-        /**
-         */
-        public void setLeaf(final boolean leaf) {
-            this.leaf = leaf;
-        }
-
-        /**
-         * @return
-         */
-        private int maxChildren() {
-            return maxKeys() + 1;
-        }
-
-        /**
-         * @return
-         */
-        private int maxKeys() {
-            return 2 * degree - 1;
-        }
-
-        /**
-         * @param r
-         */
-        public void setChild(final int index, final Node<T, V> r) {
-            children[index] = r;
-        }
-
-        /**
-         * @param j
-         * @param key
-         */
-        public void setKey(final int j, final T key) {
-            keys[j] = key;
-        }
-
-        /*
-        * (non-Javadoc)
-        *
-        * @see java.lang.Object#toString()
-        */
-        @Override
-        public String toString() {
-            final StringBuilder builder = new StringBuilder();
-            builder.append("[");
-
-            for (int i = 0; i < getKeysCount(); i++) {
-                if (!isLeaf()) {
-                    builder.append(children[i]).append(',');
-                }
-                builder.append(keys[i].toString()).append(',');
-            }
-
-            if (!isLeaf()) {
-                builder.append(children[getKeysCount()]).append(',');
-            }
-            builder.append("]");
-            return builder.toString();
-        }
-
-        public V getValue(int i) {
-            return values[i];
-
-        }
-
-        public void setValue(int i, V value) {
-            values[i] = value;
-        }
     }
 
 }

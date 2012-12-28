@@ -33,8 +33,9 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
 /**
  * @author rank
@@ -59,13 +60,14 @@ public class BPlusTreeMapTest {
     public void testDegree2() {
         BPlusTreeMap<Double, Object> tree = new BPlusTreeMap<>(2);
 
-        tree.insert(0.2d, new Object());
+        final Object value = new Object();
+        tree.insert(0.2d, value);
         tree.insert(1.0d, new Object());
         tree.insert(0.1d, new Object());
         tree.insert(2.2d, new Object());
         tree.insert(5.2d, new Object());
 
-        assertThat(tree.search(0.2d), is(notNullValue()));
+        assertThat(tree.search(0.2d), is(value));
     }
 
     @Test(groups = {"unit"})
@@ -76,7 +78,7 @@ public class BPlusTreeMapTest {
             tree.insert(d, d);
         }
 
-        for (int d = 6000; d > 6000; d--) {
+        for (int d = 6000; d > -6000; d--) {
             assertThat(tree.search(d), is(d));
         }
 
@@ -145,62 +147,57 @@ public class BPlusTreeMapTest {
     }
 
     @Test(groups = {"unit"})
-    public void testSplitFullChildNode() {
-        BPlusTreeMap.Node<Integer, Integer> fullNode = new BPlusTreeMap.Node<>(2);
+    public void testSplitFullLeafNode() {
+        LeafNode<Double, Double> fullNode = new LeafNode<>(2);
 
-        fullNode.setKey(0, 1);
-        fullNode.setKey(1, 2);
-        fullNode.setKey(2, 3);
-        fullNode.setKeysCount(3);
-        fullNode.setLeaf(true);
+        fullNode.insertNonFull(0.5d, 0.5d);
+        fullNode.insertNonFull(1.5d, 1.5d);
+        fullNode.insertNonFull(2.5d, 2.5d);
 
         assertThat(fullNode.isFull(), is(true));
 
-        BPlusTreeMap.Node<Integer, Integer> newNode = new BPlusTreeMap.Node<>(fullNode.getDegree());
-
-        newNode.setKey(0, 4);
-        newNode.setKeysCount(1);
-        newNode.setChild(0, fullNode);
-        newNode.setLeaf(false);
-
-        BPlusTreeMap.Node<Integer, Integer> oldNode = new BPlusTreeMap.Node<>(fullNode.getDegree());
-
-        oldNode.setKey(0, 5);
-        oldNode.setKeysCount(1);
-        oldNode.setLeaf(true);
-
-        newNode.setChild(1, oldNode);
-
-        BPlusTreeMap.splitChild(newNode, 0, fullNode);
-
-        assertThat(fullNode.isFull(), is(false));
-        assertThat(newNode.getChild(0).getKey(0), is(1));
-        assertThat(newNode.getKey(0), is(2));
-        assertThat(newNode.getKey(1), is(4));
-        assertThat(newNode.getChild(1).getKey(0), is(3));
-        assertThat(newNode.getChild(2).getKey(0), is(5));
-    }
-
-    @Test(groups = {"unit"})
-    public void testSplitFullNode() {
-        BPlusTreeMap.Node<Double, Double> fullNode = new BPlusTreeMap.Node<>(2);
-
-        fullNode.setKey(0, 0.5d);
-        fullNode.setKey(1, 1.1d);
-        fullNode.setKey(2, 1.5d);
-        fullNode.setKeysCount(3);
-
-        assertThat(fullNode.isFull(), is(true));
-
-        BPlusTreeMap.Node<Double, Double> newNode = new BPlusTreeMap.Node<>(fullNode.getDegree());
+        InternalNode<Double, Double> newNode = new InternalNode<>(fullNode.getDegree());
 
         newNode.setChild(0, fullNode);
 
-        BPlusTreeMap.splitChild(newNode, 0, fullNode);
+        fullNode.splitChild(newNode, 0);
 
         assertThat(fullNode.isFull(), is(false));
+/*
         assertThat(newNode.getChild(0).getKey(0), is(0.5d));
         assertThat(newNode.getKey(0), is(1.1d));
         assertThat(newNode.getChild(1).getKey(0), is(1.5d));
+*/
     }
+
+    @Test(groups = {"unit"})
+    public void testSplitFullInternalNode() {
+        InternalNode<Double, Double> fullNode = new InternalNode<>(2);
+
+        final LeafNode<Double, Double> leafNode1 = new LeafNode<>(fullNode.getDegree());
+        final LeafNode<Double, Double> leafNode2 = new LeafNode<>(fullNode.getDegree());
+        final LeafNode<Double, Double> leafNode3 = new LeafNode<>(fullNode.getDegree());
+        final LeafNode<Double, Double> leafNode4 = new LeafNode<>(fullNode.getDegree());
+
+        fullNode.setChild(0, leafNode1);
+        fullNode.setChild(1, 1d, leafNode2);
+        fullNode.setChild(2, 2d, leafNode3);
+        fullNode.setChild(3, 3d, leafNode4);
+
+        assertThat(fullNode.isFull(), is(true));
+
+        InternalNode<Double, Double> newNode = new InternalNode<>(fullNode.getDegree());
+
+        newNode.setChild(0, fullNode);
+
+        fullNode.splitChild(newNode, 0);
+
+        assertThat(fullNode.isFull(), is(false));
+/*
+        assertThat(newNode.getChild(0).getKey(0), is(0.5d));
+        assertThat(newNode.getKey(0), is(1.1d));
+        assertThat(newNode.getChild(1).getKey(0), is(1.5d));
+*/
+    }
+
 }
