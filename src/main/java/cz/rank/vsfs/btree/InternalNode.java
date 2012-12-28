@@ -98,6 +98,13 @@ class InternalNode<K extends Comparable<? super K>, V> extends AbstractNode<K, V
         children.add(index, node);
     }
 
+    @Override
+    public List<V> rangeSearch(K from, K to) {
+        final int pos = Collections.binarySearch(keys, from);
+
+        return pos < 0 ? getChild(-pos - 1).rangeSearch(from, to) : getChild(pos).rangeSearch(from, to);
+    }
+
     /**
      * @param key
      * @param node

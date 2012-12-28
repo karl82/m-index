@@ -27,6 +27,7 @@
 package cz.rank.vsfs.btree;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -36,6 +37,7 @@ import java.util.List;
 class LeafNode<K extends Comparable<? super K>, V> extends AbstractNode<K, V> {
     private final List<K> keys;
     private final List<V> values;
+    private LeafNode<K, V> sibling = null;
 
     public LeafNode(int degree) {
         super(degree);
@@ -72,8 +74,16 @@ class LeafNode<K extends Comparable<? super K>, V> extends AbstractNode<K, V> {
 
         parent.setChild(index + 1, keys.get(nodeDegree - 1), z);
 
-//        parent.setKey(index, fullNode.getKey(nodeDegree - 1));
-//        node.setValue(index, fullNode.getValue(nodeDegree - 1));
+        siblingCorrection(z);
+    }
+
+    private void siblingCorrection(LeafNode<K, V> z) {
+        if (sibling == null) {
+            sibling = z;
+        } else {
+            z.sibling = sibling;
+            sibling = z;
+        }
     }
 
     @Override
@@ -84,6 +94,39 @@ class LeafNode<K extends Comparable<? super K>, V> extends AbstractNode<K, V> {
     @Override
     public void setChild(int index, Node<K, V> node) {
         throw new UnsupportedOperationException(this.getClass() + " doesn't support children");
+    }
+
+    @Override
+    public List<V> rangeSearch(K from, K to) {
+        int fromPos = Collections.binarySearch(keys, from);
+        int toPos = Collections.binarySearch(keys, to);
+
+        final List<V> range = new ArrayList<>(maxKeys());
+
+        if (fromPos < 0) {
+            fromPos = -fromPos - 1;
+        }
+
+        if (toPos < 0) {
+            toPos = -toPos - 1;
+        }
+
+        final List<V> matchedValues = values.subList(fromPos, toPos);
+        range.addAll(matchedValues);
+
+        if (!matchedValues.isEmpty()) {
+            range.addAll(siblingRange(from, to));
+        }
+
+        return range;
+    }
+
+    private Collection<? extends V> siblingRange(K from, K to) {
+        if (sibling == null) {
+            return Collections.emptyList();
+        } else {
+            return sibling.rangeSearch(from, to);
+        }
     }
 
     @Override

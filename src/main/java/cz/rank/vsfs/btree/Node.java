@@ -26,6 +26,8 @@
 
 package cz.rank.vsfs.btree;
 
+import java.util.List;
+
 /**
  * @author Karel Rank
  */
@@ -45,4 +47,6 @@ public interface Node<K extends Comparable<? super K>, V> {
     void setChild(int index, K key, Node<K, V> r);
 
     void setChild(int index, Node<K, V> node);
+
+    List<V> rangeSearch(K from, K to);
 }

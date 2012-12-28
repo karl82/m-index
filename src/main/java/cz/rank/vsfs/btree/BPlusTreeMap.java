@@ -29,6 +29,8 @@
  */
 package cz.rank.vsfs.btree;
 
+import java.util.List;
+
 /**
  * @author rank
  */
@@ -132,4 +134,7 @@ public class BPlusTreeMap<K extends Comparable<K>, V> {
         return root.toString();
     }
 
+    public List<V> rangeSearch(K from, K to) {
+        return root.rangeSearch(from, to);
+    }
 }

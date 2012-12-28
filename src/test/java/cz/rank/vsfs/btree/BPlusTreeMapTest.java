@@ -33,7 +33,10 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.List;
+
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
@@ -144,6 +147,19 @@ public class BPlusTreeMapTest {
         for (int d = 30; d > -30; d--) {
             assertThat(tree.search(d), is(d));
         }
+    }
+
+    @Test(groups = {"unit"})
+    public void testRangeQuery() {
+        BPlusTreeMap<Integer, Integer> tree = new BPlusTreeMap<>(2);
+
+        for (int d = 10; d > -10; d--) {
+            tree.insert(d, d);
+        }
+
+        List<Integer> range = tree.rangeSearch(-2, 2);
+
+        assertThat(range, contains(-2, -1, 0, 1));
     }
 
     @Test(groups = {"unit"})
