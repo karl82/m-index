@@ -100,9 +100,9 @@ class InternalNode<K extends Comparable<? super K>, V> extends AbstractNode<K, V
 
     @Override
     public List<V> rangeSearch(K from, K to) {
-        final int pos = Collections.binarySearch(keys, from);
+        final int pos = fixBinPos(Collections.binarySearch(keys, from));
 
-        return pos < 0 ? getChild(-pos - 1).rangeSearch(from, to) : getChild(pos).rangeSearch(from, to);
+        return getChild(pos).rangeSearch(from, to);
     }
 
     /**
@@ -143,9 +143,9 @@ class InternalNode<K extends Comparable<? super K>, V> extends AbstractNode<K, V
 
     @Override
     public V search(K key) {
-        final int pos = Collections.binarySearch(keys, key);
+        final int pos = fixBinPos(Collections.binarySearch(keys, key));
 
 
-        return pos < 0 ? getChild(-pos - 1).search(key) : getChild(pos).search(key);
+        return getChild(pos).search(key);
     }
 }

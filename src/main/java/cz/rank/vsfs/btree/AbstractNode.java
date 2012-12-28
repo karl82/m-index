@@ -76,4 +76,14 @@ public abstract class AbstractNode<K extends Comparable<? super K>, V> implement
     public boolean isFull() {
         return getKeysCount() == maxKeys();
     }
+
+    /**
+     * Converts result from {@link java.util.Collections#binarySearch(java.util.List, Object)} to correct positive position
+     *
+     * @param pos
+     * @return {@code pos} if {@code pos >= 0}; otherwise {@code -pos - 1}
+     */
+    protected int fixBinPos(int pos) {
+        return pos < 0 ? -pos - 1 : pos;
+    }
 }

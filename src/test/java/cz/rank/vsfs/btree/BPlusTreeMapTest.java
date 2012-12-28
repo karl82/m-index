@@ -37,6 +37,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
@@ -72,6 +73,18 @@ public class BPlusTreeMapTest {
 
         assertThat(tree.search(0.2d), is(value));
     }
+
+    @Test(groups = {"unit"})
+    public void testValuesReplacement() {
+        BPlusTreeMap<Integer, Object> tree = new BPlusTreeMap<>(2);
+
+        final Object value = new Object();
+        tree.insert(1, new Object());
+        tree.insert(1, value);
+
+        assertThat(tree.search(1), is(value));
+    }
+
 
     @Test(groups = {"unit"})
     public void testDegree20() {
@@ -163,6 +176,43 @@ public class BPlusTreeMapTest {
     }
 
     @Test(groups = {"unit"})
+    public void testEmptyRangeQuery() {
+        BPlusTreeMap<Integer, Integer> tree = new BPlusTreeMap<>(2);
+
+        for (int d = 10; d > -10; d--) {
+            tree.insert(d, d);
+        }
+
+        List<Integer> range = tree.rangeSearch(20, 22);
+
+        assertThat(range, is(empty()));
+    }
+
+    @Test(groups = {"unit"}, expectedExceptions = IllegalArgumentException.class)
+    public void testWrongRangesForRangeQuery() {
+        BPlusTreeMap<Integer, Integer> tree = new BPlusTreeMap<>(2);
+
+        for (int d = 10; d > -10; d--) {
+            tree.insert(d, d);
+        }
+
+        tree.rangeSearch(22, 20);
+    }
+
+    @Test(groups = {"unit"})
+    public void testOneMatchOnLastSiblingForRangeQuery() {
+        BPlusTreeMap<Integer, Integer> tree = new BPlusTreeMap<>(2);
+
+        for (int d = 10; d > -10; d--) {
+            tree.insert(d, d);
+        }
+
+        List<Integer> range = tree.rangeSearch(10, 11);
+
+        assertThat(range, contains(10));
+    }
+
+    @Test(groups = {"unit"})
     public void testSplitFullLeafNode() {
         LeafNode<Double, Double> fullNode = new LeafNode<>(2);
 
@@ -184,6 +234,16 @@ public class BPlusTreeMapTest {
         assertThat(newNode.getKey(0), is(1.1d));
         assertThat(newNode.getChild(1).getKey(0), is(1.5d));
 */
+    }
+
+    @Test(groups = {"unit"}, expectedExceptions = UnsupportedOperationException.class)
+    public void testLeafNodeDoesntSupportChildren1() {
+        new LeafNode<Integer, Object>(2).setChild(0, new LeafNode<Integer, Object>(2));
+    }
+
+    @Test(groups = {"unit"}, expectedExceptions = UnsupportedOperationException.class)
+    public void testLeafNodeDoesntSupportChildren2() {
+        new LeafNode<Integer, Object>(2).setChild(0, 0, new LeafNode<Integer, Object>(2));
     }
 
     @Test(groups = {"unit"})

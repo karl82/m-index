@@ -135,6 +135,14 @@ public class BPlusTreeMap<K extends Comparable<K>, V> {
     }
 
     public List<V> rangeSearch(K from, K to) {
+        doCheckRange(from, to);
+
         return root.rangeSearch(from, to);
+    }
+
+    private void doCheckRange(K from, K to) {
+        if (from.compareTo(to) > 0) {
+            throw new IllegalArgumentException("From: " + from + " cannot be greater than to: " + to);
+        }
     }
 }

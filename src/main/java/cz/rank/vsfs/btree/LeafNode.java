@@ -51,8 +51,8 @@ class LeafNode<K extends Comparable<? super K>, V> extends AbstractNode<K, V> {
         final int pos = Collections.binarySearch(keys, key);
 
         if (pos < 0) {
-            keys.add(-pos - 1, key);
-            values.add(-pos - 1, value);
+            keys.add(fixBinPos(pos), key);
+            values.add(fixBinPos(pos), value);
         } else {
             keys.set(pos, key);
             values.set(pos, value);
@@ -98,18 +98,10 @@ class LeafNode<K extends Comparable<? super K>, V> extends AbstractNode<K, V> {
 
     @Override
     public List<V> rangeSearch(K from, K to) {
-        int fromPos = Collections.binarySearch(keys, from);
-        int toPos = Collections.binarySearch(keys, to);
+        final int fromPos = fixBinPos(Collections.binarySearch(keys, from));
+        final int toPos = fixBinPos(Collections.binarySearch(keys, to));
 
         final List<V> range = new ArrayList<>(maxKeys());
-
-        if (fromPos < 0) {
-            fromPos = -fromPos - 1;
-        }
-
-        if (toPos < 0) {
-            toPos = -toPos - 1;
-        }
 
         final List<V> matchedValues = values.subList(fromPos, toPos);
         range.addAll(matchedValues);
