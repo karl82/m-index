@@ -36,15 +36,15 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 public class MultiLevelClusterBuilderTest {
 
     public static final int INITIAL_PIVOTS_COUNT = 500;
     public static final int INITIAL_POINTS_COUNT = 5000;
 
-    @Test(expectedExceptions = {IllegalArgumentException.class}, expectedExceptionsMessageRegExp = ".*null.*",
+    @Test(expectedExceptions = {NullPointerException.class}, expectedExceptionsMessageRegExp = ".*null.*",
           groups = {"unit"})
     public void testNoNullPivots() {
         new MultiLevelClusterBuilder<Point>(1).withPivots(null);
@@ -56,7 +56,7 @@ public class MultiLevelClusterBuilderTest {
         new MultiLevelClusterBuilder<Point>(1).fromPoints(new HashSet<Point>());
     }
 
-    @Test(expectedExceptions = {IllegalArgumentException.class}, expectedExceptionsMessageRegExp = ".*null.*",
+    @Test(expectedExceptions = {NullPointerException.class}, expectedExceptionsMessageRegExp = ".*null.*",
           groups = {"unit"})
     public void testNullPivotsDuringBuild() {
         Set<Point> points = new HashSet<>();
@@ -71,13 +71,13 @@ public class MultiLevelClusterBuilderTest {
         new MultiLevelClusterBuilder<Point>(1).withPivots(new HashSet<Pivot<Point>>());
     }
 
-    @Test(expectedExceptions = {IllegalArgumentException.class}, expectedExceptionsMessageRegExp = ".*null.*",
+    @Test(expectedExceptions = {NullPointerException.class}, expectedExceptionsMessageRegExp = ".*null.*",
           groups = {"unit"})
     public void testNoNullPoints() {
         new MultiLevelClusterBuilder<Point>(1).fromPoints(null);
     }
 
-    @Test(expectedExceptions = {IllegalArgumentException.class}, expectedExceptionsMessageRegExp = ".*null.*",
+    @Test(expectedExceptions = {NullPointerException.class}, expectedExceptionsMessageRegExp = ".*null.*",
           groups = {"unit"})
     public void testNullPointsDuringBuild() {
         Set<Pivot<Point>> pivots = new HashSet<>();

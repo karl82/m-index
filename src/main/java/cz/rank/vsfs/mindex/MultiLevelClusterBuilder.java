@@ -68,11 +68,12 @@ public class MultiLevelClusterBuilder<D extends Distanceable<D>> {
      * Checks validity of points from which should be the cluster build
      *
      * @param points
-     * @throws IllegalArgumentException if points are null or empty
+     * @throws IllegalArgumentException if points are empty
+     * @throws NullPointerException     if points are null
      */
     private void checkPoints(Set<D> points) {
         if (points == null) {
-            throw new IllegalArgumentException("Points are null");
+            throw new NullPointerException("Points are null");
         }
 
         if (points.isEmpty()) {
@@ -92,11 +93,12 @@ public class MultiLevelClusterBuilder<D extends Distanceable<D>> {
      * Checks validity of pivots from which should be the cluster build
      *
      * @param pivots
-     * @throws IllegalArgumentException if pivots are null or empty
+     * @throws IllegalArgumentException if pivots are empty
+     * @throws NullPointerException     if pivots are null
      */
     private void checkPivots(Set<Pivot<D>> pivots) {
         if (pivots == null) {
-            throw new IllegalArgumentException("Pivots are null");
+            throw new NullPointerException("Pivots are null");
         }
 
         if (pivots.isEmpty()) {
