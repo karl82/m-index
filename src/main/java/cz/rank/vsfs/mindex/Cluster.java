@@ -27,6 +27,7 @@
 package cz.rank.vsfs.mindex;
 
 import net.jcip.annotations.NotThreadSafe;
+import org.apache.commons.math3.util.FastMath;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -62,7 +63,7 @@ public class Cluster<D extends Distanceable<D>> {
     private int calculateIndex() {
         int tempIndex = 0;
         for (int i = 0; i < indexes.length; i++) {
-            tempIndex += indexes[i] * Math.pow(pivotsCount, indexes.length - 1 - i);
+            tempIndex += indexes[i] * FastMath.pow(pivotsCount, indexes.length - 1 - i);
         }
         return tempIndex;
     }
@@ -85,7 +86,7 @@ public class Cluster<D extends Distanceable<D>> {
         double distance = basePivot.distance(object);
         objects.put(object, distance);
 
-        maxDistance = Math.max(maxDistance, distance);
+        maxDistance = FastMath.max(maxDistance, distance);
     }
 
     /**
