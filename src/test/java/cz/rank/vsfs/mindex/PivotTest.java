@@ -33,14 +33,14 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 public class PivotTest {
-    @Test
+    @Test(groups = "unit")
     public void testPivotIndex() {
         Pivot<Point> pivot = new Pivot<>(0, new Point(0, 0));
 
         assertThat(pivot.getIndex(), is(0));
     }
 
-    @Test
+    @Test(groups = "unit")
     public void testPivotsAreEqual() {
         Pivot<Point> pivot1 = new Pivot<>(0, new Point(0, 0));
         Pivot<Point> pivot2 = new Pivot<>(0, new Point(0, 0));
@@ -48,28 +48,28 @@ public class PivotTest {
         assertThat(pivot1, is(pivot2));
     }
 
-    @Test
+    @Test(groups = "unit")
     public void testPivotIsEqualToItself() {
         Pivot<Point> pivot1 = new Pivot<>(0, new Point(0, 0));
 
         assertThat(pivot1, is(pivot1));
     }
 
-    @Test
+    @Test(groups = "unit")
     public void testPivotIsNotEqualToNull() {
         Pivot<Point> pivot1 = new Pivot<>(0, new Point(0, 0));
 
         assertThat(pivot1.equals(null), is(false));
     }
 
-    @Test
+    @Test(groups = "unit")
     public void testPivotIsNotEqualToObject() {
         Pivot<Point> pivot1 = new Pivot<>(0, new Point(0, 0));
 
         assertThat(pivot1.equals(new Object()), is(false));
     }
 
-    @Test
+    @Test(groups = "unit")
     public void testPivotAreNotEqual() {
         Pivot<Point> pivot1 = new Pivot<>(0, new Point(0, 0));
         Pivot<Point> pivot2 = new Pivot<>(1, new Point(0, 0));
