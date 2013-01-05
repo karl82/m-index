@@ -33,8 +33,14 @@ public class PivotDistance<D extends Distanceable<D>> implements Comparable<Pivo
     private final Pivot<D> pivot;
     private final double distance;
 
-    PivotDistance(Pivot<D> pivot, double distance) {
+    PivotDistance(Pivot<D> pivot, D point) {
         this.pivot = pivot;
+
+        distance = pivot.distance(point);
+    }
+
+    private PivotDistance(double distance) {
+        pivot = null;
         this.distance = distance;
     }
 
@@ -47,21 +53,16 @@ public class PivotDistance<D extends Distanceable<D>> implements Comparable<Pivo
     }
 
     @Override
-    public int compareTo(PivotDistance pivotDistance) {
-        if (pivotDistance == null) {
-            throw new NullPointerException("PivotsDistance for copmarision is null");
+    public int compareTo(PivotDistance clusterPivotDistance) {
+        if (clusterPivotDistance == null) {
+            throw new NullPointerException("PivotsDistance for comparison is null");
         }
 
-        if (pivotDistance.getDistance() == distance) {
-            return 0;
-        }
-
-        if (distance < pivotDistance.getDistance()) {
-            return -1;
-        }
-
-        return 1;
+        return Double.valueOf(distance).compareTo(clusterPivotDistance.getDistance());
     }
 
 
+    public static <D extends Distanceable<D>> PivotDistance<D> maxClusterPivotDistance() {
+        return new PivotDistance<>(Double.MAX_VALUE);
+    }
 }

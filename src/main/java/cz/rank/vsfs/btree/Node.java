@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * @author Karel Rank
  */
-public interface Node<K extends Comparable<? super K>, V> {
+interface Node<K extends Comparable<? super K>, V> {
     int getDegree();
 
     int getKeysCount();

@@ -26,49 +26,31 @@
 
 package cz.rank.vsfs.mindex;
 
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Karel Rank
  */
-public class ClusterPivotDistanceTest {
-    @DataProvider(name = "comparableData")
-    public Object[][] comparableData() {
-        return new Object[][]{
-                {new Point(5.0, 5.0),
-                 new Point(5.0, 5.0),
-                 0},
-                {new Point(6.0, 6.0),
-                 new Point(5.0, 5.0),
-                 1},
-                {new Point(5.0, 5.0),
-                 new Point(6.0, 6.0),
-                 -1},
-        };
+public class ClusterNode<D extends Distanceable<D>> {
+    private final int level;
+    private List<Cluster<D>> clusters = new ArrayList<>();
 
+    public ClusterNode(int level) {
+
+        this.level = level;
     }
 
-    @Test(groups = "unit", dataProvider = "comparableData")
-    public void testCompareTo(Point distance1, Point distance2, int expectedResult) throws Exception {
-        assertThat(clusterPivotDistance(distance1).compareTo(clusterPivotDistance(distance2)), is(expectedResult));
+    public Cluster<D> get(int index) {
+        return null;
     }
 
-    @Test(groups = "unit", dataProvider = "comparableData")
-    public void testCompareToReverse(Point distance1, Point distance2, int expectedResult) throws Exception {
-        assertThat(clusterPivotDistance(distance2).compareTo(clusterPivotDistance(distance1)), is(-expectedResult));
+    public Collection<Cluster<D>> getClusters() {
+        return clusters;
     }
 
-    @Test(groups = "unit", expectedExceptions = NullPointerException.class)
-    public void testCompareToNull() {
-        clusterPivotDistance(new Point(0, 0)).compareTo(null);
-    }
-
-    private ClusterPivotDistance<Point> clusterPivotDistance(Point point) {
-        return new ClusterPivotDistance<>(new Cluster<Point>(new Pivot<Point>(0, new Point(0, 0)), 1, new Index(1, 1)),
-                                          point);
+    public void add(Cluster<D> cluster) {
+        clusters.add(cluster);
     }
 }

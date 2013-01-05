@@ -3319,17 +3319,18 @@ description "garbage collector"
 
 \end_inset
 
-), který počítá reference na jednotlivé objekty v
+), který sleduje reference na jednotlivé alokovaní objekty v
 \begin_inset space ~
 \end_inset
 
 paměti JVM.
- Pokud GC zjistí, že počet referencí je 0, uvolní daný objekt
+ Pokud GC zjistí, že na objekt nejsou žádné reference, uvolní pamět daného
+ objektu
 \begin_inset Foot
 status open
 
 \begin_layout Plain Layout
-Podobná technika/pattern bude součástí C++0x pomocí 
+Podobná technika/pattern je součástí C++11 pomocí 
 \emph on
 shared_ptr
 \emph default
@@ -3338,28 +3339,14 @@ shared_ptr
 status open
 
 \begin_layout Plain Layout
-odkaz na C++0x
+odkaz na C++11
 \end_layout
 
 \end_inset
 
-.
- Již existují vzorové implementace, např.
- v
-\begin_inset space ~
-\end_inset
-
-knihovně boost
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-odkaz na boost.org
-\end_layout
-
-\end_inset
-
-
+, kde se používá 
+\emph on
+reference counting
 \end_layout
 
 \end_inset

@@ -26,40 +26,11 @@
 
 package cz.rank.vsfs.mindex;
 
-import java.util.Collection;
-import java.util.Map;
-
-public class PointsIntoClusterDivider<D extends Distanceable<D>> {
-    private final Map<Pivot<D>, Cluster<D>> clusters;
-    private final Collection<Pivot<D>> pivots;
-    private final Collection<D> points;
-
-    public PointsIntoClusterDivider(Map<Pivot<D>, Cluster<D>> clusters, Collection<Pivot<D>> pivots, Collection<D> points) {
-        this.clusters = clusters;
-        this.pivots = pivots;
-        this.points = points;
-    }
-
-    public void divide() {
-        final VoronoiQuickDivider<D> divider = new VoronoiQuickDivider<>(pivots, points);
-        final Map<D, Pivot<D>> nearestPivots = divider.calculate();
-
-        assignObjectsToClusters(nearestPivots);
-
-        normalizeClusters();
-    }
-
-    private void assignObjectsToClusters(Map<D, Pivot<D>> nearestPivots) {
-        for (Map.Entry<D, Pivot<D>> entry : nearestPivots.entrySet()) {
-            final Cluster<D> cluster = clusters.get(entry.getValue());
-
-            cluster.add(entry.getKey());
-        }
-    }
-
-    private void normalizeClusters() {
-        for (Cluster<D> cluster : clusters.values()) {
-            cluster.normalizeDistances();
-        }
+/**
+ * @author Karel Rank
+ */
+public class RootCluster<D extends Distanceable<D>> extends Cluster<D> {
+    public RootCluster(int level) {
+        super(level);
     }
 }

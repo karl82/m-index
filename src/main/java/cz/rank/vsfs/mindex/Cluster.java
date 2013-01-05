@@ -29,7 +29,6 @@ package cz.rank.vsfs.mindex;
 import net.jcip.annotations.NotThreadSafe;
 import org.apache.commons.math3.util.FastMath;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,33 +38,27 @@ import java.util.Set;
 
 @NotThreadSafe
 public class Cluster<D extends Distanceable<D>> {
-    private final int[] indexes;
-    private final int calculatedIndex;
+    private final Index index;
     private final Pivot<D> basePivot;
-    private final int pivotsCount;
-    private final Map<D, Double> objects = new HashMap<>();
+    private final Map<D, Double> objectsWithDistances = new HashMap<>();
+    private final int level;
     private boolean normalized = false;
     private double maxDistance = 0.0d;
     private final Set<Cluster<D>> subClusters;
 
-    public Cluster(Pivot<D> basePivot, int pivotsCount, int[] indexes) {
+    public Cluster(Pivot<D> basePivot, int level, Index index) {
         this.basePivot = basePivot;
-        this.pivotsCount = pivotsCount;
-        this.indexes = indexes;
-        this.calculatedIndex = calculateIndex();
-        subClusters = new HashSet<>(this.pivotsCount);
+        this.level = level;
+        this.index = index;
+        subClusters = new HashSet<>();
     }
 
-    public int getIndex() {
-        return calculatedIndex;
+    public Cluster(int level) {
+        this.level = level;
     }
 
-    private int calculateIndex() {
-        int tempIndex = 0;
-        for (int i = 0; i < indexes.length; i++) {
-            tempIndex += indexes[i] * FastMath.pow(pivotsCount, indexes.length - 1 - i);
-        }
-        return tempIndex;
+    private int getCalculatedIndex() {
+        return index.getIndex();
     }
 
     /**
@@ -84,7 +77,7 @@ public class Cluster<D extends Distanceable<D>> {
      */
     public void add(D object) {
         double distance = basePivot.distance(object);
-        objects.put(object, distance);
+        objectsWithDistances.put(object, distance);
 
         maxDistance = FastMath.max(maxDistance, distance);
     }
@@ -100,8 +93,8 @@ public class Cluster<D extends Distanceable<D>> {
         }
 
         if (maxDistance > 0d) {
-            for (Map.Entry<D, Double> entry : objects.entrySet()) {
-                objects.put(entry.getKey(), entry.getValue() / maxDistance);
+            for (Map.Entry<D, Double> entry : objectsWithDistances.entrySet()) {
+                objectsWithDistances.put(entry.getKey(), entry.getValue() / maxDistance);
             }
         }
 
@@ -117,32 +110,32 @@ public class Cluster<D extends Distanceable<D>> {
             throw new IllegalStateException("Cluster is not yet normalized: " + this);
         }
 
-        final Double objectDistance = objects.get(object);
+        final Double objectDistance = objectsWithDistances.get(object);
         if (objectDistance == null) {
             throw new IllegalArgumentException("Object: " + object + " was not found in this cluster:" + this);
         }
 
-        return objectDistance + getIndex();
+        return objectDistance + getCalculatedIndex();
     }
 
     private boolean isNotNormalized() {
         return !isNormalized();
     }
 
-    public int[] getIndexes() {
-        return indexes;
+    public Index getIndex() {
+        return index;
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("Cluster [indexes=").append(Arrays.toString(indexes)).append(", objects=").append(objects)
+        builder.append("Cluster [index=").append(index).append(", objectsWithDistances=").append(objectsWithDistances)
                .append("]");
         return builder.toString();
     }
 
     public Set<D> getObjects() {
-        return Collections.unmodifiableSet(objects.keySet());
+        return Collections.unmodifiableSet(objectsWithDistances.keySet());
     }
 
     public void addSubClusters(Collection<Cluster<D>> subClusters) {
@@ -151,5 +144,9 @@ public class Cluster<D extends Distanceable<D>> {
 
     public Set<Cluster<D>> getSubClusters() {
         return subClusters;
+    }
+
+    public int size() {
+        return objectsWithDistances.size();
     }
 }

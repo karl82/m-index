@@ -35,7 +35,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * @author Karel Rank
  */
-public class ClusterPivotDistanceTest {
+public class PivotDistanceTest {
     @DataProvider(name = "comparableData")
     public Object[][] comparableData() {
         return new Object[][]{
@@ -54,21 +54,20 @@ public class ClusterPivotDistanceTest {
 
     @Test(groups = "unit", dataProvider = "comparableData")
     public void testCompareTo(Point distance1, Point distance2, int expectedResult) throws Exception {
-        assertThat(clusterPivotDistance(distance1).compareTo(clusterPivotDistance(distance2)), is(expectedResult));
+        assertThat(pivotDistance(distance1).compareTo(pivotDistance(distance2)), is(expectedResult));
     }
 
     @Test(groups = "unit", dataProvider = "comparableData")
     public void testCompareToReverse(Point distance1, Point distance2, int expectedResult) throws Exception {
-        assertThat(clusterPivotDistance(distance2).compareTo(clusterPivotDistance(distance1)), is(-expectedResult));
+        assertThat(pivotDistance(distance2).compareTo(pivotDistance(distance1)), is(-expectedResult));
     }
 
     @Test(groups = "unit", expectedExceptions = NullPointerException.class)
     public void testCompareToNull() {
-        clusterPivotDistance(new Point(0, 0)).compareTo(null);
+        pivotDistance(new Point(0, 0)).compareTo(null);
     }
 
-    private ClusterPivotDistance<Point> clusterPivotDistance(Point point) {
-        return new ClusterPivotDistance<>(new Cluster<Point>(new Pivot<Point>(0, new Point(0, 0)), 1, new Index(1, 1)),
-                                          point);
+    private PivotDistance<Point> pivotDistance(Point point) {
+        return new PivotDistance<>(new Pivot<Point>(0, new Point(0, 0)), point);
     }
 }

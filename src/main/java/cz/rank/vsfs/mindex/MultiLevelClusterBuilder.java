@@ -112,7 +112,7 @@ public class MultiLevelClusterBuilder<D extends Distanceable<D>> {
         final Map<Pivot<D>, Cluster<D>> clusters = new HashMap<>(pivots.size());
 
         for (Pivot<D> pivot : pivots) {
-            clusters.put(pivot, new Cluster<>(pivot, pivots.size(), new int[]{pivot.getIndex()}));
+            clusters.put(pivot, new Cluster<>(pivot, pivots.size(), new Index(pivot.getIndex(), pivots.size())));
         }
 
         new PointsIntoClusterDivider<>(clusters, pivots, points).divide();

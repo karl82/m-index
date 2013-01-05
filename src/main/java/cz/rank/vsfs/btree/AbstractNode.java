@@ -29,7 +29,7 @@ package cz.rank.vsfs.btree;
 /**
  * @author Karel Rank
  */
-public abstract class AbstractNode<K extends Comparable<? super K>, V> implements Node<K, V> {
+abstract class AbstractNode<K extends Comparable<? super K>, V> implements Node<K, V> {
     private final int degree;
 
     public AbstractNode(int degree) {

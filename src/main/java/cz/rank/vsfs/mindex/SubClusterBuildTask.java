@@ -27,7 +27,6 @@
 package cz.rank.vsfs.mindex;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -92,11 +91,9 @@ public class SubClusterBuildTask<D extends Distanceable<D>> extends RecursiveAct
     public void compute() {
         final Map<Pivot<D>, Cluster<D>> subClusters = new HashMap<>(pendingPivots.size());
 
-        final int[] clusterIndexes = cluster.getIndexes();
         for (Pivot<D> pivot : pendingPivots) {
-            final int[] index = Arrays.copyOf(clusterIndexes, clusterIndexes.length + 1);
-            index[index.length - 1] = pivot.getIndex();
-            subClusters.put(pivot, new Cluster<>(cluster.getBasePivot(), originalPivotsCount, index));
+            subClusters.put(pivot, new Cluster<>(cluster.getBasePivot(), originalPivotsCount,
+                                                 cluster.getIndex().addLevel(pivot.getIndex())));
         }
 
         final Set<D> points = cluster.getObjects();

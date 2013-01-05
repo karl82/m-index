@@ -1,7 +1,5 @@
 /*
- * Copyright © 2012 Karel Rank All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
+ * Copyright © 2012 Karel Rr without modification,
  * are permitted provided that the following conditions are met:
  *  Redistributions of source code must retain the above copyright notice, this
  *   list of conditions and the following disclaimer.
@@ -26,40 +24,47 @@
 
 package cz.rank.vsfs.mindex;
 
-import java.util.Collection;
-import java.util.Map;
+import net.jcip.annotations.Immutable;
+import org.apache.commons.math3.util.FastMath;
 
-public class PointsIntoClusterDivider<D extends Distanceable<D>> {
-    private final Map<Pivot<D>, Cluster<D>> clusters;
-    private final Collection<Pivot<D>> pivots;
-    private final Collection<D> points;
+/**
+ * Index for cluster
+ *
+ * @author Karel Rank
+ */
+@Immutable
+public class Index {
+    private final int index;
+    private final int maxLevel;
+    private final int level;
 
-    public PointsIntoClusterDivider(Map<Pivot<D>, Cluster<D>> clusters, Collection<Pivot<D>> pivots, Collection<D> points) {
-        this.clusters = clusters;
-        this.pivots = pivots;
-        this.points = points;
+    public Index(int index, int maxLevel) {
+        this.index = index;
+        this.maxLevel = maxLevel;
+        level = 0;
     }
 
-    public void divide() {
-        final VoronoiQuickDivider<D> divider = new VoronoiQuickDivider<>(pivots, points);
-        final Map<D, Pivot<D>> nearestPivots = divider.calculate();
-
-        assignObjectsToClusters(nearestPivots);
-
-        normalizeClusters();
+    private Index(int index, int maxLevel, int level) {
+        this.index = index;
+        this.maxLevel = maxLevel;
+        this.level = level;
     }
 
-    private void assignObjectsToClusters(Map<D, Pivot<D>> nearestPivots) {
-        for (Map.Entry<D, Pivot<D>> entry : nearestPivots.entrySet()) {
-            final Cluster<D> cluster = clusters.get(entry.getValue());
-
-            cluster.add(entry.getKey());
-        }
+    public int getIndex() {
+        return index;
     }
 
-    private void normalizeClusters() {
-        for (Cluster<D> cluster : clusters.values()) {
-            cluster.normalizeDistances();
-        }
+    public Index addLevel(int index) {
+        final int calculatedIndex = (int) (this.index * FastMath.pow(maxLevel, level + 1) + index);
+        return new Index(calculatedIndex, maxLevel, level + 1);
+    }
+
+    @Override
+    public String toString() {
+        return "Index{" +
+                "index=" + index +
+                ", maxLevel=" + maxLevel +
+                ", level=" + level +
+                '}';
     }
 }

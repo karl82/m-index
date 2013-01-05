@@ -26,40 +26,47 @@
 
 package cz.rank.vsfs.mindex;
 
+import cz.rank.vsfs.btree.BPlusTreeMap;
+
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
+import java.util.List;
 
-public class PointsIntoClusterDivider<D extends Distanceable<D>> {
-    private final Map<Pivot<D>, Cluster<D>> clusters;
-    private final Collection<Pivot<D>> pivots;
-    private final Collection<D> points;
+/**
+ * @author Karel Rank
+ */
+public class RangeQuery<D extends Distanceable<D>> {
+    private final Collection<Cluster<D>> clusters;
+    private final BPlusTreeMap<Double, D> btree;
 
-    public PointsIntoClusterDivider(Map<Pivot<D>, Cluster<D>> clusters, Collection<Pivot<D>> pivots, Collection<D> points) {
+    public RangeQuery(Collection<Cluster<D>> clusters, BPlusTreeMap<Double, D> btree) {
         this.clusters = clusters;
-        this.pivots = pivots;
-        this.points = points;
+        this.btree = btree;
     }
 
-    public void divide() {
-        final VoronoiQuickDivider<D> divider = new VoronoiQuickDivider<>(pivots, points);
-        final Map<D, Pivot<D>> nearestPivots = divider.calculate();
+    public D query(D point, double range) {
+        final List<ClusterPivotDistance<D>> clusterPivotDistances = new ArrayList<>(clusters.size());
+        ClusterPivotDistance nearestPivot = ClusterPivotDistance.maxClusterPivotDistance();
 
-        assignObjectsToClusters(nearestPivots);
+        for (Cluster<D> cluster : clusters) {
+            final ClusterPivotDistance<D> currentDistance = new ClusterPivotDistance<>(cluster,
+                                                                                       point);
 
-        normalizeClusters();
-    }
-
-    private void assignObjectsToClusters(Map<D, Pivot<D>> nearestPivots) {
-        for (Map.Entry<D, Pivot<D>> entry : nearestPivots.entrySet()) {
-            final Cluster<D> cluster = clusters.get(entry.getValue());
-
-            cluster.add(entry.getKey());
+            clusterPivotDistances.add(currentDistance);
+            if (currentDistance.compareTo(nearestPivot) < 0) {
+                nearestPivot = currentDistance;
+            }
         }
+
+        final List<Cluster<D>> clustersForProcessing = new ArrayList<>(clusters.size());
+        // Double-Pivot distance constraint
+        for (ClusterPivotDistance<D> clusterPivotDistance : clusterPivotDistances) {
+            if (clusterPivotDistance.getDistance() - nearestPivot.getDistance() <= 2 * range) {
+                clustersForProcessing.add(clusterPivotDistance.getCluster());
+            }
+        }
+
+        return null;
     }
 
-    private void normalizeClusters() {
-        for (Cluster<D> cluster : clusters.values()) {
-            cluster.normalizeDistances();
-        }
-    }
 }

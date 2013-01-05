@@ -26,49 +26,53 @@
 
 package cz.rank.vsfs.mindex;
 
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 /**
  * @author Karel Rank
  */
-public class ClusterPivotDistanceTest {
-    @DataProvider(name = "comparableData")
-    public Object[][] comparableData() {
-        return new Object[][]{
-                {new Point(5.0, 5.0),
-                 new Point(5.0, 5.0),
-                 0},
-                {new Point(6.0, 6.0),
-                 new Point(5.0, 5.0),
-                 1},
-                {new Point(5.0, 5.0),
-                 new Point(6.0, 6.0),
-                 -1},
-        };
+public class ClusterPivotDistance<D extends Distanceable<D>> implements Comparable<ClusterPivotDistance> {
+    private final Cluster<D> cluster;
+    private final D point;
+    private final double distance;
 
+    ClusterPivotDistance(Cluster<D> cluster, D point) {
+        this.cluster = cluster;
+        this.point = point;
+
+        distance = cluster.getBasePivot().distance(point);
     }
 
-    @Test(groups = "unit", dataProvider = "comparableData")
-    public void testCompareTo(Point distance1, Point distance2, int expectedResult) throws Exception {
-        assertThat(clusterPivotDistance(distance1).compareTo(clusterPivotDistance(distance2)), is(expectedResult));
+    private ClusterPivotDistance(double distance) {
+        cluster = null;
+        point = null;
+        this.distance = distance;
     }
 
-    @Test(groups = "unit", dataProvider = "comparableData")
-    public void testCompareToReverse(Point distance1, Point distance2, int expectedResult) throws Exception {
-        assertThat(clusterPivotDistance(distance2).compareTo(clusterPivotDistance(distance1)), is(-expectedResult));
+    public Cluster<D> getCluster() {
+        return cluster;
     }
 
-    @Test(groups = "unit", expectedExceptions = NullPointerException.class)
-    public void testCompareToNull() {
-        clusterPivotDistance(new Point(0, 0)).compareTo(null);
+    public double getDistance() {
+        return distance;
     }
 
-    private ClusterPivotDistance<Point> clusterPivotDistance(Point point) {
-        return new ClusterPivotDistance<>(new Cluster<Point>(new Pivot<Point>(0, new Point(0, 0)), 1, new Index(1, 1)),
-                                          point);
+    @Override
+    public int compareTo(ClusterPivotDistance clusterPivotDistance) {
+        if (clusterPivotDistance == null) {
+            throw new NullPointerException("PivotsDistance for comparison is null");
+        }
+
+        return Double.valueOf(distance).compareTo(clusterPivotDistance.getDistance());
+    }
+
+    @Override
+    public String toString() {
+        return "ClusterPivotDistance{" +
+                "distance=" + distance +
+                ", cluster=" + cluster +
+                '}';
+    }
+
+    public static <D extends Distanceable<D>> ClusterPivotDistance<D> maxClusterPivotDistance() {
+        return new ClusterPivotDistance<>(Double.MAX_VALUE);
     }
 }
