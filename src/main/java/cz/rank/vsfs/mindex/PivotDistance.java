@@ -33,14 +33,56 @@ public class PivotDistance<D extends Distanceable<D>> implements Comparable<Pivo
     private final Pivot<D> pivot;
     private final double distance;
 
-    PivotDistance(Pivot<D> pivot, D point) {
+    PivotDistance(Pivot<D> pivot, D object) {
         this.pivot = pivot;
 
-        distance = pivot.distance(point);
+        distance = pivot.distance(object);
     }
 
     private PivotDistance(double distance) {
         pivot = null;
+        this.distance = distance;
+    }
+
+    public PivotDistance(double maximumDistance, Pivot<D> pivot, D object) {
+        this.pivot = pivot;
+
+        distance = pivot.distance(object) / maximumDistance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        PivotDistance that = (PivotDistance) o;
+
+        if (Double.compare(that.distance, distance) != 0) {
+            return false;
+        }
+        if (!pivot.equals(that.pivot)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        result = pivot.hashCode();
+        temp = distance != +0.0d ? Double.doubleToLongBits(distance) : 0L;
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
+    public PivotDistance(Pivot<D> pivot, double distance) {
+        this.pivot = pivot;
         this.distance = distance;
     }
 
@@ -64,5 +106,13 @@ public class PivotDistance<D extends Distanceable<D>> implements Comparable<Pivo
 
     public static <D extends Distanceable<D>> PivotDistance<D> maxClusterPivotDistance() {
         return new PivotDistance<>(Double.MAX_VALUE);
+    }
+
+    @Override
+    public String toString() {
+        return "PivotDistance{" +
+                "pivot=" + pivot +
+                ", distance=" + distance +
+                '}';
     }
 }

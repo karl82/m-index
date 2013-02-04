@@ -36,7 +36,7 @@ import static org.hamcrest.Matchers.is;
 public class ClusterTest {
     @Test(groups = "unit")
     public void testAddPointIntoCluster() {
-        Cluster<Point> cluster = new Cluster<>(new Pivot<>(0, new Point(0, 0)), 2, new Index(1, 2));
+        InternalCluster<Point> cluster = new InternalCluster<>(new Pivot<>(0, new Point(0, 0)), 2, new Index(1, 2));
         Point point = new Point(4, 3);
         cluster.add(point);
 
@@ -47,13 +47,13 @@ public class ClusterTest {
 
     @Test(groups = "unit", expectedExceptions = {IllegalStateException.class})
     public void testCallGetKeyBeforeNormalization() {
-        Cluster<Point> cluster = new Cluster<>(new Pivot<>(0, new Point(0, 0)), 2, new Index(1, 2));
+        InternalCluster<Point> cluster = new InternalCluster<>(new Pivot<>(0, new Point(0, 0)), 2, new Index(1, 2));
         cluster.getKey(new Point(0, 0));
     }
 
     @Test(groups = "unit", expectedExceptions = {IllegalStateException.class})
     public void testDoubleCallNormalizeDistances() {
-        Cluster<Point> cluster = new Cluster<>(new Pivot<>(0, new Point(0, 0)), 2, new Index(1, 2));
+        InternalCluster<Point> cluster = new InternalCluster<>(new Pivot<>(0, new Point(0, 0)), 2, new Index(1, 2));
 
         cluster.normalizeDistances();
         cluster.normalizeDistances();

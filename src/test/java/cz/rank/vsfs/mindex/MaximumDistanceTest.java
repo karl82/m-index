@@ -26,36 +26,32 @@
 
 package cz.rank.vsfs.mindex;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import org.testng.annotations.Test;
 
-public class VoronoiQuickDivider<D extends Distanceable<D>> {
-    private final Collection<Pivot<D>> pivots;
-    private final Collection<D> points;
+import java.util.ArrayList;
+import java.util.List;
 
-    public VoronoiQuickDivider(Collection<Pivot<D>> pivots, Collection<D> points) {
-        this.pivots = pivots;
-        this.points = points;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+/**
+ * @author Karel Rank
+ */
+public class MaximumDistanceTest {
+    @Test
+    public void testMaximumDistance() {
+        MaximumDistance<Point> maximumDistance = new MaximumDistance<Point>(points());
+
+        assertThat(maximumDistance.calculate(), is(3d));
     }
 
-    public Map<D, PivotDistance<D>> calculate() {
-        final Map<D, PivotDistance<D>> nearestPivots = new HashMap<>();
-        for (D point : points) {
-            Pivot<D> nearestPivot = null;
-            double shortestDistance = Double.MAX_VALUE;
-            for (Pivot<D> pivot : pivots) {
-                double currentDistance = pivot.distance(point);
-
-                if (currentDistance < shortestDistance) {
-                    shortestDistance = currentDistance;
-                    nearestPivot = pivot;
-                }
-            }
-
-            nearestPivots.put(point, new PivotDistance(nearestPivot, shortestDistance));
-        }
-
-        return nearestPivots;
+    private List<Point> points() {
+        final List<Point> points = new ArrayList<>();
+        points.add(new Point(-2, 0));
+        points.add(new Point(-1, 0));
+        points.add(new Point(0, 0));
+        points.add(new Point(1, 0));
+        return points;
     }
+
 }

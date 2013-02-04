@@ -26,11 +26,15 @@
 
 package cz.rank.vsfs.mindex;
 
+import cz.rank.vsfs.btree.BPlusTreeMap;
+import org.apache.commons.math3.util.FastMath;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -45,8 +49,11 @@ public class ClusterTree<D extends Distanceable<D>> {
     private final int maxLevel;
     private final int leafClusterCapacity;
     private final Collection<Pivot<D>> pivots;
-    private final Collection<D> points;
+    private final List<D> objects;
     private final Cluster<D> root = new RootCluster<>(0);
+    private final BPlusTreeMap<Double, D> btreemap = new BPlusTreeMap<>(500);
+    private PivotDistanceTable<D> pivotDistanceTable = null;
+    private double maximumDistance;
 
     public ClusterTree(int maxLevel, int leafClusterCapacity, Collection<Pivot<D>> pivots) {
         this.maxLevel = maxLevel;
@@ -56,18 +63,10 @@ public class ClusterTree<D extends Distanceable<D>> {
         checkParams();
 
         // Save reallocation
-        points = new ArrayList<>(minimalExpectedPoints());
-
-        createLevelOneClusters();
+        objects = new ArrayList<>(minimalExpectedObjects());
     }
 
-    private void createLevelOneClusters() {
-        for (Pivot<D> pivot : pivots) {
-            root.add(new Cluster<>(pivot, pivots.size(), new Index(pivot.getIndex(), maxLevel)));
-        }
-    }
-
-    private int minimalExpectedPoints() {
+    private int minimalExpectedObjects() {
         return this.leafClusterCapacity * this.pivots.size();
     }
 
@@ -96,55 +95,86 @@ public class ClusterTree<D extends Distanceable<D>> {
         }
     }
 
-    public Cluster<D> getCluster(int index) {
-        return root.get(index);
-    }
-
     public void add(D point) {
-        points.add(point);
+        objects.add(point);
     }
 
     public void build() {
-        final Queue<ClusterNode<D>> nodeQueue = new ArrayDeque<>();
-        nodeQueue.add(root);
+        calculateMaximumDistance();
+        calculateDistances();
 
-        while (!nodeQueue.isEmpty()) {
-            final ClusterNode<D> node = nodeQueue.poll();
-            final Map<Pivot<D>, Cluster<D>> clusterMappedToPivots = new HashMap<>(node.getClusters().size());
+        for (D object : objects) {
+            Cluster<D> currentCluster = root;
+            for (int currentLevel = 0; currentLevel < maxLevel; currentLevel++) {
+                final Pivot<D> pivot = pivotDistanceTable.getPivotAt(object, currentLevel);
 
-            for (Cluster<D> cluster : node.getClusters()) {
-                clusterMappedToPivots.put(cluster.getBasePivot(), cluster);
+                currentCluster = currentCluster.getOrCreateSubCluster(pivot);
             }
-            new PointsIntoClusterDivider<D>(clusterMappedToPivots, pivots, points).divide();
-
         }
     }
 
+    private void calculateMaximumDistance() {
+        maximumDistance = new MaximumDistance<D>(objects).calculate();
+    }
+
+    private void calculateDistances() {
+        pivotDistanceTable = new PivotDistanceTable<D>(maximumDistance, pivots, objects);
+        pivotDistanceTable.calculate();
+    }
+
     public Collection<D> rangeQuery(D queryObject, double range) {
-        final Set<D> founded = new HashSet<>();
+        final Set<D> foundObjects = new HashSet<>();
 
-        final Collection<ClusterPivotDistance<D>> pivotsPermutation = new PriorityQueue<>(pivots.size());
+        final int pivotsSize = pivots.size();
 
-        for (Cluster<D> pivot : root.getClusters()) {
-            final ClusterPivotDistance<D> currentDistance = new ClusterPivotDistance<>(pivot, queryObject);
-
+        final Collection<ClusterPivotDistance<D>> pivotsPermutation = new PriorityQueue<>(pivotsSize);
+        final Map<Pivot<D>, ClusterPivotDistance<D>> pivotsDistances = new HashMap<>(pivotsSize);
+        for (Cluster<D> cluster : root.getSubClusters()) {
+            final ClusterPivotDistance<D> currentDistance = new ClusterPivotDistance<>(cluster, queryObject);
 
             pivotsPermutation.add(currentDistance);
+            pivotsDistances.put(cluster.getBasePivot(), currentDistance);
         }
 
-        final Queue<ClusterNode<D>> nodeQueue = new ArrayDeque<>();
+        final Queue<Cluster<D>> nodeQueue = new ArrayDeque<>();
 
         nodeQueue.add(root);
 
         int currentLevel = 0;
         while (nodeQueue.isEmpty()) {
-            final ClusterNode<D> node = nodeQueue.poll();
+            final Cluster<D> node = nodeQueue.poll();
 
             if (currentLevel > 0) {
                 continue;
 
             }
+
+            if (node instanceof InternalCluster) {
+                nodeQueue.addAll(node.getSubClusters());
+            } else {
+                final LeafCluster<D> leafCluster = (LeafCluster) node;
+                final double keyMin = leafCluster.getKeyMin();
+                final double keyMax = leafCluster.getKeyMax();
+                final double rMin = frac(keyMin);
+                final double rMax = frac(keyMax);
+                final double distance = leafCluster.getBasePivot().distance(queryObject);
+
+                if (distance + range < rMin || distance - range > rMax) {
+                    continue;
+                }
+
+                final double keyMinFloor = FastMath.floor(keyMin);
+                final Collection<D> objects = btreemap
+                        .rangeSearch(keyMinFloor + distance - range, keyMinFloor + distance + range);
+
+                for (D object : objects) {
+                }
+            }
         }
-        return founded;
+        return foundObjects;
+    }
+
+    private double frac(double x) {
+        return x - FastMath.floor(x);
     }
 }

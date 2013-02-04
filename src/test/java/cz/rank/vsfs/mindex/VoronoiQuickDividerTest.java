@@ -26,48 +26,60 @@
 
 package cz.rank.vsfs.mindex;
 
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 public class VoronoiQuickDividerTest {
-    private final Collection<Pivot<Point>> pivots = new HashSet<>();
-    private final Collection<Point> points = new HashSet<>();
+    @DataProvider(name = "pivotsPointsData")
+    public Object[][] pivotsPointsDataProvider() {
+        Collection<Pivot<Point>> pivots = new HashSet<>();
+        Collection<Point> points = new HashSet<>();
+        Map<Point, PivotDistance<Point>> expected = new HashMap<>();
 
-    @BeforeMethod
-    public void setUp() {
-        for (int i = -1, pivotIndex = 0; i <= 1; i++, pivotIndex++) {
-            pivots.add(new Pivot<>(pivotIndex, new Point(i, 0)));
-        }
+        Point tmpPoint = addPoint(points, -5, 0);
+        expected.put(tmpPoint, new PivotDistance<>(addPivot(pivots, 0, -5, -5), tmpPoint));
+        tmpPoint = addPoint(points, -4, 0);
+        expected.put(tmpPoint, new PivotDistance<>(addPivot(pivots, 1, -4, -5), tmpPoint));
+        tmpPoint = addPoint(points, -3, 0);
+        expected.put(tmpPoint, new PivotDistance<>(addPivot(pivots, 2, -3, -5), tmpPoint));
+        tmpPoint = addPoint(points, -2, 0);
+        expected.put(tmpPoint, new PivotDistance<>(addPivot(pivots, 3, -2, -5), tmpPoint));
+        tmpPoint = addPoint(points, -1, 0);
+        expected.put(tmpPoint, new PivotDistance<>(addPivot(pivots, 4, -1, -5), tmpPoint));
 
-        for (int i = -2; i < 2; i++) {
-            points.add(new Point(i, 1));
-            points.add(new Point(i, 0));
-            points.add(new Point(i, -1));
-        }
+        return new Object[][]{
+                {pivots,
+                 points,
+                 expected}
+        };
     }
 
-    @AfterMethod
-    public void tearDown() {
-        points.clear();
-        pivots.clear();
+    private Point addPoint(Collection<Point> points, int x, int y) {
+        Point point = new Point(x, y);
+        points.add(point);
+
+        return point;
     }
 
-    @Test(groups = {"unit"})
-    public void testOrder() {
+    private Pivot<Point> addPivot(Collection<Pivot<Point>> pivots, int index, int x, int y) {
+        final Pivot<Point> pivot = new Pivot<>(index, new Point(x, y));
+        pivots.add(pivot);
+
+        return pivot;
+    }
+
+    @Test(groups = {"unit"}, dataProvider = "pivotsPointsData")
+    public void testOrder(Collection<Pivot<Point>> pivots, Collection<Point> points, Map<Point, PivotDistance<Point>> expected) {
         VoronoiQuickDivider<Point> divider = new VoronoiQuickDivider<>(pivots, points);
 
-
-        Map<Point, Pivot<Point>> nearestPivots = divider.calculate();
-
-        for (Entry<Point, Pivot<Point>> entry : nearestPivots.entrySet()) {
-            System.out.println(entry);
-        }
+        assertThat(divider.calculate(), is(expected));
     }
-
 }

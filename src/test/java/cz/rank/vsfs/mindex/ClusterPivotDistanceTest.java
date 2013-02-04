@@ -68,7 +68,7 @@ public class ClusterPivotDistanceTest {
     }
 
     private ClusterPivotDistance<Point> clusterPivotDistance(Point point) {
-        return new ClusterPivotDistance<>(new Cluster<Point>(new Pivot<Point>(0, new Point(0, 0)), 1, new Index(1, 1)),
+        return new ClusterPivotDistance<>(new InternalCluster<Point>(new Pivot<Point>(0, new Point(0, 0)), 1, new Index(1, 1)),
                                           point);
     }
 }

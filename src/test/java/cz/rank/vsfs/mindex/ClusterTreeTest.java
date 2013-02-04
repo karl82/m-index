@@ -44,19 +44,6 @@ public class ClusterTreeTest {
         final ClusterTree<Point> tree = new ClusterTree<>(2, 5, twoPivots());
     }
 
-    @Test(groups = {"unit"}, enabled = false)
-    public void testLeafCapacity() {
-        final ClusterTree<Point> tree = new ClusterTree<>(2, 2, twoPivots());
-
-        tree.add(new Point(0.1d, 0.1d));
-        tree.add(new Point(0.1d, 0.2d));
-        tree.add(new Point(0.2d, 0.1d));
-
-        tree.build();
-
-        assertThat(tree.getCluster(0).size(), is(3));
-    }
-
     @Test(expectedExceptions = IllegalArgumentException.class,
           expectedExceptionsMessageRegExp = ".*must be greater than 0.*", groups = {"unit"})
     public void testMaximalLevelMustBeGreaterThanOne() {

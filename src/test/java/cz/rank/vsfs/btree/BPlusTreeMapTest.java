@@ -175,6 +175,25 @@ public class BPlusTreeMapTest {
         assertThat(range, contains(-2, -1, 0, 1));
     }
 
+    @Test(groups = {"unit"}, enabled = false)
+    public void testRangeQueryWithDuplicates() {
+        BPlusTreeMap<Integer, Object> tree = new BPlusTreeMap<>(2);
+
+        Object object1 = new Object();
+        Object object2 = new Object();
+
+        for (int d = 10; d > -10; d--) {
+            tree.insert(d, new Object());
+        }
+
+        tree.insert(12, object1);
+        tree.insert(12, object2);
+
+        List<Object> range = tree.rangeSearch(12, 13);
+
+        assertThat(range, contains(object2, object1));
+    }
+
     @Test(groups = {"unit"})
     public void testEmptyRangeQuery() {
         BPlusTreeMap<Integer, Integer> tree = new BPlusTreeMap<>(2);
@@ -229,11 +248,6 @@ public class BPlusTreeMapTest {
         fullNode.splitChild(newNode, 0);
 
         assertThat(fullNode.isFull(), is(false));
-/*
-        assertThat(newNode.getChild(0).getKey(0), is(0.5d));
-        assertThat(newNode.getKey(0), is(1.1d));
-        assertThat(newNode.getChild(1).getKey(0), is(1.5d));
-*/
     }
 
     @Test(groups = {"unit"}, expectedExceptions = UnsupportedOperationException.class)
@@ -269,11 +283,6 @@ public class BPlusTreeMapTest {
         fullNode.splitChild(newNode, 0);
 
         assertThat(fullNode.isFull(), is(false));
-/*
-        assertThat(newNode.getChild(0).getKey(0), is(0.5d));
-        assertThat(newNode.getKey(0), is(1.1d));
-        assertThat(newNode.getChild(1).getKey(0), is(1.5d));
-*/
     }
 
 }

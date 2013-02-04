@@ -29,7 +29,7 @@ package cz.rank.vsfs.mindex;
 /**
  * @author Karel Rank
  */
-public class RootCluster<D extends Distanceable<D>> extends Cluster<D> {
+public class RootCluster<D extends Distanceable<D>> extends InternalCluster<D> {
     public RootCluster(int level) {
         super(level);
     }

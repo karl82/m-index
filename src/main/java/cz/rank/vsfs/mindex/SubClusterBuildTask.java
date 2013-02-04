@@ -27,6 +27,7 @@
 package cz.rank.vsfs.mindex;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -39,7 +40,7 @@ import java.util.concurrent.RecursiveAction;
 public class SubClusterBuildTask<D extends Distanceable<D>> extends RecursiveAction {
     private final int currentLevel;
     private final int level;
-    private final Cluster<D> cluster;
+    private final Cluster cluster;
     private final Set<Pivot<D>> pendingPivots;
     private final int originalPivotsCount;
 
@@ -92,15 +93,15 @@ public class SubClusterBuildTask<D extends Distanceable<D>> extends RecursiveAct
         final Map<Pivot<D>, Cluster<D>> subClusters = new HashMap<>(pendingPivots.size());
 
         for (Pivot<D> pivot : pendingPivots) {
-            subClusters.put(pivot, new Cluster<>(cluster.getBasePivot(), originalPivotsCount,
+            subClusters.put(pivot, new InternalCluster<D>(cluster.getBasePivot(), originalPivotsCount,
                                                  cluster.getIndex().addLevel(pivot.getIndex())));
         }
 
-        final Set<D> points = cluster.getObjects();
+        final Collection points = cluster.getObjects();
 
         new PointsIntoClusterDivider<>(subClusters, pendingPivots, points).divide();
 
-        cluster.addSubClusters(subClusters.values());
+//        cluster.addSubClusters(subClusters.values());
         // Check if we reach desired level of clustering
         if (currentLevel < level) {
             final SubClusterBuildTask.Builder<D> builder = new SubClusterBuildTask.Builder<D>().levels(currentLevel + 1,

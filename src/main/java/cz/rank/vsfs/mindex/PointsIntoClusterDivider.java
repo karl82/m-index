@@ -40,26 +40,20 @@ public class PointsIntoClusterDivider<D extends Distanceable<D>> {
         this.points = points;
     }
 
-    public void divide() {
+    public Map<D, PivotDistance<D>> divide() {
         final VoronoiQuickDivider<D> divider = new VoronoiQuickDivider<>(pivots, points);
-        final Map<D, Pivot<D>> nearestPivots = divider.calculate();
+        final Map<D, PivotDistance<D>> nearestPivots = divider.calculate();
 
         assignObjectsToClusters(nearestPivots);
 
-        normalizeClusters();
+        return nearestPivots;
     }
 
-    private void assignObjectsToClusters(Map<D, Pivot<D>> nearestPivots) {
-        for (Map.Entry<D, Pivot<D>> entry : nearestPivots.entrySet()) {
-            final Cluster<D> cluster = clusters.get(entry.getValue());
+    private void assignObjectsToClusters(Map<D, PivotDistance<D>> nearestPivots) {
+        for (Map.Entry<D, PivotDistance<D>> entry : nearestPivots.entrySet()) {
+            final Cluster<D> cluster = clusters.get(entry.getValue().getPivot());
 
             cluster.add(entry.getKey());
-        }
-    }
-
-    private void normalizeClusters() {
-        for (Cluster<D> cluster : clusters.values()) {
-            cluster.normalizeDistances();
         }
     }
 }

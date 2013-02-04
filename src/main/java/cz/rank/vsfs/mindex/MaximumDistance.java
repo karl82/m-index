@@ -26,36 +26,30 @@
 
 package cz.rank.vsfs.mindex;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.commons.math3.util.FastMath;
 
-public class VoronoiQuickDivider<D extends Distanceable<D>> {
-    private final Collection<Pivot<D>> pivots;
-    private final Collection<D> points;
+import java.util.List;
 
-    public VoronoiQuickDivider(Collection<Pivot<D>> pivots, Collection<D> points) {
-        this.pivots = pivots;
+/**
+ * @author Karel Rank
+ */
+public class MaximumDistance<D extends Distanceable<D>> {
+    private final List<D> points;
+
+    public MaximumDistance(List<D> points) {
         this.points = points;
     }
 
-    public Map<D, PivotDistance<D>> calculate() {
-        final Map<D, PivotDistance<D>> nearestPivots = new HashMap<>();
-        for (D point : points) {
-            Pivot<D> nearestPivot = null;
-            double shortestDistance = Double.MAX_VALUE;
-            for (Pivot<D> pivot : pivots) {
-                double currentDistance = pivot.distance(point);
+    public double calculate() {
+        final int size = points.size();
+        double maximum = 0d;
 
-                if (currentDistance < shortestDistance) {
-                    shortestDistance = currentDistance;
-                    nearestPivot = pivot;
-                }
+        for (int i = 0; i < size; i++) {
+            final D object = points.get(i);
+            for (int j = i + 1; j < size; j++) {
+                maximum = FastMath.max(object.distance(points.get(j)), maximum);
             }
-
-            nearestPivots.put(point, new PivotDistance(nearestPivot, shortestDistance));
         }
-
-        return nearestPivots;
+        return maximum;
     }
 }

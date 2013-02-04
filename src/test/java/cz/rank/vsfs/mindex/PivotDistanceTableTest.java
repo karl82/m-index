@@ -26,36 +26,38 @@
 
 package cz.rank.vsfs.mindex;
 
+import org.testng.annotations.Test;
+
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
-public class VoronoiQuickDivider<D extends Distanceable<D>> {
-    private final Collection<Pivot<D>> pivots;
-    private final Collection<D> points;
-
-    public VoronoiQuickDivider(Collection<Pivot<D>> pivots, Collection<D> points) {
-        this.pivots = pivots;
-        this.points = points;
+/**
+ * @author Karel Rank
+ */
+public class PivotDistanceTableTest {
+    @Test
+    public void testDistanceTable() {
+        PivotDistanceTable<Point> distanceTable = new PivotDistanceTable<>(pivots(), points());
+        distanceTable.calculate();
     }
 
-    public Map<D, PivotDistance<D>> calculate() {
-        final Map<D, PivotDistance<D>> nearestPivots = new HashMap<>();
-        for (D point : points) {
-            Pivot<D> nearestPivot = null;
-            double shortestDistance = Double.MAX_VALUE;
-            for (Pivot<D> pivot : pivots) {
-                double currentDistance = pivot.distance(point);
-
-                if (currentDistance < shortestDistance) {
-                    shortestDistance = currentDistance;
-                    nearestPivot = pivot;
-                }
-            }
-
-            nearestPivots.put(point, new PivotDistance(nearestPivot, shortestDistance));
-        }
-
-        return nearestPivots;
+    private Collection<Point> points() {
+        Collection<Point> points = new ArrayList<>();
+        points.add(new Point(-2,1));
+        points.add(new Point(-1,1));
+        points.add(new Point(0,1));
+        points.add(new Point(1,1));
+        return points;
     }
+
+    private Collection<Pivot<Point>> pivots() {
+        Collection<Pivot<Point>> pivots = new ArrayList<>();
+
+        pivots.add(new Pivot<>(0, new Point(-2,0)));
+        pivots.add(new Pivot<>(1, new Point(-1,0)));
+        pivots.add(new Pivot<>(2, new Point(0,0)));
+        pivots.add(new Pivot<>(3, new Point(1,0)));
+        return pivots;
+    }
+
 }
