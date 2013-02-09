@@ -26,29 +26,41 @@
 
 package cz.rank.vsfs.btree;
 
-import java.util.List;
+import org.testng.annotations.Test;
 
 /**
  * @author Karel Rank
  */
-interface Node<K extends Comparable<? super K>, V> {
-    int getDegree();
+public class DotNodeVisitorTest {
+    @Test(groups = "unit")
+    public void test() {
+        DotNodeVisitor visitor = new DotNodeVisitor();
+        Node<Double, Double> node = internalNode();
 
-    int getKeysCount();
+        node.accept(visitor);
 
-    boolean isFull();
+        String graphDefinition = visitor.getGraphDefinition();
+    }
 
-    V search(K key);
+    private Node<Double, Double> internalNode() {
+        InternalNode<Double, Double> fullNode = new InternalNode<>(2);
 
-    void insertNonFull(K key, V value);
+        final LeafNode<Double, Double> leafNode1 = new LeafNode<>(fullNode.getDegree());
+        final LeafNode<Double, Double> leafNode2 = new LeafNode<>(fullNode.getDegree());
+        final LeafNode<Double, Double> leafNode3 = new LeafNode<>(fullNode.getDegree());
+        final LeafNode<Double, Double> leafNode4 = new LeafNode<>(fullNode.getDegree());
 
-    void splitChild(Node<K, V> parent, int index);
+        fullNode.setChild(0, leafNode1);
+        fullNode.setChild(1, 1d, leafNode2);
+        fullNode.setChild(2, 2d, leafNode3);
+        fullNode.setChild(3, 3d, leafNode4);
 
-    void setChild(int index, K key, Node<K, V> r);
+        InternalNode<Double, Double> newNode = new InternalNode<>(fullNode.getDegree());
 
-    void setChild(int index, Node<K, V> node);
+        newNode.setChild(0, fullNode);
 
-    List<V> rangeSearch(K from, K to);
+        fullNode.splitChild(newNode, 0);
 
-    void accept(NodeVisitor visitor);
+        return newNode;
+    }
 }

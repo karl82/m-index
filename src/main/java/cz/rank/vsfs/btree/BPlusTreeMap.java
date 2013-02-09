@@ -106,4 +106,11 @@ public class BPlusTreeMap<K extends Comparable<K>, V> {
             throw new IllegalArgumentException("From: " + from + " cannot be greater than to: " + to);
         }
     }
+
+    public String toGraph() {
+        final DotNodeVisitor<K, V> visitor = new DotNodeVisitor<>();
+        root.accept(visitor);
+
+        return visitor.getGraphDefinition();
+    }
 }

@@ -88,12 +88,16 @@ class LeafNode<K extends Comparable<? super K>, V> extends AbstractNode<K, V> {
 
     @Override
     public void setChild(int index, K key, Node<K, V> r) {
+        throwUnsupportedChildren();
+    }
+
+    private void throwUnsupportedChildren() {
         throw new UnsupportedOperationException(this.getClass() + " doesn't support children");
     }
 
     @Override
     public void setChild(int index, Node<K, V> node) {
-        throw new UnsupportedOperationException(this.getClass() + " doesn't support children");
+        throwUnsupportedChildren();
     }
 
     @Override
@@ -133,6 +137,7 @@ class LeafNode<K extends Comparable<? super K>, V> extends AbstractNode<K, V> {
         return pos < 0 ? null : values.get(pos);
     }
 
+    @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
         builder.append("[");
@@ -149,5 +154,10 @@ class LeafNode<K extends Comparable<? super K>, V> extends AbstractNode<K, V> {
         builder.append("]");
 
         return builder.toString();
+    }
+
+    @Override
+    public void accept(NodeVisitor visitor) {
+        visitor.enterLeafNode(keys, values, maxKeys());
     }
 }

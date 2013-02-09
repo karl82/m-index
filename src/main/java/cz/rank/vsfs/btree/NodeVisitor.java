@@ -31,24 +31,8 @@ import java.util.List;
 /**
  * @author Karel Rank
  */
-interface Node<K extends Comparable<? super K>, V> {
-    int getDegree();
+interface NodeVisitor<K extends Comparable<K>, V> {
+    void enterInternalNode(List<Node<K, V>> children, List<K> keys, int maxKeys);
 
-    int getKeysCount();
-
-    boolean isFull();
-
-    V search(K key);
-
-    void insertNonFull(K key, V value);
-
-    void splitChild(Node<K, V> parent, int index);
-
-    void setChild(int index, K key, Node<K, V> r);
-
-    void setChild(int index, Node<K, V> node);
-
-    List<V> rangeSearch(K from, K to);
-
-    void accept(NodeVisitor visitor);
+    void enterLeafNode(List<K> keys, List<V> values, int maxKeys);
 }

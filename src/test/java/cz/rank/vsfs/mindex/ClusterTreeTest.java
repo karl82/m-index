@@ -105,6 +105,8 @@ public class ClusterTreeTest {
 
         tree.build();
 
+        final String treeGraph = tree.getTreeGraph();
+
         final Collection<Point> points = tree.rangeQuery(new Point(2.1d, 0.8d), 0.5d);
 
         assertThat(points, hasItem(point));
@@ -120,6 +122,8 @@ public class ClusterTreeTest {
         tree.addAll(createPoints(1000, 100));
 
         tree.build();
+
+        final String treeGraph = tree.getTreeGraph();
 
         final Collection<Point> points = tree.rangeQuery(new Point(2.0d, 1.0d), 0.5d);
 

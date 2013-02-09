@@ -145,7 +145,11 @@ class InternalNode<K extends Comparable<? super K>, V> extends AbstractNode<K, V
     public V search(K key) {
         final int pos = fixBinPos(Collections.binarySearch(keys, key));
 
-
         return getChild(pos).search(key);
+    }
+
+    @Override
+    public void accept(NodeVisitor visitor) {
+        visitor.enterInternalNode(children, keys, maxKeys());
     }
 }
