@@ -26,6 +26,7 @@
 
 package cz.rank.vsfs.mindex;
 
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
@@ -132,6 +133,25 @@ public class ClusterTreeTest {
         assertThat(points, contains(point));
     }
 
+    @Test(groups = {"longRunning"})
+    public void testRangeQuery3rdLevelHundredPivots() {
+        final List<Point> pivotPoints = createPoints(500, 100);
+        final ClusterTree<Point> tree = new ClusterTree<>(3, 5, createPivots(pivotPoints));
+        final Point point = new Point(2, 1);
+        tree.add(point);
+        tree.addAll(pivotPoints);
+        tree.addAll(createPoints(60000, 100));
+
+        tree.build();
+
+        final String treeGraph = tree.getTreeGraph();
+        final String clusterGraph = tree.getClusterGraph();
+
+        final Collection<Point> points = tree.rangeQuery(new Point(2.0d, 1.0d), 0.5d);
+
+        assertThat(points, contains(point));
+    }
+
     private List<Point> createPoints(int pointsCount, int limit) {
         List<Point> points = new ArrayList<>(pointsCount);
 
@@ -144,14 +164,214 @@ public class ClusterTreeTest {
         return points;
     }
 
-    private Collection<Pivot<Point>> createPivots(List<Point> pivotPoints) {
-        List<Pivot<Point>> pivots = new ArrayList<>(pivotPoints.size());
+    private static <D extends Distanceable<D>> Collection<Pivot<D>> createPivots(List<D> pivotPoints) {
+        List<Pivot<D>> pivots = new ArrayList<>(pivotPoints.size());
 
         for (int i = 0; i < pivotPoints.size(); ++i) {
             pivots.add(new Pivot<>(i, pivotPoints.get(i)));
         }
 
         return pivots;
+    }
+
+    @DataProvider(name = "rangeQueryData")
+    public Object[][] rangeQueryData() {
+        return new Object[][]{
+                // 10 Pivots, Cluster level 2
+                {10,
+                 60000,
+                 4,
+                 2,
+                 5},
+                {10,
+                 60000,
+                 5,
+                 2,
+                 5},
+                {10,
+                 60000,
+                 6,
+                 2,
+                 5},
+                {10,
+                 60000,
+                 7,
+                 2,
+                 5},
+                {10,
+                 60000,
+                 8,
+                 2,
+                 5},
+                // 30 Pivots, Cluster level 2
+                {30,
+                 60000,
+                 4,
+                 2,
+                 5},
+                {30,
+                 60000,
+                 5,
+                 2,
+                 5},
+                {30,
+                 60000,
+                 6,
+                 2,
+                 5},
+                {30,
+                 60000,
+                 7,
+                 2,
+                 5},
+                {30,
+                 60000,
+                 8,
+                 2,
+                 5},
+                // 50 Pivots, Cluster level 2
+                {50,
+                 60000,
+                 4,
+                 2,
+                 5},
+                {50,
+                 60000,
+                 5,
+                 2,
+                 5},
+                {50,
+                 60000,
+                 6,
+                 2,
+                 5},
+                {50,
+                 60000,
+                 7,
+                 2,
+                 5},
+                {50,
+                 60000,
+                 8,
+                 2,
+                 5},
+                // 10 Pivots, Cluster level 3
+                {10,
+                 60000,
+                 4,
+                 3,
+                 5},
+                {10,
+                 60000,
+                 5,
+                 3,
+                 5},
+                {10,
+                 60000,
+                 6,
+                 3,
+                 5},
+                {10,
+                 60000,
+                 7,
+                 3,
+                 5},
+                {10,
+                 60000,
+                 8,
+                 3,
+                 5},
+                // 30 Pivots, Cluster level 3
+                {30,
+                 60000,
+                 4,
+                 3,
+                 5},
+                {30,
+                 60000,
+                 5,
+                 3,
+                 5},
+                {30,
+                 60000,
+                 6,
+                 3,
+                 5},
+                {30,
+                 60000,
+                 7,
+                 3,
+                 5},
+                {30,
+                 60000,
+                 8,
+                 3,
+                 5},
+                // 50 Pivots, Cluster level 3
+                {50,
+                 60000,
+                 4,
+                 3,
+                 5},
+                {50,
+                 60000,
+                 5,
+                 3,
+                 5},
+                {50,
+                 60000,
+                 6,
+                 3,
+                 5},
+                {50,
+                 60000,
+                 7,
+                 3,
+                 5},
+                {50,
+                 60000,
+                 8,
+                 3,
+                 5}
+        };
+    }
+
+    @Test(groups = {"longRunning"}, dataProvider = "rangeQueryData")
+    public void testRangeQuery(int pivotsCount, int objectsCount, int scalarDimension, int maxClusterLevel, int btreeDegree) {
+        final List<Scalar> pivotScalars = createScalars(pivotsCount, scalarDimension, 100);
+        final ClusterTree<Scalar> tree = new ClusterTree<>(maxClusterLevel, btreeDegree, createPivots(pivotScalars));
+        final List<Scalar> searchScalars = createScalars(100, scalarDimension, 100);
+//        tree.addAll(searchScalars);
+        tree.addAll(pivotScalars);
+        tree.addAll(createScalars(objectsCount, scalarDimension, 100));
+
+        tree.build();
+
+//        final String treeGraph = tree.getTreeGraph();
+//        final String clusterGraph = tree.getClusterGraph();
+
+        for (Scalar scalar : searchScalars) {
+            final Collection<Scalar> points = tree.rangeQuery(scalar, 5d);
+
+            if (points.isEmpty()) {
+                System.out.println("Is empty!");
+            }
+        }
+    }
+
+    private List<Scalar> createScalars(int scalarsCount, int scalarDimension, int limit) {
+        final List<Scalar> scalars = new ArrayList<>(scalarsCount);
+
+        final ThreadLocalRandom random = ThreadLocalRandom.current();
+        for (int i = 0; i < scalarsCount; ++i) {
+            final List<Double> values = new ArrayList<>(scalarDimension);
+            for (int j = 0; j < scalarDimension; ++j) {
+                values.add(random.nextDouble(-limit, limit));
+            }
+            scalars.add(new Scalar(values));
+        }
+
+        return scalars;
     }
 
 }
