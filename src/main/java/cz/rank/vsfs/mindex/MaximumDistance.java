@@ -34,20 +34,20 @@ import java.util.List;
  * @author Karel Rank
  */
 public class MaximumDistance<D extends Distanceable<D>> {
-    private final List<D> points;
+    private final List<D> objects;
 
-    public MaximumDistance(List<D> points) {
-        this.points = points;
+    public MaximumDistance(List<D> objects) {
+        this.objects = objects;
     }
 
     public double calculate() {
-        final int size = points.size();
+        final int size = objects.size();
         double maximum = 0d;
 
         for (int i = 0; i < size; i++) {
-            final D object = points.get(i);
+            final D object = objects.get(i);
             for (int j = i + 1; j < size; j++) {
-                maximum = FastMath.max(object.distance(points.get(j)), maximum);
+                maximum = FastMath.max(object.distance(objects.get(j)), maximum);
             }
         }
         return maximum;

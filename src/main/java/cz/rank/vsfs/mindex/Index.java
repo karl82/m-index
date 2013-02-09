@@ -40,46 +40,56 @@ import java.util.Set;
  */
 @Immutable
 public class Index {
-    private final int calculatedIndex;
+    private final int maxIndex;
+    private int calculatedIndex = Integer.MIN_VALUE;
     private final int maxLevel;
     private final int level;
     private final List<Integer> indexes;
     private final Set<Integer> indexes2LevelSet;
 
-    public Index(int index, int maxLevel) {
+    public Index(int index, int maxLevel, int maxIndex) {
         this.indexes = new ArrayList<>(maxLevel);
         this.indexes.add(index);
-        this.calculatedIndex = index;
         this.maxLevel = maxLevel;
-        level = 0;
+        this.maxIndex = maxIndex;
+        level = 1;
         indexes2LevelSet = new HashSet<>();
     }
 
-    private Index(Collection<Integer> indexes, int index, int calculatedIndex, int maxLevel, int level) {
+    private Index(Collection<Integer> indexes, int index, int maxLevel, int level, int maxIndex) {
         this.indexes = new ArrayList<>(indexes);
         this.indexes.add(index);
-        this.calculatedIndex = calculatedIndex;
         this.maxLevel = maxLevel;
+        this.maxIndex = maxIndex;
         this.level = level;
         indexes2LevelSet = new HashSet<>(this.indexes.subList(0, level > 2 ? level : 0));
     }
 
     public int getCalculatedIndex() {
+        if (calculatedIndex == Integer.MIN_VALUE) {
+            calculatedIndex = 0;
+            for (int i = 0; i <= level - 1; ++i) {
+                calculatedIndex += indexes.get(i) * FastMath.pow(maxIndex, level - 1 - i);
+            }
+        }
+
         return calculatedIndex;
     }
 
     public Index addLevel(int index) {
-        final int calculatedIndex = (int) (this.calculatedIndex * FastMath.pow(maxLevel, level + 1) + index);
-        return new Index(this.indexes, index, calculatedIndex, maxLevel, level + 1);
+        return new Index(this.indexes, index, maxLevel, level + 1, maxIndex);
     }
 
     @Override
     public String toString() {
-        return "Index{" +
-                "index=" + calculatedIndex +
-                ", maxLevel=" + maxLevel +
-                ", level=" + level +
-                '}';
+        final StringBuilder sb = new StringBuilder();
+        sb.append("Index");
+        sb.append("{calculatedIndex=").append(calculatedIndex);
+        sb.append(", maxLevel=").append(maxLevel);
+        sb.append(", level=").append(level);
+        sb.append(", indexes=").append(indexes);
+        sb.append('}');
+        return sb.toString();
     }
 
     public int getMaxLevel() {
@@ -96,5 +106,9 @@ public class Index {
 
     public int prevLevelIndex() {
         return indexes.get(level - 1);
+    }
+
+    public int getMaxIndex() {
+        return maxIndex;
     }
 }

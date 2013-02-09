@@ -40,68 +40,53 @@ public class IndexTest {
     public Object[][] createClusterIndexTestData() {
         return new Object[][]{
                 {2,
+                 4,
                  new int[]{0},
                  0},
                 {2,
+                 4,
                  new int[]{1},
                  1},
-                {4,
-                 new int[]{0,
-                           1},
-                 1},
-                {4,
-                 new int[]{0,
-                           2},
+                {2,
+                 4,
+                 new int[]{2},
                  2},
-                {4,
-                 new int[]{0,
-                           3},
+                {2,
+                 4,
+                 new int[]{3},
                  3},
-                {4,
+                {2,
+                 4,
                  new int[]{1,
                            0},
                  4},
-                {4,
+                {2,
+                 4,
                  new int[]{1,
                            2},
                  6},
-                {4,
-                 new int[]{1,
-                           3},
-                 7},
-                {4,
-                 new int[]{2,
-                           0},
-                 8},
-                {4,
+                {2,
+                 4,
                  new int[]{2,
                            1},
                  9},
-                {4,
-                 new int[]{2,
-                           3},
-                 11},
-                {4,
-                 new int[]{3,
-                           0},
-                 12},
-                {4,
-                 new int[]{3,
-                           1},
-                 13},
-                {4,
-                 new int[]{3,
+                {3,
+                 3,
+                 new int[]{1,
+                           0,
                            2},
-                 14}};
+                 11},
+
+        };
     }
 
     @Test(groups = "unit", dataProvider = "clusterIndexTestData")
-    public void testClusterIndex(int pivotsCount, int[] indexes, int expectedIndex) {
-        assertThat(createIndex(pivotsCount, indexes).getCalculatedIndex(), is(expectedIndex));
+    public void testClusterIndex(int maxLevel, int maxIndexes, int[] indexes, int expectedIndex) {
+        assertThat(createIndex(maxLevel, maxIndexes, indexes).getCalculatedIndex(), is(expectedIndex));
     }
 
-    private Index createIndex(int pivotsCount, int[] indexes) {
-        Index index = new Index(indexes[0], pivotsCount);
+    private Index createIndex(int maxLevel, int maxIndexes, int[] indexes) {
+        Index index = new Index(indexes[0], maxLevel, maxIndexes);
 
         for (int i = 1; i < indexes.length; i++) {
             index = index.addLevel(indexes[i]);

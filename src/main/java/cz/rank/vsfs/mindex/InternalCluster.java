@@ -77,14 +77,18 @@ public class InternalCluster<D extends Distanceable<D>> implements Cluster<D> {
 
         if (cluster == null) {
             if (index.getLevel() + 1 != index.getMaxLevel()) {
-                cluster = new InternalCluster<D>(this, index.addLevel(pivot.getIndex()));
+                cluster = new InternalCluster<D>(this, nextLevelIndex(pivot));
             } else {
-                cluster = new LeafCluster<D>(this, index.addLevel(pivot.getIndex()));
+                cluster = new LeafCluster<D>(this, nextLevelIndex(pivot));
             }
 
             subClustersMappedToPivots.put(pivot, cluster);
         }
         return cluster;
+    }
+
+    protected Index nextLevelIndex(Pivot<D> pivot) {
+        return index.addLevel(pivot.getIndex());
     }
 
     @Override
@@ -111,4 +115,16 @@ public class InternalCluster<D extends Distanceable<D>> implements Cluster<D> {
     public double getKeyMax() {
         return rMax;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("InternalCluster");
+        sb.append("{index=").append(index);
+        sb.append(", rMin=").append(rMin);
+        sb.append(", rMax=").append(rMax);
+        sb.append('}');
+        return sb.toString();
+    }
+
 }

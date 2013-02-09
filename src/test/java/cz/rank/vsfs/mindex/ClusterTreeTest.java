@@ -28,13 +28,16 @@ package cz.rank.vsfs.mindex;
 
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 
 /**
  * @author Karel Rank
@@ -81,32 +84,68 @@ public class ClusterTreeTest {
     @Test(groups = {"unit"})
     public void testRangeQuery2ndLevel() {
         final ClusterTree<Point> tree = new ClusterTree<>(2, 5, twoPivots());
-        final Point point = new Point(0, 0);
+        final Point point = new Point(1, 1);
         tree.add(point);
-        tree.add(new Point(1, 1));
+        tree.add(new Point(0, 0));
 
         tree.build();
 
-        final Collection<Point> points = tree.rangeQuery(new Point(0, 0), 0.5d);
+        final Collection<Point> points = tree.rangeQuery(new Point(1, 1), 0.5d);
 
         assertThat(points, hasItem(point));
     }
 
     @Test(groups = {"unit"})
     public void testRangeQuery3rdLevel() {
-        final ClusterTree<Point> tree = new ClusterTree<>(3, 5, threePivots());
+        final List<Point> pivotPoints = createPoints(3, 3);
+        final ClusterTree<Point> tree = new ClusterTree<>(3, 5, createPivots(pivotPoints));
         final Point point = new Point(2, 1);
+        tree.addAll(pivotPoints);
         tree.add(point);
-        tree.add(new Point(3, 5));
-        tree.add(new Point(2, 4));
-        tree.add(new Point(3, 2));
-        tree.add(new Point(0, 1));
 
         tree.build();
 
         final Collection<Point> points = tree.rangeQuery(new Point(2.1d, 0.8d), 0.5d);
 
         assertThat(points, hasItem(point));
+    }
+
+    @Test(groups = {"unit"})
+    public void testRangeQuery3rdLevelHundredPivots() {
+        final List<Point> pivotPoints = createPoints(100, 100);
+        final ClusterTree<Point> tree = new ClusterTree<>(3, 5, createPivots(pivotPoints));
+        final Point point = new Point(2, 1);
+        tree.add(point);
+        tree.addAll(pivotPoints);
+        tree.addAll(createPoints(1000, 100));
+
+        tree.build();
+
+        final Collection<Point> points = tree.rangeQuery(new Point(2.0d, 1.0d), 0.5d);
+
+        assertThat(points, contains(point));
+    }
+
+    private List<Point> createPoints(int pointsCount, int limit) {
+        List<Point> points = new ArrayList<>(pointsCount);
+
+        for (int i = 0; i < pointsCount; ++i) {
+            points.add(new Point(ThreadLocalRandom.current().nextDouble(-limit, limit),
+                                 ThreadLocalRandom.current().nextDouble(
+                                         -limit, limit)));
+        }
+
+        return points;
+    }
+
+    private Collection<Pivot<Point>> createPivots(List<Point> pivotPoints) {
+        List<Pivot<Point>> pivots = new ArrayList<>(pivotPoints.size());
+
+        for (int i = 0; i < pivotPoints.size(); ++i) {
+            pivots.add(new Pivot<>(i, pivotPoints.get(i)));
+        }
+
+        return pivots;
     }
 
 }

@@ -66,7 +66,7 @@ public class ClusterTree<D extends Distanceable<D>> {
 
         // Save reallocation
         objects = new ArrayList<>(minimalExpectedObjects());
-        root = new RootCluster<>(maxLevel);
+        root = new RootCluster<>(maxLevel, this.pivots.size());
     }
 
     private int minimalExpectedObjects() {
@@ -108,7 +108,7 @@ public class ClusterTree<D extends Distanceable<D>> {
 
         for (D object : objects) {
             Cluster<D> currentCluster = root;
-            for (int currentLevel = 0; currentLevel < maxLevel; currentLevel++) {
+            for (int currentLevel = 0; currentLevel < maxLevel; ++currentLevel) {
                 final Pivot<D> pivot = pivotDistanceTable.pivotAt(object, currentLevel);
 
                 currentCluster = currentCluster.getOrCreateSubCluster(pivot);
@@ -116,6 +116,9 @@ public class ClusterTree<D extends Distanceable<D>> {
 
             final double distance = pivotDistanceTable.firstPivotDistance(object);
             final double objectKey = currentCluster.getCalculatedIndex() + distance;
+
+            logger.debug("Inserting into B+Tree key: {}; obj: {}", objectKey, object);
+
             btreemap.insert(objectKey, object);
             currentCluster.propagateDistance(objectKey);
         }
@@ -238,5 +241,9 @@ public class ClusterTree<D extends Distanceable<D>> {
 
     private double frac(double x) {
         return x - FastMath.floor(x);
+    }
+
+    public void addAll(List<D> objects) {
+        this.objects.addAll(objects);
     }
 }
