@@ -112,7 +112,8 @@ public class ClusterTree<D extends Distanceable<D>> {
             final double distance = pivotDistanceTable.firstPivotDistance(object);
             final double objectKey = currentCluster.getCalculatedIndex() + distance;
 
-            logger.debug("Inserting into B+Tree key: {}; obj: {}", objectKey, object);
+            logger.debug("Inserting into B+Tree key: {}; obj: {}; cluster: {}", objectKey, object,
+                         currentCluster.getIndex());
 
             btreemap.insert(objectKey, object);
             currentCluster.propagateDistance(objectKey);
@@ -169,7 +170,7 @@ public class ClusterTree<D extends Distanceable<D>> {
                         continue;
                     }
 
-                    if (queryObject.distance(object) <= normalizedRange) {
+                    if (queryObject.distance(object) / maximumDistance <= normalizedRange) {
                         foundObjects.add(object);
                     }
                 }
@@ -223,7 +224,7 @@ public class ClusterTree<D extends Distanceable<D>> {
             }
         }
 
-        return 0;  //To change body of created methods use File | Settings | File Templates.
+        return 0;
     }
 
     private PivotDistanceTable<D> calculateDistanceFor(D queryObject) {
