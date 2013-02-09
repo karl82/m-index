@@ -29,105 +29,62 @@ package cz.rank.vsfs.mindex;
 import net.jcip.annotations.NotThreadSafe;
 import org.apache.commons.math3.util.FastMath;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 @NotThreadSafe
 public class InternalCluster<D extends Distanceable<D>> implements Cluster<D> {
     private final Index index;
-    private final Pivot<D> basePivot;
-    private final Map<D, Double> objectsWithDistances = new HashMap<>();
-    private final int level;
-    private final Collection<Cluster<D>> subClusters = new ArrayList<>();
-    private boolean normalized = false;
-    private double maxDistance = 0.0d;
+    private final Cluster<D> parent;
     private final Map<Pivot<D>, Cluster<D>> subClustersMappedToPivots = new HashMap<>();
+    private double rMin = Double.MAX_VALUE;
+    private double rMax = Double.MIN_VALUE;
 
-    public InternalCluster(Pivot<D> basePivot, int level, Index index) {
-        this.basePivot = basePivot;
-        this.level = level;
+    public InternalCluster(Cluster<D> parent, Index index) {
+        this.parent = parent;
         this.index = index;
     }
 
-    public InternalCluster(int level) {
-        this.level = level;
-        index = null;
-        basePivot = null;
+    public InternalCluster(Index index) {
+        this.index = index;
+        parent = null;
     }
 
-    private int getCalculatedIndex() {
-        return index.getIndex();
-    }
-
-    /**
-     * Returns base pivot used for distance calculations
-     *
-     * @return base pivot
-     */
-    public Pivot<D> getBasePivot() {
-        return basePivot;
-    }
-
-    /**
-     * Adds object into cluster
-     *
-     * @param object
-     */
     @Override
-    public void add(D object) {
-        double distance = basePivot.distance(object);
-        objectsWithDistances.put(object, distance);
-
-        maxDistance = FastMath.max(maxDistance, distance);
+    public int getCalculatedIndex() {
+        return index.getCalculatedIndex();
     }
 
-    /**
-     * Normalize distances in cluster to range [0, 1).
-     * <p/>
-     * Can be called only once
-     */
-    public void normalizeDistances() {
-        if (isNormalized()) {
-            throw new IllegalStateException("Cluster is already normalized: " + this);
-        }
+    @Override
+    public void propagateDistance(double distance) {
+        rMin = FastMath.min(distance, rMin);
+        rMax = FastMath.max(distance, rMax);
 
-        if (maxDistance > 0d) {
-            for (Map.Entry<D, Double> entry : objectsWithDistances.entrySet()) {
-                objectsWithDistances.put(entry.getKey(), entry.getValue() / maxDistance);
-            }
+        if (parent != null) {
+            parent.propagateDistance(distance);
         }
+    }
 
-        normalized = true;
+    @Override
+    public int getLevel() {
+        return getIndex().getLevel();
     }
 
     @Override
     public Cluster<D> getOrCreateSubCluster(Pivot<D> pivot) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+        Cluster<D> cluster = subClustersMappedToPivots.get(pivot);
 
-    private boolean isNormalized() {
-        return normalized;
-    }
+        if (cluster == null) {
+            if (index.getLevel() + 1 != index.getMaxLevel()) {
+                cluster = new InternalCluster<D>(this, index.addLevel(pivot.getIndex()));
+            } else {
+                cluster = new LeafCluster<D>(this, index.addLevel(pivot.getIndex()));
+            }
 
-    @Override
-    public double getKey(D object) {
-        if (isNotNormalized()) {
-            throw new IllegalStateException("Cluster is not yet normalized: " + this);
+            subClustersMappedToPivots.put(pivot, cluster);
         }
-
-        final Double objectDistance = objectsWithDistances.get(object);
-        if (objectDistance == null) {
-            throw new IllegalArgumentException("Object: " + object + " was not found in this cluster:" + this);
-        }
-
-        return objectDistance + getCalculatedIndex();
-    }
-
-    private boolean isNotNormalized() {
-        return !isNormalized();
+        return cluster;
     }
 
     @Override
@@ -136,25 +93,22 @@ public class InternalCluster<D extends Distanceable<D>> implements Cluster<D> {
     }
 
     @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Cluster [index=").append(index).append(", objectsWithDistances=").append(objectsWithDistances)
-               .append("]");
-        return builder.toString();
-    }
-
-    @Override
-    public Collection<D> getObjects() {
-        return Collections.unmodifiableSet(objectsWithDistances.keySet());
-    }
-
-    @Override
     public Collection<Cluster<D>> getSubClusters() {
-        return subClusters;
+        return subClustersMappedToPivots.values();
     }
 
     @Override
-    public int size() {
-        return objectsWithDistances.size();
+    public int parentIndex() {
+        return getIndex().prevLevelIndex();
+    }
+
+    @Override
+    public double getKeyMin() {
+        return rMin;
+    }
+
+    @Override
+    public double getKeyMax() {
+        return rMax;
     }
 }

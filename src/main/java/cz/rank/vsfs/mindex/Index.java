@@ -27,6 +27,12 @@ package cz.rank.vsfs.mindex;
 import net.jcip.annotations.Immutable;
 import org.apache.commons.math3.util.FastMath;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
  * Index for cluster
  *
@@ -34,37 +40,61 @@ import org.apache.commons.math3.util.FastMath;
  */
 @Immutable
 public class Index {
-    private final int index;
+    private final int calculatedIndex;
     private final int maxLevel;
     private final int level;
+    private final List<Integer> indexes;
+    private final Set<Integer> indexes2LevelSet;
 
     public Index(int index, int maxLevel) {
-        this.index = index;
+        this.indexes = new ArrayList<>(maxLevel);
+        this.indexes.add(index);
+        this.calculatedIndex = index;
         this.maxLevel = maxLevel;
         level = 0;
+        indexes2LevelSet = new HashSet<>();
     }
 
-    private Index(int index, int maxLevel, int level) {
-        this.index = index;
+    private Index(Collection<Integer> indexes, int index, int calculatedIndex, int maxLevel, int level) {
+        this.indexes = new ArrayList<>(indexes);
+        this.indexes.add(index);
+        this.calculatedIndex = calculatedIndex;
         this.maxLevel = maxLevel;
         this.level = level;
+        indexes2LevelSet = new HashSet<>(this.indexes.subList(0, level > 2 ? level : 0));
     }
 
-    public int getIndex() {
-        return index;
+    public int getCalculatedIndex() {
+        return calculatedIndex;
     }
 
     public Index addLevel(int index) {
-        final int calculatedIndex = (int) (this.index * FastMath.pow(maxLevel, level + 1) + index);
-        return new Index(calculatedIndex, maxLevel, level + 1);
+        final int calculatedIndex = (int) (this.calculatedIndex * FastMath.pow(maxLevel, level + 1) + index);
+        return new Index(this.indexes, index, calculatedIndex, maxLevel, level + 1);
     }
 
     @Override
     public String toString() {
         return "Index{" +
-                "index=" + index +
+                "index=" + calculatedIndex +
                 ", maxLevel=" + maxLevel +
                 ", level=" + level +
                 '}';
+    }
+
+    public int getMaxLevel() {
+        return maxLevel;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public Set<Integer> indexes2LevelAsSet() {
+        return indexes2LevelSet;
+    }
+
+    public int prevLevelIndex() {
+        return indexes.get(level - 1);
     }
 }

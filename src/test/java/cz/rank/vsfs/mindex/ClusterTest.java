@@ -28,34 +28,15 @@ package cz.rank.vsfs.mindex;
 
 import org.testng.annotations.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-
 /**
  */
 public class ClusterTest {
     @Test(groups = "unit")
     public void testAddPointIntoCluster() {
-        InternalCluster<Point> cluster = new InternalCluster<>(new Pivot<>(0, new Point(0, 0)), 2, new Index(1, 2));
+//        InternalCluster<Point> cluster = new InternalCluster<>(new Pivot<>(0, new Point(0, 0)), new Index(1, 2));
         Point point = new Point(4, 3);
-        cluster.add(point);
+//        cluster.add(point);
 
-        cluster.normalizeDistances();
-
-        assertThat(cluster.getKey(point), is(2d));
-    }
-
-    @Test(groups = "unit", expectedExceptions = {IllegalStateException.class})
-    public void testCallGetKeyBeforeNormalization() {
-        InternalCluster<Point> cluster = new InternalCluster<>(new Pivot<>(0, new Point(0, 0)), 2, new Index(1, 2));
-        cluster.getKey(new Point(0, 0));
-    }
-
-    @Test(groups = "unit", expectedExceptions = {IllegalStateException.class})
-    public void testDoubleCallNormalizeDistances() {
-        InternalCluster<Point> cluster = new InternalCluster<>(new Pivot<>(0, new Point(0, 0)), 2, new Index(1, 2));
-
-        cluster.normalizeDistances();
-        cluster.normalizeDistances();
+//        assertThat(cluster.getKey(point), is(2d));
     }
 }

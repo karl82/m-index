@@ -78,8 +78,32 @@ public class PivotDistanceTable<D extends Distanceable<D>> {
         }
     }
 
-    public Pivot<D> getPivotAt(D object, int index) {
-        return distancesSortedByDistance.get(object).get(index).getPivot();
+    public Pivot<D> pivotAt(D object, int index) {
+        return pivotDistanceAt(object, index).getPivot();
+    }
+
+    private PivotDistance<D> pivotDistanceAt(D object, int index) {
+        return distancesSortedByDistance.get(object).get(index);
+    }
+
+    public double firstPivotDistance(D object) {
+        return distanceAt(object, 0);
+    }
+
+    public double distanceAt(D object, int index) {
+        return pivotDistanceAt(object, index).getDistance();
+    }
+
+    public double firstPivotDistanceFrom(D object, int index) {
+        if (index < 0) {
+            return firstPivotDistance(object);
+        } else {
+            return distanceAt(object, index + 1);
+        }
+    }
+
+    public double pivotDistance(D object, int pivotIndex) {
+        return distancesSortedByPivot.get(object).get(pivotIndex).getDistance();
     }
 
     private static class PivotDistanceComparator<D extends Distanceable<D>> implements Comparator<PivotDistance<D>> {

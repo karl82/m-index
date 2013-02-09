@@ -29,11 +29,12 @@ package cz.rank.vsfs.mindex;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 
 /**
  * @author Karel Rank
@@ -71,4 +72,41 @@ public class ClusterTreeTest {
     private List<Pivot<Point>> twoPivots() {
         return Arrays.asList(new Pivot<>(0, new Point(0, 0)), new Pivot<>(1, new Point(1, 1)));
     }
+
+    private List<Pivot<Point>> threePivots() {
+        return Arrays.asList(new Pivot<>(0, new Point(0, 0)), new Pivot<>(1, new Point(1, 1)),
+                             new Pivot<>(2, new Point(1, 5)));
+    }
+
+    @Test(groups = {"unit"})
+    public void testRangeQuery2ndLevel() {
+        final ClusterTree<Point> tree = new ClusterTree<>(2, 5, twoPivots());
+        final Point point = new Point(0, 0);
+        tree.add(point);
+        tree.add(new Point(1, 1));
+
+        tree.build();
+
+        final Collection<Point> points = tree.rangeQuery(new Point(0, 0), 0.5d);
+
+        assertThat(points, hasItem(point));
+    }
+
+    @Test(groups = {"unit"})
+    public void testRangeQuery3rdLevel() {
+        final ClusterTree<Point> tree = new ClusterTree<>(3, 5, threePivots());
+        final Point point = new Point(2, 1);
+        tree.add(point);
+        tree.add(new Point(3, 5));
+        tree.add(new Point(2, 4));
+        tree.add(new Point(3, 2));
+        tree.add(new Point(0, 1));
+
+        tree.build();
+
+        final Collection<Point> points = tree.rangeQuery(new Point(2.1d, 0.8d), 0.5d);
+
+        assertThat(points, hasItem(point));
+    }
+
 }

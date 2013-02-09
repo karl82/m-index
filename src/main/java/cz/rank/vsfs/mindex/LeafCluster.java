@@ -30,15 +30,8 @@ package cz.rank.vsfs.mindex;
  * @author Karel Rank
  */
 public class LeafCluster<D extends Distanceable<D>> extends InternalCluster<D> {
-    public LeafCluster(Pivot<D> basePivot, int level, Index index) {
-        super(basePivot, level, index);
+    public LeafCluster(Cluster<D> parentCluster, Index index) {
+        super(parentCluster, index);
     }
 
-    public double getKeyMin() {
-        return 0;  //To change body of created methods use File | Settings | File Templates.
-    }
-
-    public double getKeyMax() {
-        return 0;  //To change body of created methods use File | Settings | File Templates.
-    }
 }

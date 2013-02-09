@@ -27,8 +27,6 @@
 package cz.rank.vsfs.mindex;
 
 import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Karel Rank
@@ -36,17 +34,19 @@ import java.util.Set;
 public interface Cluster<D extends Distanceable<D>> {
     Index getIndex();
 
-    Collection<D> getObjects();
-
     Collection<Cluster<D>> getSubClusters();
 
-    int size();
-
-    Pivot<D> getBasePivot();
-
-    void add(D object);
-
-    double getKey(D point);
-
     Cluster<D> getOrCreateSubCluster(Pivot<D> pivot);
+
+    int getCalculatedIndex();
+
+    void propagateDistance(double distance);
+
+    int getLevel();
+
+    int parentIndex();
+
+    double getKeyMin();
+
+    double getKeyMax();
 }

@@ -97,7 +97,7 @@ public class IndexTest {
 
     @Test(groups = "unit", dataProvider = "clusterIndexTestData")
     public void testClusterIndex(int pivotsCount, int[] indexes, int expectedIndex) {
-        assertThat(createIndex(pivotsCount, indexes).getIndex(), is(expectedIndex));
+        assertThat(createIndex(pivotsCount, indexes).getCalculatedIndex(), is(expectedIndex));
     }
 
     private Index createIndex(int pivotsCount, int[] indexes) {
