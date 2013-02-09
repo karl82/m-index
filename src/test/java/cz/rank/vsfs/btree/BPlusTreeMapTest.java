@@ -284,5 +284,4 @@ public class BPlusTreeMapTest {
 
         assertThat(fullNode.isFull(), is(false));
     }
-
 }

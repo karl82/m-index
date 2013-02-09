@@ -49,45 +49,6 @@ public class BPlusTreeMap<K extends Comparable<K>, V> {
         root = new LeafNode<>(degree);
     }
 
-/*
-    public static <T extends Comparable<T>, V> void splitChild(final InternalNode<T, V> node, final int index, final InternalNode<T, V> fullNode) {
-        final int nodeDegree = fullNode.getDegree();
-        final InternalNode<T, V> z = new InternalNode<>(nodeDegree);
-
-        z.leaf = fullNode.leaf;
-        z.setKeysCount(nodeDegree - 1);
-
-        for (int j = 0; j < nodeDegree - 1; j++) {
-            z.setKey(j, fullNode.getKey(j + nodeDegree));
-            z.setValue(j, fullNode.getValue(j + nodeDegree));
-        }
-
-        if (!fullNode.isLeaf()) {
-            for (int j = 0; j < nodeDegree; j++) {
-                z.setChild(j, fullNode.getChild(j + nodeDegree));
-            }
-        }
-
-        fullNode.setKeysCount(nodeDegree - 1);
-
-        for (int j = node.getKeysCount(); j >= index + 1; j--) {
-            node.setChild(j + 1, node.getChild(j));
-        }
-
-        node.setChild(index + 1, z);
-
-        for (int j = node.getKeysCount() - 1; j >= index; j--) {
-            node.setKey(j + 1, node.getKey(j));
-            node.setValue(j + 1, node.getValue(j));
-        }
-
-        node.setKey(index, fullNode.getKey(nodeDegree - 1));
-        node.setValue(index, fullNode.getValue(nodeDegree - 1));
-
-        node.setKeysCount(node.getKeysCount() + 1);
-    }
-*/
-
     /**
      * Degree of this B+Tree
      *
