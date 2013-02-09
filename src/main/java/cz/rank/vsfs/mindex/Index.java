@@ -62,7 +62,7 @@ public class Index {
         this.maxLevel = maxLevel;
         this.maxIndex = maxIndex;
         this.level = level;
-        indexes2LevelSet = new HashSet<>(this.indexes.subList(0, level > 2 ? level : 0));
+        indexes2LevelSet = new HashSet<>(this.indexes.subList(0, level >= 2 ? level - 1 : 0));
     }
 
     public int getCalculatedIndex() {
