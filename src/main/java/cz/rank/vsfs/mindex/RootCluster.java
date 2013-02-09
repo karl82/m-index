@@ -42,4 +42,11 @@ public class RootCluster<D extends Distanceable<D>> extends InternalCluster<D> {
     private int getMaxLevel() {
         return getIndex().getMaxLevel();
     }
+
+    @Override
+    public void accept(ClusterVisitor visitor) {
+        for (Cluster<D> cluster : getSubClusters()) {
+            cluster.accept(visitor);
+        }
+    }
 }

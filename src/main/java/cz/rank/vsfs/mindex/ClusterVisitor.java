@@ -26,29 +26,11 @@
 
 package cz.rank.vsfs.mindex;
 
-import java.util.Collection;
-
 /**
  * @author Karel Rank
  */
-public interface Cluster<D extends Distanceable<D>> {
-    Index getIndex();
+public interface ClusterVisitor<D extends Distanceable<D>> {
+    String getGraphDefinition();
 
-    Collection<Cluster<D>> getSubClusters();
-
-    Cluster<D> getOrCreateSubCluster(Pivot<D> pivot);
-
-    int getCalculatedIndex();
-
-    void propagateDistance(double distance);
-
-    int getLevel();
-
-    int parentIndex();
-
-    double getKeyMin();
-
-    double getKeyMax();
-
-    void accept(ClusterVisitor<D> visitor);
+    void enterCluster(Cluster<D> cluster);
 }

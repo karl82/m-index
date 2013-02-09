@@ -245,4 +245,10 @@ public class ClusterTree<D extends Distanceable<D>> {
     public String getTreeGraph() {
         return btreemap.toGraph();
     }
+
+    public String getClusterGraph() {
+        final ClusterVisitor visitor = new DotClusterVisitor();
+        root.accept(visitor);
+        return visitor.getGraphDefinition();
+    }
 }

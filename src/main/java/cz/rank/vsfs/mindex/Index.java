@@ -82,14 +82,7 @@ public class Index {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("Index");
-        sb.append("{calculatedIndex=").append(calculatedIndex);
-        sb.append(", maxLevel=").append(maxLevel);
-        sb.append(", level=").append(level);
-        sb.append(", indexes=").append(indexes);
-        sb.append('}');
-        return sb.toString();
+        return indexes.toString();
     }
 
     public int getMaxLevel() {

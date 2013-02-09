@@ -117,6 +117,11 @@ public class InternalCluster<D extends Distanceable<D>> implements Cluster<D> {
     }
 
     @Override
+    public void accept(ClusterVisitor visitor) {
+        visitor.enterCluster(this);
+    }
+
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("InternalCluster");

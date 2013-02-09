@@ -106,6 +106,7 @@ public class ClusterTreeTest {
         tree.build();
 
         final String treeGraph = tree.getTreeGraph();
+        final String clusterGraph = tree.getClusterGraph();
 
         final Collection<Point> points = tree.rangeQuery(new Point(2.1d, 0.8d), 0.5d);
 
@@ -113,17 +114,18 @@ public class ClusterTreeTest {
     }
 
     @Test(groups = {"unit"})
-    public void testRangeQuery3rdLevelHundredPivots() {
-        final List<Point> pivotPoints = createPoints(100, 100);
+    public void testRangeQuery3rdLevelTensPivots() {
+        final List<Point> pivotPoints = createPoints(10, 100);
         final ClusterTree<Point> tree = new ClusterTree<>(3, 5, createPivots(pivotPoints));
         final Point point = new Point(2, 1);
         tree.add(point);
         tree.addAll(pivotPoints);
-        tree.addAll(createPoints(1000, 100));
+        tree.addAll(createPoints(100, 100));
 
         tree.build();
 
         final String treeGraph = tree.getTreeGraph();
+        final String clusterGraph = tree.getClusterGraph();
 
         final Collection<Point> points = tree.rangeQuery(new Point(2.0d, 1.0d), 0.5d);
 

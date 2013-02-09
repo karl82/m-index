@@ -26,29 +26,30 @@
 
 package cz.rank.vsfs.mindex;
 
-import java.util.Collection;
-
 /**
  * @author Karel Rank
  */
-public interface Cluster<D extends Distanceable<D>> {
-    Index getIndex();
+public class DotClusterVisitor<D extends Distanceable<D>> implements ClusterVisitor<D> {
+    private static final String graphHeader = "digraph G {\n";
+    private static final String graphFooter = "}";
 
-    Collection<Cluster<D>> getSubClusters();
+    private final StringBuilder clusterDefinitions = new StringBuilder();
 
-    Cluster<D> getOrCreateSubCluster(Pivot<D> pivot);
+    @Override
+    public String getGraphDefinition() {
+        return graphHeader + clusterDefinitions + graphFooter;
+    }
 
-    int getCalculatedIndex();
+    @Override
+    public void enterCluster(Cluster<D> cluster) {
+        String currentIndex = cluster.getIndex().toString().replaceAll("[\\[\\]]", "\"");
+        for (Cluster<D> subCluster : cluster.getSubClusters()) {
+            createRelation(currentIndex, subCluster.getIndex().toString().replaceAll("[\\[\\]]", "\""));
+            subCluster.accept(this);
+        }
+    }
 
-    void propagateDistance(double distance);
-
-    int getLevel();
-
-    int parentIndex();
-
-    double getKeyMin();
-
-    double getKeyMax();
-
-    void accept(ClusterVisitor<D> visitor);
+    private void createRelation(String from, String to) {
+        clusterDefinitions.append(from).append(" -> ").append(to).append(";\n");
+    }
 }
