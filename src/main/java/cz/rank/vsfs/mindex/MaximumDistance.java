@@ -27,29 +27,121 @@
 package cz.rank.vsfs.mindex;
 
 import org.apache.commons.math3.util.FastMath;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
+ * Calculates maximum distance between distanceable objects
+ * <p/>
+ * Uses divide and conquer to split work between several cores
+ *
  * @author Karel Rank
  */
 public class MaximumDistance<D extends Distanceable<D>> {
+    public static final int SOLVER_GRANULARITY = 10000;
+    private static final Logger logger = LoggerFactory.getLogger(MaximumDistance.class);
     private final List<D> objects;
+    /**
+     * Use all available cores.
+     */
+    private final ExecutorCompletionService<Double> ecs = new ExecutorCompletionService<>(
+            Executors.newFixedThreadPool(nSolverThreads()));
+    private final int objectsSize;
+    private AtomicInteger submittedSolvers = new AtomicInteger();
+    private double maximum = 0d;
+    private volatile boolean submittedAllSolvers = false;
 
     public MaximumDistance(List<D> objects) {
         this.objects = objects;
+        objectsSize = objects.size();
+    }
+
+    /**
+     * Optimal count of solver threads
+     *
+     * @return {@link Runtime#availableProcessors()}
+     */
+    private int nSolverThreads() {
+        return Runtime.getRuntime().availableProcessors();
     }
 
     public double calculate() {
-        final int size = objects.size();
-        double maximum = 0d;
+        final CyclicBarrier cyclicBarrier = new CyclicBarrier(2);
+        final ExecutorService es = Executors.newSingleThreadExecutor();
+        es.execute(new Runnable() {
+            @Override
+            public void run() {
+                int takenSolvers = 0;
+                while (takenSolvers++ != submittedSolvers.get() || !submittedAllSolvers) {
+                    try {
+                        Future<Double> result = ecs.take();
+                        maximum = FastMath.max(result.get(), maximum);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    } catch (ExecutionException e) {
+                        logger.error("Error during calculation maximum distance!", e);
+                    }
+                }
 
-        for (int i = 0; i < size; i++) {
+                waitForCalculation(cyclicBarrier);
+            }
+        });
+
+        submitSolvers();
+
+        waitForCalculation(cyclicBarrier);
+
+        return maximum;
+    }
+
+    private void waitForCalculation(CyclicBarrier cyclicBarrier) {
+        try {
+            cyclicBarrier.await();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (BrokenBarrierException e) {
+            logger.error("Error during calculation maximum distance!", e);
+        }
+    }
+
+    private void submitSolvers() {
+        for (int i = 0; i < objectsSize; i++) {
             final D object = objects.get(i);
-            for (int j = i + 1; j < size; j++) {
-                maximum = FastMath.max(object.distance(objects.get(j)), maximum);
+            for (int j = i + 1; j < objectsSize; j += SOLVER_GRANULARITY) {
+                ecs.submit(new DistanceSolver(j, object));
+                submittedSolvers.incrementAndGet();
             }
         }
-        return maximum;
+        submittedAllSolvers = true;
+    }
+
+    private class DistanceSolver implements Callable<Double> {
+        private final int j;
+        private D object;
+
+        public DistanceSolver(int j, D object) {
+            this.j = j;
+            this.object = object;
+        }
+
+        @Override
+        public Double call() throws Exception {
+            double tempMaximum = 0;
+            for (int jj = j; jj < j + SOLVER_GRANULARITY && jj < objectsSize; ++jj) {
+                tempMaximum = FastMath.max(object.distance(objects.get(jj)), tempMaximum);
+            }
+            return tempMaximum;
+        }
     }
 }
