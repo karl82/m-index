@@ -337,41 +337,33 @@ public class ClusterTreeTest {
     }
 
     @Test(groups = {"longRunning"}, dataProvider = "rangeQueryData")
-    public void testRangeQuery(int pivotsCount, int objectsCount, int scalarDimension, int maxClusterLevel, int btreeDegree) {
-        final List<Scalar> pivotScalars = createScalars(pivotsCount, scalarDimension, 100);
-        final ClusterTree<Scalar> tree = new ClusterTree<>(maxClusterLevel, btreeDegree, createPivots(pivotScalars));
-        final List<Scalar> searchScalars = createScalars(100, scalarDimension, 100);
-//        tree.addAll(searchScalars);
-        tree.addAll(pivotScalars);
-        tree.addAll(createScalars(objectsCount, scalarDimension, 100));
+    public void testRangeQuery(int pivotsCount, int objectsCount, int vectorDimension, int maxClusterLevel, int btreeDegree) {
+        final List<Vector> pivotVectors = createVectors(pivotsCount, vectorDimension, 100);
+        final ClusterTree<Vector> tree = new ClusterTree<>(maxClusterLevel, btreeDegree, createPivots(pivotVectors));
+        final List<Vector> searchVectors = createVectors(100, vectorDimension, 100);
+        tree.addAll(pivotVectors);
+        tree.addAll(createVectors(objectsCount, vectorDimension, 100));
 
         tree.build();
 
-//        final String treeGraph = tree.getTreeGraph();
-//        final String clusterGraph = tree.getClusterGraph();
-
-        for (Scalar scalar : searchScalars) {
-            final Collection<Scalar> points = tree.rangeQuery(scalar, 5d);
-
-            if (points.isEmpty()) {
-                System.out.println("Is empty!");
-            }
+        for (Vector vector : searchVectors) {
+            final Collection<Vector> points = tree.rangeQuery(vector, 5d);
         }
     }
 
-    private List<Scalar> createScalars(int scalarsCount, int scalarDimension, int limit) {
-        final List<Scalar> scalars = new ArrayList<>(scalarsCount);
+    private List<Vector> createVectors(int vectorsCount, int vectorDimension, int limit) {
+        final List<Vector> vectors = new ArrayList<>(vectorsCount);
 
         final ThreadLocalRandom random = ThreadLocalRandom.current();
-        for (int i = 0; i < scalarsCount; ++i) {
-            final List<Double> values = new ArrayList<>(scalarDimension);
-            for (int j = 0; j < scalarDimension; ++j) {
+        for (int i = 0; i < vectorsCount; ++i) {
+            final List<Double> values = new ArrayList<>(vectorDimension);
+            for (int j = 0; j < vectorDimension; ++j) {
                 values.add(random.nextDouble(-limit, limit));
             }
-            scalars.add(new Scalar(values));
+            vectors.add(new Vector(values));
         }
 
-        return scalars;
+        return vectors;
     }
 
 }

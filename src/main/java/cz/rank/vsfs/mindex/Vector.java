@@ -33,15 +33,15 @@ import java.util.List;
 /**
  * @author Karel Rank
  */
-public class Scalar implements Distanceable<Scalar> {
+public class Vector implements Distanceable<Vector> {
     private final List<Double> values;
 
-    public Scalar(List<Double> values) {
+    public Vector(List<Double> values) {
         this.values = values;
     }
 
     @Override
-    public double distance(Scalar object) {
+    public double distance(Vector object) {
         double sumVector = subtractAndPow2AndSum(values, object.values);
 
         return FastMath.sqrt(sumVector);
