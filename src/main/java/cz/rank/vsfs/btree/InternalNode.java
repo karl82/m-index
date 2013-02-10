@@ -48,22 +48,22 @@ class InternalNode<K extends Comparable<? super K>, V> extends AbstractNode<K, V
 
     @Override
     public void insertNonFull(K key, V value) {
-        int i = getKeysCount() - 1;
+        int childPos = fixBinPos(Collections.binarySearch(keys, key));
 
-        while (i >= 0 && key.compareTo(keys.get(i)) < 0) {
-            i--;
-        }
+        childPos = splitChildIfFull(childPos, key);
 
-        i++;
+        getChild(childPos).insertNonFull(key, value);
+    }
 
-        if (getChild(i).isFull()) {
-            getChild(i).splitChild(this, i);
-            if (key.compareTo(keys.get(i)) > 0) {
-                i++;
+    private int splitChildIfFull(int childPos, K key) {
+        final Node<K, V> child = getChild(childPos);
+        if (child.isFull()) {
+            child.splitChild(this, childPos);
+            if (key.compareTo(keys.get(childPos)) > 0) {
+                childPos++;
             }
         }
-
-        getChild(i).insertNonFull(key, value);
+        return childPos;
     }
 
     @Override
