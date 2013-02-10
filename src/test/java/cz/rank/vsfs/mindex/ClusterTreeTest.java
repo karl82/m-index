@@ -164,7 +164,7 @@ public class ClusterTreeTest {
         return points;
     }
 
-    private static <D extends Distanceable<D>> Collection<Pivot<D>> createPivots(List<D> pivotPoints) {
+    private static <D extends Distanceable<D>> List<Pivot<D>> createPivots(List<D> pivotPoints) {
         List<Pivot<D>> pivots = new ArrayList<>(pivotPoints.size());
 
         for (int i = 0; i < pivotPoints.size(); ++i) {

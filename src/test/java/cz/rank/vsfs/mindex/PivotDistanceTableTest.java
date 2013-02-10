@@ -29,7 +29,7 @@ package cz.rank.vsfs.mindex;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Karel Rank
@@ -41,22 +41,22 @@ public class PivotDistanceTableTest {
         distanceTable.calculate();
     }
 
-    private Collection<Point> points() {
-        Collection<Point> points = new ArrayList<>();
-        points.add(new Point(-2,1));
-        points.add(new Point(-1,1));
-        points.add(new Point(0,1));
-        points.add(new Point(1,1));
+    private List<Point> points() {
+        List<Point> points = new ArrayList<>();
+        points.add(new Point(-2, 1));
+        points.add(new Point(-1, 1));
+        points.add(new Point(0, 1));
+        points.add(new Point(1, 1));
         return points;
     }
 
-    private Collection<Pivot<Point>> pivots() {
-        Collection<Pivot<Point>> pivots = new ArrayList<>();
+    private List<Pivot<Point>> pivots() {
+        List<Pivot<Point>> pivots = new ArrayList<>();
 
-        pivots.add(new Pivot<>(0, new Point(-2,0)));
-        pivots.add(new Pivot<>(1, new Point(-1,0)));
-        pivots.add(new Pivot<>(2, new Point(0,0)));
-        pivots.add(new Pivot<>(3, new Point(1,0)));
+        pivots.add(new Pivot<>(0, new Point(-2, 0)));
+        pivots.add(new Pivot<>(1, new Point(-1, 0)));
+        pivots.add(new Pivot<>(2, new Point(0, 0)));
+        pivots.add(new Pivot<>(3, new Point(1, 0)));
         return pivots;
     }
 

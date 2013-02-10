@@ -49,14 +49,14 @@ public class ClusterTree<D extends Distanceable<D>> {
     private static final Logger logger = LoggerFactory.getLogger(ClusterTree.class);
 
     private final int maxLevel;
-    private final Collection<Pivot<D>> pivots;
+    private final List<Pivot<D>> pivots;
     private final List<D> objects;
     private final Cluster<D> root;
     private final BPlusTreeMap<Double, D> btreemap;
     private PivotDistanceTable<D> pivotDistanceTable = null;
     private double maximumDistance;
 
-    public ClusterTree(int maxLevel, int btreeLevel, Collection<Pivot<D>> pivots) {
+    public ClusterTree(int maxLevel, int btreeLevel, List<Pivot<D>> pivots) {
         this.maxLevel = maxLevel;
         this.pivots = pivots;
 

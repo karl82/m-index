@@ -39,13 +39,14 @@ import java.util.Map;
  */
 public class PivotDistanceTable<D extends Distanceable<D>> {
     private final double maximumDistance;
-    private final Collection<Pivot<D>> pivots;
+    private final List<Pivot<D>> pivots;
     private final Collection<D> objects;
 
     private final Map<D, List<PivotDistance<D>>> distancesSortedByDistance;
     private final Map<D, List<PivotDistance<D>>> distancesSortedByPivot;
+    private final PivotDistanceComparator<D> distanceComparator = new PivotDistanceComparator<>();
 
-    public PivotDistanceTable(double maximumDistance, Collection<Pivot<D>> pivots, Collection<D> objects) {
+    public PivotDistanceTable(double maximumDistance, List<Pivot<D>> pivots, Collection<D> objects) {
         this.maximumDistance = maximumDistance;
         this.pivots = pivots;
         this.objects = objects;
@@ -53,7 +54,7 @@ public class PivotDistanceTable<D extends Distanceable<D>> {
         distancesSortedByPivot = new HashMap<>(objects.size());
     }
 
-    public PivotDistanceTable(Collection<Pivot<D>> pivots, Collection<D> objects) {
+    public PivotDistanceTable(List<Pivot<D>> pivots, Collection<D> objects) {
         this.pivots = pivots;
         this.objects = objects;
         distancesSortedByDistance = new HashMap<>(objects.size());
@@ -62,20 +63,40 @@ public class PivotDistanceTable<D extends Distanceable<D>> {
     }
 
     public void calculate() {
-        final PivotDistanceComparator<D> distanceComparator = new PivotDistanceComparator<>();
         for (D object : objects) {
-            List<PivotDistance<D>> objectDistances = new ArrayList<>(pivots.size());
-            for (Pivot<D> pivot : pivots) {
-                objectDistances.add(new PivotDistance<D>(maximumDistance, pivot, object));
-            }
-
-            List<PivotDistance<D>> objectDistancesSortedByDistance = new ArrayList<>(objectDistances);
-            Collections.sort(objectDistancesSortedByDistance);
-            Collections.sort(objectDistances, distanceComparator);
-
-            distancesSortedByDistance.put(object, objectDistancesSortedByDistance);
-            distancesSortedByPivot.put(object, objectDistances);
+            calculateObjectDistance(object);
         }
+    }
+
+    private void calculateObjectDistance(D object) {
+        List<PivotDistance<D>> objectDistances = doCalculatePivotDistances(object);
+
+        copyAndSortDistancesByDistance(object, objectDistances);
+        sortDistancesByPivot(object, objectDistances);
+    }
+
+    private void sortDistancesByPivot(D object, List<PivotDistance<D>> objectDistances) {
+        Collections.sort(objectDistances, distanceComparator);
+        distancesSortedByPivot.put(object, objectDistances);
+    }
+
+    private void copyAndSortDistancesByDistance(D object, List<PivotDistance<D>> objectDistances) {
+        List<PivotDistance<D>> objectDistancesSortedByDistance = new ArrayList<>(objectDistances);
+        Collections.sort(objectDistancesSortedByDistance);
+        distancesSortedByDistance.put(object, objectDistancesSortedByDistance);
+    }
+
+    private List<PivotDistance<D>> doCalculatePivotDistances(D object) {
+        final int size = pivots.size();
+        final List<PivotDistance<D>> objectDistances = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            objectDistances.add(createPivotDistance(object, i));
+        }
+        return objectDistances;
+    }
+
+    private PivotDistance<D> createPivotDistance(D object, int i) {
+        return new PivotDistance<D>(maximumDistance, pivots.get(i), object);
     }
 
     public Pivot<D> pivotAt(D object, int index) {

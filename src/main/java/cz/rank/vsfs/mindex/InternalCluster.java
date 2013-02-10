@@ -58,9 +58,21 @@ public class InternalCluster<D extends Distanceable<D>> implements Cluster<D> {
 
     @Override
     public void propagateDistance(double distance) {
-        rMin = FastMath.min(distance, rMin);
-        rMax = FastMath.max(distance, rMax);
+        propagateMinDistance(distance);
+        propagateMaxDistance(distance);
 
+        propagateToParent(distance);
+    }
+
+    private void propagateMaxDistance(double distance) {
+        rMax = FastMath.max(distance, rMax);
+    }
+
+    private void propagateMinDistance(double distance) {
+        rMin = FastMath.min(distance, rMin);
+    }
+
+    private void propagateToParent(double distance) {
         if (parent != null) {
             parent.propagateDistance(distance);
         }
@@ -76,15 +88,37 @@ public class InternalCluster<D extends Distanceable<D>> implements Cluster<D> {
         Cluster<D> cluster = subClustersMappedToPivots.get(pivot);
 
         if (cluster == null) {
-            if (index.getLevel() + 1 != index.getMaxLevel()) {
-                cluster = new InternalCluster<D>(this, nextLevelIndex(pivot));
-            } else {
-                cluster = new LeafCluster<D>(this, nextLevelIndex(pivot));
-            }
-
-            subClustersMappedToPivots.put(pivot, cluster);
+            cluster = createSubCluster(pivot);
+            storeSubCluster(pivot, cluster);
         }
         return cluster;
+    }
+
+    private void storeSubCluster(Pivot<D> pivot, Cluster<D> cluster) {
+        subClustersMappedToPivots.put(pivot, cluster);
+    }
+
+    private Cluster<D> createSubCluster(Pivot<D> pivot) {
+        Cluster<D> cluster;
+        if (leafLevel()) {
+            cluster = createLeafSubCluster(pivot);
+        } else {
+            cluster = createInternalSubCluster(pivot);
+        }
+
+        return cluster;
+    }
+
+    private boolean leafLevel() {
+        return index.getLevel() + 1 == index.getMaxLevel();
+    }
+
+    private LeafCluster<D> createLeafSubCluster(Pivot<D> pivot) {
+        return new LeafCluster<D>(this, nextLevelIndex(pivot));
+    }
+
+    private InternalCluster<D> createInternalSubCluster(Pivot<D> pivot) {
+        return new InternalCluster<D>(this, nextLevelIndex(pivot));
     }
 
     protected Index nextLevelIndex(Pivot<D> pivot) {
