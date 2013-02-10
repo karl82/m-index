@@ -36,7 +36,7 @@ import java.util.List;
  */
 class LeafNode<K extends Comparable<? super K>, V> extends AbstractNode<K, V> {
     private final List<K> keys;
-    private final List<V> values;
+    private final List<List<V>> values;
     private LeafNode<K, V> sibling = null;
 
     public LeafNode(int degree) {
@@ -52,10 +52,12 @@ class LeafNode<K extends Comparable<? super K>, V> extends AbstractNode<K, V> {
 
         if (pos < 0) {
             keys.add(fixBinPos(pos), key);
-            values.add(fixBinPos(pos), value);
+            final ArrayList<V> values = new ArrayList<>();
+            values.add(value);
+            this.values.add(fixBinPos(pos), values);
         } else {
-            keys.set(pos, key);
-            values.set(pos, value);
+//            keys.set(pos, key);
+            values.get(pos).add(value);
         }
     }
 
@@ -66,7 +68,7 @@ class LeafNode<K extends Comparable<? super K>, V> extends AbstractNode<K, V> {
 
         final List<K> keysForMove = keys.subList(nodeDegree, getKeysCount());
         z.keys.addAll(keysForMove);
-        final List<V> valuesForMove = values.subList(nodeDegree, getKeysCount());
+        final List<List<V>> valuesForMove = values.subList(nodeDegree, getKeysCount());
         z.values.addAll(valuesForMove);
 
         keysForMove.clear();
@@ -107,9 +109,10 @@ class LeafNode<K extends Comparable<? super K>, V> extends AbstractNode<K, V> {
 
         final List<V> range = new ArrayList<>(maxKeys());
 
-        final List<V> matchedValues = values.subList(fromPos, toPos);
-        range.addAll(matchedValues);
-
+        final List<List<V>> matchedValues = values.subList(fromPos, toPos);
+        for (List<V> list : matchedValues) {
+            range.addAll(list);
+        }
         if (!matchedValues.isEmpty()) {
             range.addAll(siblingRange(from, to));
         }
@@ -134,7 +137,7 @@ class LeafNode<K extends Comparable<? super K>, V> extends AbstractNode<K, V> {
     public V search(K key) {
         final int pos = Collections.binarySearch(keys, key);
 
-        return pos < 0 ? null : values.get(pos);
+        return pos < 0 ? null : values.get(pos).get(0);
     }
 
     @Override

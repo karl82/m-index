@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * @author rank
  */
-public class BPlusTreeMap<K extends Comparable<K>, V> {
+public class BPlusTreeMultiMap<K extends Comparable<K>, V> {
     private final int degree;
     private Node<K, V> root;
 
@@ -43,7 +43,7 @@ public class BPlusTreeMap<K extends Comparable<K>, V> {
      *
      * @param degree
      */
-    public BPlusTreeMap(final int degree) {
+    public BPlusTreeMultiMap(final int degree) {
         this.degree = degree;
 
         root = new LeafNode<>(degree);
@@ -79,7 +79,7 @@ public class BPlusTreeMap<K extends Comparable<K>, V> {
 
     /**
      * @param key
-     * @return
+     * @return first matching item
      */
     public V search(K key) {
         return root.search(key);

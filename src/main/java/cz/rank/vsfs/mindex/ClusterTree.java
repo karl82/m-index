@@ -26,7 +26,7 @@
 
 package cz.rank.vsfs.mindex;
 
-import cz.rank.vsfs.btree.BPlusTreeMap;
+import cz.rank.vsfs.btree.BPlusTreeMultiMap;
 import org.apache.commons.math3.util.FastMath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +52,7 @@ public class ClusterTree<D extends Distanceable<D>> {
     private final List<Pivot<D>> pivots;
     private final List<D> objects;
     private final Cluster<D> root;
-    private final BPlusTreeMap<Double, D> btreemap;
+    private final BPlusTreeMultiMap<Double, D> btreemap;
     private PivotDistanceTable<D> pivotDistanceTable = null;
     private double maximumDistance;
 
@@ -65,7 +65,7 @@ public class ClusterTree<D extends Distanceable<D>> {
         // Save reallocation
         objects = new ArrayList<>(50000);
         root = new RootCluster<>(maxLevel, this.pivots.size());
-        btreemap = new BPlusTreeMap<>(btreeLevel);
+        btreemap = new BPlusTreeMultiMap<>(btreeLevel);
     }
 
     private void checkParams() {

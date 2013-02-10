@@ -38,13 +38,14 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
 /**
  * @author rank
  */
-public class BPlusTreeMapTest {
+public class BPlusTreeMultiMapTest {
 
     /**
      * @throws Exception
@@ -62,7 +63,7 @@ public class BPlusTreeMapTest {
 
     @Test(groups = {"unit"})
     public void testDegree2() {
-        BPlusTreeMap<Double, Object> tree = new BPlusTreeMap<>(2);
+        BPlusTreeMultiMap<Double, Object> tree = new BPlusTreeMultiMap<>(2);
 
         final Object value = new Object();
         tree.insert(0.2d, value);
@@ -75,20 +76,8 @@ public class BPlusTreeMapTest {
     }
 
     @Test(groups = {"unit"})
-    public void testValuesReplacement() {
-        BPlusTreeMap<Integer, Object> tree = new BPlusTreeMap<>(2);
-
-        final Object value = new Object();
-        tree.insert(1, new Object());
-        tree.insert(1, value);
-
-        assertThat(tree.search(1), is(value));
-    }
-
-
-    @Test(groups = {"unit"})
     public void testDegree20() {
-        BPlusTreeMap<Integer, Integer> tree = new BPlusTreeMap<>(20);
+        BPlusTreeMultiMap<Integer, Integer> tree = new BPlusTreeMultiMap<>(20);
 
         for (int d = 6000; d > -6000; d--) {
             tree.insert(d, d);
@@ -102,7 +91,7 @@ public class BPlusTreeMapTest {
 
     @Test(groups = {"unit"})
     public void testDescendingDegree2() {
-        BPlusTreeMap<Integer, Integer> tree = new BPlusTreeMap<>(2);
+        BPlusTreeMultiMap<Integer, Integer> tree = new BPlusTreeMultiMap<>(2);
 
         tree.insert(6, 6);
         tree.insert(5, 5);
@@ -117,17 +106,17 @@ public class BPlusTreeMapTest {
 
     @Test(expectedExceptions = IllegalArgumentException.class, groups = {"unit"})
     public void testMinimalDegree0() {
-        new BPlusTreeMap<Integer, Void>(0);
+        new BPlusTreeMultiMap<Integer, Void>(0);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class, groups = {"unit"})
     public void testMinimalDegree1() {
-        new BPlusTreeMap<Integer, Void>(1);
+        new BPlusTreeMultiMap<Integer, Void>(1);
     }
 
     @Test(groups = {"unit"})
     public void testNullReturnOnSearch() {
-        BPlusTreeMap<Integer, Integer> tree = new BPlusTreeMap<>(2);
+        BPlusTreeMultiMap<Integer, Integer> tree = new BPlusTreeMultiMap<>(2);
 
         for (int d = -30; d < 30; d++) {
             tree.insert(d, d);
@@ -138,7 +127,7 @@ public class BPlusTreeMapTest {
 
     @Test(groups = {"unit"})
     public void testSeveralSplitsAscendingDegree2() {
-        BPlusTreeMap<Integer, Integer> tree = new BPlusTreeMap<>(2);
+        BPlusTreeMultiMap<Integer, Integer> tree = new BPlusTreeMultiMap<>(2);
 
         for (int d = -30; d < 30; d++) {
             tree.insert(d, d);
@@ -151,7 +140,7 @@ public class BPlusTreeMapTest {
 
     @Test(groups = {"unit"})
     public void testSeveralSplitsDescendingDegree2() {
-        BPlusTreeMap<Integer, Integer> tree = new BPlusTreeMap<>(2);
+        BPlusTreeMultiMap<Integer, Integer> tree = new BPlusTreeMultiMap<>(2);
 
         for (int d = 30; d > -30; d--) {
             tree.insert(d, d);
@@ -164,7 +153,7 @@ public class BPlusTreeMapTest {
 
     @Test(groups = {"unit"})
     public void testRangeQuery() {
-        BPlusTreeMap<Integer, Integer> tree = new BPlusTreeMap<>(2);
+        BPlusTreeMultiMap<Integer, Integer> tree = new BPlusTreeMultiMap<>(2);
 
         for (int d = 10; d > -10; d--) {
             tree.insert(d, d);
@@ -175,9 +164,9 @@ public class BPlusTreeMapTest {
         assertThat(range, contains(-2, -1, 0, 1));
     }
 
-    @Test(groups = {"unit"}, enabled = false)
+    @Test(groups = {"unit"})
     public void testRangeQueryWithDuplicates() {
-        BPlusTreeMap<Integer, Object> tree = new BPlusTreeMap<>(2);
+        BPlusTreeMultiMap<Integer, Object> tree = new BPlusTreeMultiMap<>(2);
 
         Object object1 = new Object();
         Object object2 = new Object();
@@ -191,12 +180,12 @@ public class BPlusTreeMapTest {
 
         List<Object> range = tree.rangeSearch(12, 13);
 
-        assertThat(range, contains(object2, object1));
+        assertThat(range, hasItems(object2, object1));
     }
 
     @Test(groups = {"unit"})
     public void testEmptyRangeQuery() {
-        BPlusTreeMap<Integer, Integer> tree = new BPlusTreeMap<>(2);
+        BPlusTreeMultiMap<Integer, Integer> tree = new BPlusTreeMultiMap<>(2);
 
         for (int d = 10; d > -10; d--) {
             tree.insert(d, d);
@@ -209,7 +198,7 @@ public class BPlusTreeMapTest {
 
     @Test(groups = {"unit"}, expectedExceptions = IllegalArgumentException.class)
     public void testWrongRangesForRangeQuery() {
-        BPlusTreeMap<Integer, Integer> tree = new BPlusTreeMap<>(2);
+        BPlusTreeMultiMap<Integer, Integer> tree = new BPlusTreeMultiMap<>(2);
 
         for (int d = 10; d > -10; d--) {
             tree.insert(d, d);
@@ -220,7 +209,7 @@ public class BPlusTreeMapTest {
 
     @Test(groups = {"unit"})
     public void testOneMatchOnLastSiblingForRangeQuery() {
-        BPlusTreeMap<Integer, Integer> tree = new BPlusTreeMap<>(2);
+        BPlusTreeMultiMap<Integer, Integer> tree = new BPlusTreeMultiMap<>(2);
 
         for (int d = 10; d > -10; d--) {
             tree.insert(d, d);
