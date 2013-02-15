@@ -28,6 +28,7 @@ package cz.rank.vsfs.mindex;
 
 import org.apache.commons.math3.util.FastMath;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -38,6 +39,10 @@ public class Vector implements Distanceable<Vector> {
 
     public Vector(List<Double> values) {
         this.values = values;
+    }
+
+    public Vector(Double... values) {
+        this.values = Arrays.asList(values);
     }
 
     @Override
@@ -63,5 +68,12 @@ public class Vector implements Distanceable<Vector> {
 
     private double subtract(List<Double> values1, List<Double> values2, int i) {
         return values1.get(i) - values2.get(i);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("V").append(values);
+        return sb.toString();
     }
 }
