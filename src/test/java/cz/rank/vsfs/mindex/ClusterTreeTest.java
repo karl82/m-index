@@ -26,6 +26,7 @@
 
 package cz.rank.vsfs.mindex;
 
+import cz.rank.vsfs.mindex.util.Generators;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -39,6 +40,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasItems;
 
 /**
  * @author Karel Rank
@@ -97,9 +99,25 @@ public class ClusterTreeTest {
     }
 
     @Test(groups = {"unit"})
+    public void testRangeQuery2ndLevelDuplicatedPoints() {
+        final ClusterTree<Point> tree = new ClusterTree<>(2, 5, twoPivots());
+        final Point point1 = new Point(1, 1);
+        final Point point2 = new Point(1, 1);
+        tree.add(point1);
+        tree.add(point2);
+        tree.add(new Point(0, 0));
+
+        tree.build();
+
+        final Collection<Point> points = tree.rangeQuery(new Point(1, 1), 0.5d);
+
+        assertThat(points, hasItems(point1, point2));
+    }
+
+    @Test(groups = {"unit"})
     public void testRangeQuery3rdLevel() {
         final List<Point> pivotPoints = createPoints(3, 3);
-        final ClusterTree<Point> tree = new ClusterTree<>(3, 5, createPivots(pivotPoints));
+        final ClusterTree<Point> tree = new ClusterTree<>(3, 5, Generators.createPivots(pivotPoints));
         final Point point = new Point(2, 1);
         tree.addAll(pivotPoints);
         tree.add(point);
@@ -117,7 +135,7 @@ public class ClusterTreeTest {
     @Test(groups = {"unit"})
     public void testRangeQuery3rdLevelTensPivots() {
         final List<Point> pivotPoints = createPoints(10, 100);
-        final ClusterTree<Point> tree = new ClusterTree<>(3, 5, createPivots(pivotPoints));
+        final ClusterTree<Point> tree = new ClusterTree<>(3, 5, Generators.createPivots(pivotPoints));
         final Point point = new Point(2, 1);
         tree.add(point);
         tree.addAll(pivotPoints);
@@ -136,7 +154,7 @@ public class ClusterTreeTest {
     @Test(groups = {"longRunning"})
     public void testRangeQuery3rdLevelHundredPivots() {
         final List<Point> pivotPoints = createPoints(500, 100);
-        final ClusterTree<Point> tree = new ClusterTree<>(3, 5, createPivots(pivotPoints));
+        final ClusterTree<Point> tree = new ClusterTree<>(3, 5, Generators.createPivots(pivotPoints));
         final Point point = new Point(2, 1);
         tree.add(point);
         tree.addAll(pivotPoints);
@@ -162,16 +180,6 @@ public class ClusterTreeTest {
         }
 
         return points;
-    }
-
-    private static <D extends Distanceable<D>> List<Pivot<D>> createPivots(List<D> pivotPoints) {
-        List<Pivot<D>> pivots = new ArrayList<>(pivotPoints.size());
-
-        for (int i = 0; i < pivotPoints.size(); ++i) {
-            pivots.add(new Pivot<>(i, pivotPoints.get(i)));
-        }
-
-        return pivots;
     }
 
     @DataProvider(name = "rangeQueryData")
@@ -248,32 +256,18 @@ public class ClusterTreeTest {
 
     @Test(groups = {"longRunning"}, dataProvider = "rangeQueryData")
     public void testRangeQuery(int pivotsCount, int objectsCount, int vectorDimension, int maxClusterLevel, int btreeDegree) {
-        final List<Vector> pivotVectors = createVectors(pivotsCount, vectorDimension, 100);
-        final ClusterTree<Vector> tree = new ClusterTree<>(maxClusterLevel, btreeDegree, createPivots(pivotVectors));
-        final List<Vector> searchVectors = createVectors(100, vectorDimension, 100);
+        final List<Vector> pivotVectors = Generators.createVectors(pivotsCount, vectorDimension, 100);
+        final ClusterTree<Vector> tree = new ClusterTree<>(maxClusterLevel, btreeDegree, Generators
+                .createPivots(pivotVectors));
+        final List<Vector> searchVectors = Generators.createVectors(100, vectorDimension, 100);
         tree.addAll(pivotVectors);
-        tree.addAll(createVectors(objectsCount, vectorDimension, 100));
+        tree.addAll(Generators.createVectors(objectsCount, vectorDimension, 100));
 
         tree.build();
 
         for (Vector vector : searchVectors) {
             final Collection<Vector> points = tree.rangeQuery(vector, 5d);
         }
-    }
-
-    private List<Vector> createVectors(int vectorsCount, int vectorDimension, int limit) {
-        final List<Vector> vectors = new ArrayList<>(vectorsCount);
-
-        final ThreadLocalRandom random = ThreadLocalRandom.current();
-        for (int i = 0; i < vectorsCount; ++i) {
-            final List<Double> values = new ArrayList<>(vectorDimension);
-            for (int j = 0; j < vectorDimension; ++j) {
-                values.add(random.nextDouble(-limit, limit));
-            }
-            vectors.add(new Vector(values));
-        }
-
-        return vectors;
     }
 
 }

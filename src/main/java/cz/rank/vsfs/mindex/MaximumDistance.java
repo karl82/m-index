@@ -49,14 +49,16 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author Karel Rank
  */
 public class MaximumDistance<D extends Distanceable<D>> {
+    /**
+     * Amount of computation done by each solver
+     */
     public static final int SOLVER_GRANULARITY = 10000;
     private static final Logger logger = LoggerFactory.getLogger(MaximumDistance.class);
     private final List<D> objects;
     /**
      * Use all available cores.
      */
-    private final ExecutorCompletionService<Double> ecs = new ExecutorCompletionService<>(
-            Executors.newFixedThreadPool(nSolverThreads()));
+    private final ExecutorCompletionService<Double> ecs;
     private final int objectsSize;
     private AtomicInteger submittedSolvers = new AtomicInteger();
     private double maximum = 0d;
@@ -65,6 +67,15 @@ public class MaximumDistance<D extends Distanceable<D>> {
     public MaximumDistance(List<D> objects) {
         this.objects = objects;
         objectsSize = objects.size();
+        ecs = new ExecutorCompletionService<>(
+                Executors.newFixedThreadPool(nSolverThreads()));
+    }
+
+    public MaximumDistance(List<D> objects, int cores) {
+        this.objects = objects;
+        objectsSize = objects.size();
+        ecs = new ExecutorCompletionService<>(
+                Executors.newFixedThreadPool(cores));
     }
 
     /**
