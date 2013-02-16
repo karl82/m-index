@@ -47,18 +47,30 @@ import java.util.Set;
  */
 public class ClusterTree<D extends Distanceable<D>> {
     private static final Logger logger = LoggerFactory.getLogger(ClusterTree.class);
-
     private final int maxLevel;
     private final List<Pivot<D>> pivots;
     private final List<D> objects;
     private final Cluster<D> root;
     private final BPlusTreeMultiMap<Double, D> btreemap;
     private PivotDistanceTable<D> pivotDistanceTable = null;
-    private double maximumDistance;
+    private double maximumDistance = Double.MIN_VALUE;
 
     public ClusterTree(int maxLevel, int btreeLevel, List<Pivot<D>> pivots) {
         this.maxLevel = maxLevel;
         this.pivots = pivots;
+
+        checkParams();
+
+        // Save reallocation
+        objects = new ArrayList<>(50000);
+        root = new RootCluster<>(maxLevel, this.pivots.size());
+        btreemap = new BPlusTreeMultiMap<>(btreeLevel);
+    }
+
+    public ClusterTree(int maxLevel, int btreeLevel, List<Pivot<D>> pivots, double maximumDistance) {
+        this.maxLevel = maxLevel;
+        this.pivots = pivots;
+        this.maximumDistance = maximumDistance;
 
         checkParams();
 
@@ -121,8 +133,11 @@ public class ClusterTree<D extends Distanceable<D>> {
     }
 
     private void calculateMaximumDistance() {
-        logger.info("Calculating maximum distance...");
-        maximumDistance = new MaximumDistance<D>(objects).calculate();
+        if (maximumDistance == Double.MIN_VALUE) {
+            logger.info("Calculating maximum distance...");
+            maximumDistance = new MaximumDistance<D>(objects).calculate();
+        }
+
         logger.info("Maximum distance is " + maximumDistance);
     }
 
