@@ -71,7 +71,7 @@ public class DotNodeVisitor<K extends Comparable<K>, V> implements NodeVisitor<K
     }
 
     @Override
-    public void enterLeafNode(List<K> keys, List<V> values, int maxKeys) {
+    public void enterLeafNode(List<K> keys, List<List<V>> values, int maxKeys) {
         String currentLeafNodeId = currentLeafNodeId();
 
         leafNodeCounter++;
@@ -95,7 +95,7 @@ public class DotNodeVisitor<K extends Comparable<K>, V> implements NodeVisitor<K
                         .append("\n");
     }
 
-    private String generateLeafNodeDefinition(String nodeId, List<K> keys, List<V> values, int maxKeys) {
+    private String generateLeafNodeDefinition(String nodeId, List<K> keys, List<List<V>> values, int maxKeys) {
         StringBuilder keySb = new StringBuilder("<parent>");
         StringBuilder ptrSb = new StringBuilder();
 

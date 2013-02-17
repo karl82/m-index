@@ -96,7 +96,7 @@ public class PivotDistanceTable<D extends Distanceable<D>> {
     }
 
     private PivotDistance<D> createPivotDistance(D object, int i) {
-        return new PivotDistance<D>(maximumDistance, pivots.get(i), object);
+        return new PivotDistance<>(maximumDistance, pivots.get(i), object);
     }
 
     public Pivot<D> pivotAt(D object, int index) {
@@ -113,14 +113,6 @@ public class PivotDistanceTable<D extends Distanceable<D>> {
 
     public double distanceAt(D object, int index) {
         return pivotDistanceAt(object, index).getDistance();
-    }
-
-    public double firstPivotDistanceFrom(D object, int index) {
-        if (index < 0) {
-            return firstPivotDistance(object);
-        } else {
-            return distanceAt(object, index + 1);
-        }
     }
 
     public double pivotDistance(D object, int pivotIndex) {

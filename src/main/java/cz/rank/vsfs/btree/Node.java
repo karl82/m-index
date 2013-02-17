@@ -50,5 +50,5 @@ interface Node<K extends Comparable<? super K>, V> {
 
     List<V> rangeSearch(K from, K to);
 
-    void accept(NodeVisitor visitor);
+    void accept(NodeVisitor<K, V> visitor);
 }

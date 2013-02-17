@@ -31,8 +31,8 @@ import java.util.List;
 /**
  * @author Karel Rank
  */
-interface NodeVisitor<K extends Comparable<K>, V> {
+interface NodeVisitor<K extends Comparable<? super K>, V> {
     void enterInternalNode(List<Node<K, V>> children, List<K> keys, int maxKeys);
 
-    void enterLeafNode(List<K> keys, List<V> values, int maxKeys);
+    void enterLeafNode(List<K> keys, List<List<V>> values, int maxKeys);
 }

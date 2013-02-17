@@ -151,7 +151,7 @@ public class InternalCluster<D extends Distanceable<D>> implements Cluster<D> {
     }
 
     @Override
-    public void accept(ClusterVisitor visitor) {
+    public void accept(ClusterVisitor<D> visitor) {
         visitor.enterCluster(this);
     }
 

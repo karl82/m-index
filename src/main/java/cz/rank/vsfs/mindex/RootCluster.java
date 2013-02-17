@@ -44,7 +44,7 @@ public class RootCluster<D extends Distanceable<D>> extends InternalCluster<D> {
     }
 
     @Override
-    public void accept(ClusterVisitor visitor) {
+    public void accept(ClusterVisitor<D> visitor) {
         for (Cluster<D> cluster : getSubClusters()) {
             cluster.accept(visitor);
         }

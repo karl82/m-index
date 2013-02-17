@@ -160,7 +160,7 @@ class LeafNode<K extends Comparable<? super K>, V> extends AbstractNode<K, V> {
     }
 
     @Override
-    public void accept(NodeVisitor visitor) {
+    public void accept(NodeVisitor<K, V> visitor) {
         visitor.enterLeafNode(keys, values, maxKeys());
     }
 }
