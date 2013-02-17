@@ -68,17 +68,19 @@ public class ClusterTreePerfTest {
                                             0.3,
                                             0.5,
                                             1.0};
+    public static final String MINDEX_REFERENCE_FILE = "mindex.reference.file";
     private final List<Vector> objects = new ArrayList<>();
     private double maximumDistance;
 
     @BeforeClass
     public void loadReferenceDataAndWarmUp() throws IOException {
-        Path referenceDataPath = new File(this.getClass().getClassLoader().getResource("ColorHistogram.txt").getFile())
-                .toPath();
+        Path referenceDataPath = new File(System.getProperty(MINDEX_REFERENCE_FILE)).toPath();
 
-        logger.info("Reading reference data from:" + referenceDataPath);
+        logger.info("Reading reference data from: " + referenceDataPath);
 
-        for (String line : Files.readAllLines(referenceDataPath, Charset.defaultCharset())) {
+        final List<String> lines = Files.readAllLines(referenceDataPath, Charset.defaultCharset());
+        logger.info("Read " + lines.size() + " lines");
+        for (String line : lines) {
             parseLineAndCreateVector(line);
         }
 
@@ -145,12 +147,12 @@ public class ClusterTreePerfTest {
         List<Pivot<Vector>> pivots = Generators.createPivots(objects.subList(0, params.pivotsCount));
 
         ClusterTree<Vector> clusterTree = new ClusterTree<>(params.clusterMaxLevel, 100, pivots, maximumDistance);
-        stopWatch.start(stopWatch.getTag() + ".build", Integer.toString(invocation));
+        stopWatch.start(params + ".build", Integer.toString(invocation));
         clusterTree.build();
-        stopWatch.stop(stopWatch.getTag() + ".build", Integer.toString(invocation));
+        stopWatch.stop(params + ".build", Integer.toString(invocation));
 
         int emptyResults = 0;
-        stopWatch.start(stopWatch.getTag() + ".rangeQuery", Integer.toString(invocation));
+        stopWatch.start(params + ".rangeQuery", Integer.toString(invocation));
         for (Vector queryObject : objects.subList(params.pivotsCount, params.pivotsCount + 1000)) {
             Collection<Vector> foundObjects = clusterTree.rangeQuery(queryObject, params.range);
 
@@ -159,7 +161,7 @@ public class ClusterTreePerfTest {
                 emptyResults++;
             }
         }
-        stopWatch.stop(stopWatch.getTag() + ".rangeQuery", Integer.toString(invocation));
+        stopWatch.stop(params + ".rangeQuery", Integer.toString(invocation));
 
         logger.info("Empty results {}", emptyResults);
     }

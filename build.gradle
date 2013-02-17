@@ -43,7 +43,9 @@ task perfTest(type: Test) {
 
     maxHeapSize = "6192m"
 
+    // Reference file for M-Index performance testing
+    systemProperty 'mindex.reference.file', 'src/test/resources/ColorHistogram.txt'
+
     jvmArgs = ['-verbose:gc', '-XX:+PrintGCDetails', '-XX:+PrintGCTimeStamps', '-Xloggc:gc.log']
-    useTestNG() {
-    }
+    useTestNG()
 }
