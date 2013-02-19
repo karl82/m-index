@@ -26,7 +26,6 @@
 
 package cz.rank.vsfs.mindex;
 
-import cz.rank.vsfs.mindex.util.Generators;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -37,9 +36,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static cz.rank.vsfs.mindex.util.Generators.createPivots;
+import static cz.rank.vsfs.mindex.util.Generators.createVectors;
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItems;
 
 /**
@@ -93,9 +97,9 @@ public class ClusterTreeTest {
 
         tree.build();
 
-        final Collection<Point> points = tree.rangeQuery(new Point(1, 1), 0.5d);
+        final Collection<Point> points = tree.rangeQuery(new Point(1, 1), 0.1d);
 
-        assertThat(points, hasItem(point));
+        assertThat(points, contains(point));
     }
 
     @Test(groups = {"unit"})
@@ -116,16 +120,13 @@ public class ClusterTreeTest {
 
     @Test(groups = {"unit"})
     public void testRangeQuery3rdLevel() {
-        final List<Point> pivotPoints = createPoints(3, 3);
-        final ClusterTree<Point> tree = new ClusterTree<>(3, 5, Generators.createPivots(pivotPoints));
+        final List<Point> pivotPoints = createPoints(100, 3);
+        final ClusterTree<Point> tree = new ClusterTree<>(3, 5, createPivots(pivotPoints));
         final Point point = new Point(2, 1);
         tree.addAll(pivotPoints);
         tree.add(point);
 
         tree.build();
-
-        final String treeGraph = tree.getTreeGraph();
-        final String clusterGraph = tree.getClusterGraph();
 
         final Collection<Point> points = tree.rangeQuery(new Point(2.1d, 0.8d), 0.5d);
 
@@ -135,7 +136,7 @@ public class ClusterTreeTest {
     @Test(groups = {"unit"})
     public void testRangeQuery3rdLevelTensPivots() {
         final List<Point> pivotPoints = createPoints(10, 100);
-        final ClusterTree<Point> tree = new ClusterTree<>(3, 5, Generators.createPivots(pivotPoints));
+        final ClusterTree<Point> tree = new ClusterTree<>(3, 5, createPivots(pivotPoints));
         final Point point = new Point(2, 1);
         tree.add(point);
         tree.addAll(pivotPoints);
@@ -146,19 +147,19 @@ public class ClusterTreeTest {
         final String treeGraph = tree.getTreeGraph();
         final String clusterGraph = tree.getClusterGraph();
 
-        final Collection<Point> points = tree.rangeQuery(new Point(2.0d, 1.0d), 0.5d);
+        final Collection<Point> points = tree.rangeQuery(new Point(2.0d, 1.0d), 0.1d);
 
-        assertThat(points, contains(point));
+        assertThat(points, hasItem(point));
     }
 
     @Test(groups = {"longRunning"})
     public void testRangeQuery3rdLevelHundredPivots() {
-        final List<Point> pivotPoints = createPoints(500, 100);
-        final ClusterTree<Point> tree = new ClusterTree<>(3, 5, Generators.createPivots(pivotPoints));
+        final List<Point> pivotPoints = createPoints(100, 100);
+        final ClusterTree<Point> tree = new ClusterTree<>(3, 5, createPivots(pivotPoints));
         final Point point = new Point(2, 1);
         tree.add(point);
         tree.addAll(pivotPoints);
-        tree.addAll(createPoints(60000, 100));
+        tree.addAll(createPoints(5000, 100));
 
         tree.build();
 
@@ -187,67 +188,67 @@ public class ClusterTreeTest {
         return new Object[][]{
                 // 10 Pivots, Cluster level 2
                 {10,
-                 60000,
+                 1000,
                  8,
                  2,
                  5},
                 {10,
-                 60000,
+                 1000,
                  32,
                  2,
                  5},
                 // 30 Pivots, Cluster level 2
                 {30,
-                 60000,
+                 1000,
                  8,
                  2,
                  5},
                 {30,
-                 60000,
+                 1000,
                  32,
                  2,
                  5},
                 // 50 Pivots, Cluster level 2
                 {50,
-                 60000,
+                 1000,
                  8,
                  2,
                  5},
                 {50,
-                 60000,
+                 1000,
                  32,
                  2,
                  5},
                 // 10 Pivots, Cluster level 3
                 {10,
-                 60000,
+                 1000,
                  8,
                  3,
                  5},
                 {10,
-                 60000,
+                 1000,
                  32,
                  3,
                  5},
                 // 30 Pivots, Cluster level 3
                 {30,
-                 60000,
+                 1000,
                  8,
                  3,
                  5},
                 {30,
-                 60000,
+                 1000,
                  32,
                  3,
                  5},
                 // 50 Pivots, Cluster level 3
                 {50,
-                 60000,
+                 1000,
                  8,
                  3,
                  5},
                 {50,
-                 60000,
+                 1000,
                  32,
                  3,
                  5}
@@ -256,17 +257,18 @@ public class ClusterTreeTest {
 
     @Test(groups = {"longRunning"}, dataProvider = "rangeQueryData")
     public void testRangeQuery(int pivotsCount, int objectsCount, int vectorDimension, int maxClusterLevel, int btreeDegree) {
-        final List<Vector> pivotVectors = Generators.createVectors(pivotsCount, vectorDimension, 100);
-        final ClusterTree<Vector> tree = new ClusterTree<>(maxClusterLevel, btreeDegree, Generators
-                .createPivots(pivotVectors));
-        final List<Vector> searchVectors = Generators.createVectors(100, vectorDimension, 100);
+        final List<Vector> pivotVectors = createVectors(pivotsCount, vectorDimension, 100);
+        final ClusterTree<Vector> tree = new ClusterTree<>(maxClusterLevel, btreeDegree, createPivots(pivotVectors));
+        final List<Vector> searchVectors = createVectors(100, vectorDimension, 100);
         tree.addAll(pivotVectors);
-        tree.addAll(Generators.createVectors(objectsCount, vectorDimension, 100));
+        tree.addAll(createVectors(objectsCount, vectorDimension, 100));
 
         tree.build();
 
         for (Vector vector : searchVectors) {
-            final Collection<Vector> points = tree.rangeQuery(vector, 5d);
+            final Collection<Vector> points = tree.rangeQuery(vector, 0.15d);
+
+            assertThat(points, is(not(empty())));
         }
     }
 
