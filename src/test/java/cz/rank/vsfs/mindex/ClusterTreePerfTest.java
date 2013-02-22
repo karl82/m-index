@@ -96,8 +96,8 @@ public class ClusterTreePerfTest {
     }
 
     private void warmUp() {
-        final Slf4JStopWatch stopWatch = new Slf4JStopWatch("WARM UP", PerfLogger.LOGGER);
-        performTest(new TestParams(500, 3, 1, 0.15d), 1, stopWatch);
+        final Slf4JStopWatch stopWatch = new Slf4JStopWatch(PerfLogger.LOGGER);
+        performTest(new TestParams(500, 3, 1, 0.15d), 1, stopWatch, "WARMUP");
     }
 
     private void parseLineAndCreateVector(String line) {
@@ -136,23 +136,23 @@ public class ClusterTreePerfTest {
 
     @Test(dataProvider = "clusterTreeParams")
     public void testClusterTree(TestParams params) {
-        final Slf4JStopWatch stopWatch = new Slf4JStopWatch(params.toString(), PerfLogger.LOGGER);
+        final Slf4JStopWatch stopWatch = new Slf4JStopWatch(PerfLogger.LOGGER);
         for (int i = 1; i < params.invocations + 1; i++) {
-            performTest(params, i, stopWatch);
+            performTest(params, i, stopWatch, params.toString());
         }
     }
 
-    private void performTest(TestParams params, int invocation, StopWatch stopWatch) {
+    private void performTest(TestParams params, int invocation, StopWatch stopWatch, String prefix) {
 
         List<Pivot<Vector>> pivots = Generators.createPivots(objects.subList(0, params.pivotsCount));
 
         ClusterTree<Vector> clusterTree = new ClusterTree<>(params.clusterMaxLevel, 100, pivots, maximumDistance);
-        stopWatch.start(params + ".build", Integer.toString(invocation));
+        stopWatch.start(prefix + ".build", Integer.toString(invocation));
         clusterTree.build();
-        stopWatch.stop(params + ".build", Integer.toString(invocation));
+        stopWatch.stop(prefix + ".build", Integer.toString(invocation));
 
         int emptyResults = 0;
-        stopWatch.start(params + ".rangeQuery", Integer.toString(invocation));
+        stopWatch.start(prefix + ".rangeQuery", Integer.toString(invocation));
         for (Vector queryObject : objects.subList(params.pivotsCount, params.pivotsCount + 1000)) {
             Collection<Vector> foundObjects = clusterTree.rangeQuery(queryObject, params.range);
 
@@ -161,7 +161,7 @@ public class ClusterTreePerfTest {
                 emptyResults++;
             }
         }
-        stopWatch.stop(params + ".rangeQuery", Integer.toString(invocation));
+        stopWatch.stop(prefix + ".rangeQuery", Integer.toString(invocation));
 
         logger.info("Empty results {}", emptyResults);
     }
