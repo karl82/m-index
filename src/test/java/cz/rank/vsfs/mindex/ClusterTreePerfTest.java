@@ -101,7 +101,9 @@ public class ClusterTreePerfTest {
     private void warmUp() {
         logger.info("Performing JVM warm up...");
         final Slf4JStopWatch stopWatch = new Slf4JStopWatch(PerfLogger.LOGGER);
-        performTest(new TestParams(500, 3, 1, 0.15d), 1, stopWatch, "WARMUP");
+        performTest(new TestParams(50, 3, 1, 0.15d), 1, stopWatch, "WARMUP");
+        performTest(new TestParams(50, 3, 1, 0.3d), 1, stopWatch, "WARMUP");
+        performTest(new TestParams(100, 3, 1, 0.1d), 1, stopWatch, "WARMUP");
         logger.info("JVM warm up done...");
     }
 
@@ -110,7 +112,7 @@ public class ClusterTreePerfTest {
         logger.info("Performing GC...");
         System.gc();
 
-        TimeUnit.SECONDS.sleep(2);
+        TimeUnit.SECONDS.sleep(5);
         logger.info("GC done...");
     }
 
