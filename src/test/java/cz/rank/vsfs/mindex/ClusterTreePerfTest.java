@@ -32,6 +32,7 @@ import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -44,6 +45,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Karel Rank
@@ -96,8 +98,19 @@ public class ClusterTreePerfTest {
     }
 
     private void warmUp() {
+        logger.info("Performing JVM warm up...");
         final Slf4JStopWatch stopWatch = new Slf4JStopWatch(PerfLogger.LOGGER);
         performTest(new TestParams(500, 3, 1, 0.15d), 1, stopWatch, "WARMUP");
+        logger.info("JVM warm up done...");
+    }
+
+    @AfterMethod
+    public void performGc() throws InterruptedException {
+        logger.info("Performing GC...");
+        System.gc();
+
+        TimeUnit.SECONDS.sleep(2);
+        logger.info("GC done...");
     }
 
     private void parseLineAndCreateVector(String line) {

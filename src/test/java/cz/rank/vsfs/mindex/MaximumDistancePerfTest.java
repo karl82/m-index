@@ -32,7 +32,7 @@ import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.AfterTest;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.DataProvider;
@@ -69,14 +69,14 @@ public class MaximumDistancePerfTest {
     public void warmUp() {
         logger.info("Performing JVM warm up...");
         List<Vector> objects = Generators.createVectors(30000, 32, 10);
-        MaximumDistance<Vector> maximumDistance = new MaximumDistance<Vector>(objects);
+        MaximumDistance<Vector> maximumDistance = new MaximumDistance<>(objects);
         stopWatch.start("WARM UP");
         maximumDistance.calculate();
         stopWatch.stop("WARM UP");
         logger.info("JVM warm up done...");
     }
 
-    @AfterTest
+    @AfterMethod
     public void performGc() throws InterruptedException {
         logger.info("Performing GC...");
         System.gc();
