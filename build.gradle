@@ -40,8 +40,7 @@ test {
 
 ext.perfTestCounter = 0;
 
-ext.defaultTestJvmArgs = ['-verbose:gc', '-XX:+PrintGCDetails', '-XX:+PrintGCTimeStamps', '-Xloggc:gc.log', '-Xbatch']
-
+ext.defaultTestJvmArgs = ['-verbose:gc', '-XX:+PrintGCDetails', '-XX:+PrintGCTimeStamps', '-Xloggc:gc.log']
 ext.testsJvmArgs =
     [['-XX:+AggressiveOpts', ''], ['-XX:+UseCompressedOops', '-XX:-UseCompressedOops']/*,['-XX:-UseParallelOldGC', '-XX:-UseConcMarkSweepGC', '-XX:+UseConcMarkSweepGC']*/].combinations()
 
