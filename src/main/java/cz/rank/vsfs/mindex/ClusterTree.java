@@ -124,8 +124,11 @@ public class ClusterTree<D extends Distanceable<D>> {
             final double distance = pivotDistanceTable.firstPivotDistance(object);
             final double objectKey = currentCluster.getCalculatedIndex() + distance;
 
-            logger.debug("Inserting into B+Tree key: {}; obj: {}; cluster: {}", objectKey, object,
-                         currentCluster.getIndex());
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("Inserting into B+Tree key: {}; obj: {}; cluster: {}", objectKey, object,
+                             currentCluster.getIndex());
+            }
 
             btreemap.insert(objectKey, object);
             currentCluster.propagateDistance(objectKey);
@@ -149,7 +152,10 @@ public class ClusterTree<D extends Distanceable<D>> {
     }
 
     public Collection<D> rangeQuery(D queryObject, double range) {
-        logger.info("Querying objects which are in range: " + range * maximumDistance + " from object: " + queryObject);
+        if (logger.isDebugEnabled()) {
+            logger.debug(
+                    "Querying objects which are in range: " + range * maximumDistance + " from object: " + queryObject);
+        }
 
         final Set<D> foundObjects = new HashSet<>();
         final Queue<Cluster<D>> nodeQueue = new ArrayDeque<>();
