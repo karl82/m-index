@@ -61,21 +61,22 @@ public class MaximumDistance<D extends Distanceable<D>> {
     private final ExecutorCompletionService<Double> ecs;
     private final int objectsSize;
     private final AtomicInteger submittedSolvers = new AtomicInteger();
+    private final ExecutorService ecsPool;
     private double maximum = 0d;
     private volatile boolean submittedAllSolvers = false;
 
     public MaximumDistance(List<D> objects) {
         this.objects = objects;
         objectsSize = objects.size();
-        ecs = new ExecutorCompletionService<>(
-                Executors.newFixedThreadPool(nSolverThreads()));
+        ecsPool = Executors.newFixedThreadPool(nSolverThreads());
+        ecs = new ExecutorCompletionService<>(ecsPool);
     }
 
     public MaximumDistance(List<D> objects, int cores) {
         this.objects = objects;
         objectsSize = objects.size();
-        ecs = new ExecutorCompletionService<>(
-                Executors.newFixedThreadPool(cores));
+        ecsPool = Executors.newFixedThreadPool(cores);
+        ecs = new ExecutorCompletionService<>(ecsPool);
     }
 
     /**
@@ -112,6 +113,9 @@ public class MaximumDistance<D extends Distanceable<D>> {
         submitSolvers();
 
         waitForCalculation(cyclicBarrier);
+
+        es.shutdown();
+        ecsPool.shutdown();
 
         return maximum;
     }
