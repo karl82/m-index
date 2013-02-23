@@ -171,9 +171,8 @@ public class ClusterTree<D extends Distanceable<D>> {
             }
 
             if (node instanceof LeafCluster) {
-                final LeafCluster<D> leafCluster = (LeafCluster) node;
-                final double keyMin = leafCluster.getKeyMin();
-                final double keyMax = leafCluster.getKeyMax();
+                final double keyMin = node.getKeyMin();
+                final double keyMax = node.getKeyMax();
                 final double rMin = frac(keyMin);
                 final double rMax = frac(keyMax);
                 final double distance = queryObjectPivotDistance.firstPivotDistance(queryObject);
