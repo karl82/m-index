@@ -38,14 +38,35 @@ test {
     }
 }
 
-task perfTest(type: Test) {
-    include '**/*PerfTest*'
+ext.perfTestCounter = 0;
 
-    maxHeapSize = "6192m"
+ext.defaultTestJvmArgs = ['-verbose:gc', '-XX:+PrintGCDetails', '-XX:+PrintGCTimeStamps', '-Xloggc:gc.log', '-Xbatch']
 
-    // Reference file for M-Index performance testing
-    systemProperty 'mindex.reference.file', 'src/test/resources/ColorHistogram.txt'
+ext.testsJvmArgs =
+    [['-XX:+AggressiveOpts', ''], ['-XX:+UseCompressedOops', '-XX:-UseCompressedOops']/*,['-XX:-UseParallelOldGC', '-XX:-UseConcMarkSweepGC', '-XX:+UseConcMarkSweepGC']*/].combinations()
 
-    jvmArgs = ['-verbose:gc', '-XX:+PrintGCDetails', '-XX:+PrintGCTimeStamps', '-Xloggc:gc.log']
-    useTestNG()
+
+testsJvmArgs.each { testJvmArgs ->
+    task "perfTest${perfTestCounter++}"(type: Test) {
+        include '**/*PerfTest*'
+
+        maxHeapSize = "6192m"
+
+        // Reference file for M-Index performance testing
+        systemProperty 'mindex.reference.file', 'src/test/resources/ColorHistogram.txt'
+
+        jvmArgs = (testJvmArgs << defaultTestJvmArgs).flatten()
+
+        useTestNG()
+
+        beforeTest { descriptor ->
+            logger.lifecycle("Running test: " + descriptor)
+        }
+    }
+}
+
+task perfTest {
+    dependsOn {
+        tasks.findAll { task -> task.name ==~ 'perfTest\\d+' }
+    }
 }
