@@ -102,7 +102,7 @@ public class MaximumDistancePerfTest {
         return params.toArray(new Object[params.size()][1]);
     }
 
-    @Test(dataProvider = "maximumDistancePerfData")
+    @Test(groups = "perf", dataProvider = "maximumDistancePerfData")
     public void test(TestParams params) {
         List<Vector> objects = Generators.createVectors(params.objectsCount, params.dimension, 10);
 

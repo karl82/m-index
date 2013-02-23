@@ -149,7 +149,7 @@ public class ClusterTreePerfTest {
         return params.toArray(new Object[params.size()][1]);
     }
 
-    @Test(dataProvider = "clusterTreeParams")
+    @Test(groups = "perf", dataProvider = "clusterTreeParams")
     public void testClusterTree(TestParams params) {
         final Slf4JStopWatch stopWatch = new Slf4JStopWatch(PerfLogger.LOGGER);
         for (int i = 1; i < params.invocations + 1; i++) {
@@ -161,7 +161,7 @@ public class ClusterTreePerfTest {
 
         List<Pivot<Vector>> pivots = Generators.createPivots(objects.subList(0, params.pivotsCount));
 
-        ClusterTree<Vector> clusterTree = new ClusterTree<>(params.clusterMaxLevel, 100, pivots, maximumDistance);
+        final ClusterTree<Vector> clusterTree = new ClusterTree<>(params.clusterMaxLevel, 100, pivots, maximumDistance);
         stopWatch.start(prefix + ".build", Integer.toString(invocation));
         clusterTree.build();
         stopWatch.stop(prefix + ".build", Integer.toString(invocation));
@@ -169,7 +169,7 @@ public class ClusterTreePerfTest {
         int emptyResults = 0;
         stopWatch.start(prefix + ".rangeQuery", Integer.toString(invocation));
         for (Vector queryObject : objects.subList(params.pivotsCount, params.pivotsCount + 1000)) {
-            Collection<Vector> foundObjects = clusterTree.rangeQuery(queryObject, params.range);
+            final Collection<Vector> foundObjects = clusterTree.rangeQuery(queryObject, params.range);
 
             // Avoid dead code
             if (foundObjects.isEmpty()) {
