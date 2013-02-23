@@ -60,7 +60,7 @@ public class MaximumDistance<D extends Distanceable<D>> {
      */
     private final ExecutorCompletionService<Double> ecs;
     private final int objectsSize;
-    private AtomicInteger submittedSolvers = new AtomicInteger();
+    private final AtomicInteger submittedSolvers = new AtomicInteger();
     private double maximum = 0d;
     private volatile boolean submittedAllSolvers = false;
 
@@ -139,7 +139,7 @@ public class MaximumDistance<D extends Distanceable<D>> {
 
     private class DistanceSolver implements Callable<Double> {
         private final int j;
-        private D object;
+        private final D object;
 
         public DistanceSolver(int j, D object) {
             this.j = j;

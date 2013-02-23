@@ -38,8 +38,8 @@ public class DotNodeVisitor<K extends Comparable<K>, V> implements NodeVisitor<K
             "node[shape=record];\n";
     private static final String graphFooter = "}";
 
-    private StringBuilder nodesDefinitions = new StringBuilder();
-    private StringBuilder edgesDefinitions = new StringBuilder();
+    private final StringBuilder nodesDefinitions = new StringBuilder();
+    private final StringBuilder edgesDefinitions = new StringBuilder();
 
     private int internalNodeCounter = 0;
     private int leafNodeCounter = 0;
