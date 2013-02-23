@@ -46,6 +46,7 @@ import java.util.concurrent.TimeUnit;
  * @author Karel Rank
  */
 public class MaximumDistancePerfTest {
+    public static final int DEFAULT_TEST_INVOCATIONS = 20;
     private static final Integer[] DIMENSIONS = {1,
                                                  2,
                                                  4,
@@ -93,7 +94,8 @@ public class MaximumDistancePerfTest {
         for (Integer dimension : DIMENSIONS) {
             for (Integer objectsCount : OBJECTS_COUNTS) {
                 for (int threads = 1; threads <= coresAvailable; threads++) {
-                    params.add(new TestParams[]{new TestParams(dimension, objectsCount, threads, 20)});
+                    params.add(new TestParams[]{new TestParams(dimension, objectsCount, threads,
+                                                               DEFAULT_TEST_INVOCATIONS)});
                 }
             }
         }

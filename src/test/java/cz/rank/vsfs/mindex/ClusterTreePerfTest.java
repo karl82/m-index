@@ -51,6 +51,8 @@ import java.util.concurrent.TimeUnit;
  * @author Karel Rank
  */
 public class ClusterTreePerfTest {
+    public static final String MINDEX_REFERENCE_FILE = "mindex.reference.file";
+    public static final int DEFAULT_TEST_INVOCATIONS = 40;
     private static final Logger logger = LoggerFactory.getLogger(ClusterTreePerfTest.class);
     private static final int[] PIVOTS_COUNT = {10,
                                                20,
@@ -70,7 +72,6 @@ public class ClusterTreePerfTest {
                                             0.3,
                                             0.5,
                                             1.0};
-    public static final String MINDEX_REFERENCE_FILE = "mindex.reference.file";
     private final List<Vector> objects = new ArrayList<>();
     private double maximumDistance;
 
@@ -140,7 +141,8 @@ public class ClusterTreePerfTest {
         for (Integer dimension : PIVOTS_COUNT) {
             for (Integer objectsCount : CLUSTER_MAX_LEVEL) {
                 for (Double range : RANGES) {
-                    params.add(new TestParams[]{new TestParams(dimension, objectsCount, 20, range)});
+                    params.add(
+                            new TestParams[]{new TestParams(dimension, objectsCount, DEFAULT_TEST_INVOCATIONS, range)});
                 }
             }
         }
