@@ -162,13 +162,15 @@ public class ClusterTreePerfTest {
         List<Pivot<Vector>> pivots = Generators.createPivots(objects.subList(0, params.pivotsCount));
 
         final ClusterTree<Vector> clusterTree = new ClusterTree<>(params.clusterMaxLevel, 100, pivots, maximumDistance);
+        clusterTree.addAll(objects);
         stopWatch.start(prefix + ".build", Integer.toString(invocation));
         clusterTree.build();
         stopWatch.stop(prefix + ".build", Integer.toString(invocation));
 
         int emptyResults = 0;
+        final List<Vector> queryObjects = objects.subList(params.pivotsCount, params.pivotsCount + 1000);
         stopWatch.start(prefix + ".rangeQuery", Integer.toString(invocation));
-        for (Vector queryObject : objects.subList(params.pivotsCount, params.pivotsCount + 1000)) {
+        for (Vector queryObject : queryObjects) {
             final Collection<Vector> foundObjects = clusterTree.rangeQuery(queryObject, params.range);
 
             // Avoid dead code
