@@ -160,6 +160,7 @@ public class ClusterTree<D extends Distanceable<D>> {
         final Set<D> foundObjects = new HashSet<>();
         final Queue<Cluster<D>> nodeQueue = new ArrayDeque<>();
         final PivotDistanceTable<D> queryObjectPivotDistance = calculateDistanceFor(queryObject);
+        final double firstPivotDistance = queryObjectPivotDistance.firstPivotDistance(queryObject);
 
         nodeQueue.addAll(root.getSubClusters());
 
@@ -170,21 +171,21 @@ public class ClusterTree<D extends Distanceable<D>> {
                 continue;
             }
 
-            if (node instanceof LeafCluster) {
-                final double keyMin = node.getKeyMin();
-                final double keyMax = node.getKeyMax();
-                final double rMin = frac(keyMin);
-                final double rMax = frac(keyMax);
-                final double distance = queryObjectPivotDistance.firstPivotDistance(queryObject);
+            final double keyMin = node.getKeyMin();
+            final double keyMax = node.getKeyMax();
+            final double rMin = frac(keyMin);
+            final double rMax = frac(keyMax);
 
-                if (rangePivotDistanceConstraint(range, rMin, rMax, distance)) {
-                    continue;
-                }
+            if (rangePivotDistanceConstraint(range, rMin, rMax, firstPivotDistance)) {
+                continue;
+            }
+
+            if (node instanceof LeafCluster) {
 
                 final double keyMinFloor = FastMath.floor(keyMin);
                 final Collection<D> objects = btreemap
-                        .rangeSearch(keyMinFloor + distance - range,
-                                     keyMinFloor + distance + range);
+                        .rangeSearch(keyMinFloor + firstPivotDistance - range,
+                                     keyMinFloor + firstPivotDistance + range);
 
                 for (D object : objects) {
                     if (pivotShouldBeFiltered(object, queryObject, queryObjectPivotDistance, range)) {
