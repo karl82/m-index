@@ -55,41 +55,32 @@ public class MaximumDistance<D extends Distanceable<D>> {
     public static final int SOLVER_GRANULARITY = 10000;
     private static final Logger logger = LoggerFactory.getLogger(MaximumDistance.class);
     private final List<D> objects;
+    private final int parallelism;
     /**
      * Use all available cores.
      */
-    private final ExecutorCompletionService<Double> ecs;
     private final int objectsSize;
     private final AtomicInteger submittedSolvers = new AtomicInteger();
-    private final ExecutorService ecsPool;
     private double maximum = 0d;
     private volatile boolean submittedAllSolvers = false;
 
     public MaximumDistance(List<D> objects) {
         this.objects = objects;
         objectsSize = objects.size();
-        ecsPool = Executors.newFixedThreadPool(nSolverThreads());
-        ecs = new ExecutorCompletionService<>(ecsPool);
+        parallelism = Runtime.getRuntime().availableProcessors();
     }
 
-    public MaximumDistance(List<D> objects, int cores) {
+    public MaximumDistance(List<D> objects, int parallelism) {
         this.objects = objects;
         objectsSize = objects.size();
-        ecsPool = Executors.newFixedThreadPool(cores);
-        ecs = new ExecutorCompletionService<>(ecsPool);
-    }
-
-    /**
-     * Optimal count of solver threads
-     *
-     * @return {@link Runtime#availableProcessors()}
-     */
-    private int nSolverThreads() {
-        return Runtime.getRuntime().availableProcessors();
+        this.parallelism = parallelism;
     }
 
     public double calculate() {
         final CyclicBarrier cyclicBarrier = new CyclicBarrier(2);
+
+        final ExecutorService ecsPool = Executors.newFixedThreadPool(parallelism);
+        final ExecutorCompletionService<Double> ecs = new ExecutorCompletionService<>(ecsPool);
         final ExecutorService es = Executors.newSingleThreadExecutor();
         es.execute(new Runnable() {
             @Override
@@ -110,7 +101,7 @@ public class MaximumDistance<D extends Distanceable<D>> {
             }
         });
 
-        submitSolvers();
+        submitSolvers(ecs);
 
         waitForCalculation(cyclicBarrier);
 
@@ -130,7 +121,7 @@ public class MaximumDistance<D extends Distanceable<D>> {
         }
     }
 
-    private void submitSolvers() {
+    private void submitSolvers(ExecutorCompletionService<Double> ecs) {
         for (int i = 0; i < objectsSize; i++) {
             final D object = objects.get(i);
             for (int j = i + 1; j < objectsSize; j += SOLVER_GRANULARITY) {

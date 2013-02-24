@@ -66,18 +66,18 @@ public class PivotDistanceTable<D extends Distanceable<D>> {
         this.maximumDistance = maximumDistance;
         this.pivots = pivots;
         this.objects = objects;
-        distancesSortedByDistance = new HashMap<>(objects.size());
-        distancesSortedByPivot = new HashMap<>(objects.size());
         objectsSize = objects.size();
+        distancesSortedByDistance = new HashMap<>(objectsSize);
+        distancesSortedByPivot = new HashMap<>(objectsSize);
     }
 
     public PivotDistanceTable(List<Pivot<D>> pivots, List<D> objects) {
         this.pivots = pivots;
         this.objects = objects;
-        distancesSortedByDistance = new HashMap<>(objects.size());
-        distancesSortedByPivot = new HashMap<>(objects.size());
-        maximumDistance = 1d;
         objectsSize = objects.size();
+        distancesSortedByDistance = new HashMap<>(objectsSize);
+        distancesSortedByPivot = new HashMap<>(objectsSize);
+        maximumDistance = 1d;
     }
 
     public void calculate() {
@@ -93,7 +93,7 @@ public class PivotDistanceTable<D extends Distanceable<D>> {
             @Override
             public void run() {
                 int takenSolvers = 0;
-                while (takenSolvers++ != submittedSolvers.get() || !submittedAllSolvers) {
+                while (notAllSolversTaken(takenSolvers)) {
                     try {
                         PivotDistanceResult result = ecs.take().get();
                         distancesSortedByDistance.putAll(result.distancesSortedByDistance);
@@ -103,15 +103,21 @@ public class PivotDistanceTable<D extends Distanceable<D>> {
                     } catch (ExecutionException e) {
                         logger.error("Error during calculation pivot distance table!", e);
                     }
+                    takenSolvers++;
                 }
 
                 waitForCalculation(cyclicBarrier);
+            }
+
+            private boolean notAllSolversTaken(int solvers) {
+                return !submittedAllSolvers || solvers < submittedSolvers.get();
             }
         });
 
         submitSolvers(ecs);
 
         waitForCalculation(cyclicBarrier);
+
         es.shutdown();
         ecsPool.shutdown();
     }
