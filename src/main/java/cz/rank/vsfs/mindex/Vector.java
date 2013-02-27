@@ -35,14 +35,22 @@ import java.util.List;
  * @author Karel Rank
  */
 public class Vector implements Distanceable<Vector> {
-    private final List<Double> values;
+    private final double[] values;
 
     public Vector(List<Double> values) {
-        this.values = values;
+        this.values = new double[values.size()];
+        int i = 0;
+        for (Double value : values) {
+            this.values[i++] = value;
+        }
     }
 
     public Vector(Double... values) {
-        this.values = Arrays.asList(values);
+        this.values = new double[values.length];
+        int i = 0;
+        for (Double value : values) {
+            this.values[i++] = value;
+        }
     }
 
     @Override
@@ -52,8 +60,8 @@ public class Vector implements Distanceable<Vector> {
         return FastMath.sqrt(sumVector);
     }
 
-    private double subtractAndPow2AndSum(List<Double> values1, List<Double> values2) {
-        final int size = values1.size();
+    private double subtractAndPow2AndSum(double[] values1, double[] values2) {
+        final int size = values1.length;
         double result = 0;
         for (int i = 0; i < size; ++i) {
             result += pow2(subtract(values1, values2, i));
@@ -66,14 +74,14 @@ public class Vector implements Distanceable<Vector> {
         return v * v;
     }
 
-    private double subtract(List<Double> values1, List<Double> values2, int i) {
-        return values1.get(i) - values2.get(i);
+    private double subtract(double[] values1, double[] values2, int i) {
+        return values1[i] - values2[i];
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
-        sb.append("V").append(values);
+        sb.append("V").append(Arrays.toString(values));
         return sb.toString();
     }
 }
