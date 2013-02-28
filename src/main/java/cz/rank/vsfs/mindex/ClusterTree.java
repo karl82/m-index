@@ -54,16 +54,18 @@ public class ClusterTree<D extends Distanceable<D>> {
     private final BPlusTreeMultiMap<Double, D> btreemap;
     private PivotDistanceTable<D> pivotDistanceTable = null;
     private double maximumDistance = Double.MIN_VALUE;
+    private final int pivotsSize;
 
     public ClusterTree(int maxLevel, int btreeLevel, List<Pivot<D>> pivots) {
         this.maxLevel = maxLevel;
         this.pivots = pivots;
+        pivotsSize = pivots.size();
 
         checkParams();
 
         // Save reallocation
         objects = new ArrayList<>(50000);
-        root = new RootCluster<>(maxLevel, this.pivots.size());
+        root = new RootCluster<>(maxLevel, pivotsSize);
         btreemap = new BPlusTreeMultiMap<>(btreeLevel);
     }
 
@@ -71,12 +73,13 @@ public class ClusterTree<D extends Distanceable<D>> {
         this.maxLevel = maxLevel;
         this.pivots = pivots;
         this.maximumDistance = maximumDistance;
+        pivotsSize = pivots.size();
 
         checkParams();
 
         // Save reallocation
         objects = new ArrayList<>(50000);
-        root = new RootCluster<>(maxLevel, this.pivots.size());
+        root = new RootCluster<>(maxLevel, pivotsSize);
         btreemap = new BPlusTreeMultiMap<>(btreeLevel);
     }
 
@@ -99,7 +102,7 @@ public class ClusterTree<D extends Distanceable<D>> {
             throw new IllegalArgumentException("Maximum cluster level must be greater than 0. Current: " + maxLevel);
         }
 
-        if (maxLevel > pivots.size()) {
+        if (maxLevel > pivotsSize) {
             throw new IllegalArgumentException(
                     "Maximum cluster level must be lower than pivots. Current max level: " + maxLevel + ". Pivots: " + pivots);
         }
@@ -205,7 +208,7 @@ public class ClusterTree<D extends Distanceable<D>> {
 
     private boolean pivotShouldBeFiltered(D object, D queryObject, PivotDistanceTable<D> queryObjectPivotDistance, double range) {
         double maxDistance = 0;
-        for (int i = 0; i < pivots.size(); ++i) {
+        for (int i = 0; i < pivotsSize; ++i) {
             maxDistance = FastMath.max(maxDistance, FastMath.abs(
                     queryObjectPivotDistance.pivotDistance(queryObject, i) - pivotDistanceTable
                             .pivotDistance(object, i)));
@@ -239,7 +242,7 @@ public class ClusterTree<D extends Distanceable<D>> {
         }
 
         final Set<Integer> indexes2Level = node.getIndex().indexes2LevelAsSet();
-        for (int i = 0; i < pivots.size(); i++) {
+        for (int i = 0; i < pivotsSize; i++) {
             Pivot<D> pivot = queryObjectPivotDistance.pivotAt(queryObject, i);
             if (!indexes2Level.contains(pivot.getIndex())) {
                 return queryObjectPivotDistance.distanceAt(queryObject, i);
