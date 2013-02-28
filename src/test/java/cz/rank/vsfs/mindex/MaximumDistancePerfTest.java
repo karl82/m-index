@@ -45,6 +45,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Karel Rank
  */
+@Test(enabled = false)
 public class MaximumDistancePerfTest {
     public static final int DEFAULT_TEST_INVOCATIONS = 20;
     private static final Integer[] DIMENSIONS = {1,

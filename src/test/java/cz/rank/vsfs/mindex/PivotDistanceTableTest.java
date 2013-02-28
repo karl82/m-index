@@ -37,7 +37,7 @@ import java.util.List;
 public class PivotDistanceTableTest {
     @Test
     public void testDistanceTable() {
-        PivotDistanceTable<Point> distanceTable = new PivotDistanceTable<>(pivots(), points());
+        PivotDistanceTable<Point> distanceTable = new ParallelPivotDistanceTable<>(pivots(), points());
         distanceTable.calculate();
     }
 

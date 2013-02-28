@@ -149,7 +149,7 @@ public class ClusterTree<D extends Distanceable<D>> {
 
     private void calculateDistances() {
         logger.info("Calculating pivots and objects distances...");
-        pivotDistanceTable = new PivotDistanceTable<D>(maximumDistance, pivots, objects);
+        pivotDistanceTable = new ParallelPivotDistanceTable<D>(maximumDistance, pivots, objects);
         pivotDistanceTable.calculate();
         logger.info("Finished calculation of pivots and objects distances...");
     }
@@ -253,7 +253,7 @@ public class ClusterTree<D extends Distanceable<D>> {
     }
 
     private PivotDistanceTable<D> calculateDistanceFor(D queryObject) {
-        final PivotDistanceTable<D> queryObjectPivotDistance = new PivotDistanceTable<D>(maximumDistance, pivots,
+        final PivotDistanceTable<D> queryObjectPivotDistance = new SimplePivotDistanceTable<D>(maximumDistance, pivots,
                                                                                          Arrays.asList(queryObject));
         queryObjectPivotDistance.calculate();
 

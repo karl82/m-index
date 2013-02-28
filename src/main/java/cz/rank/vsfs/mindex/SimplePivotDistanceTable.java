@@ -26,17 +26,38 @@
 
 package cz.rank.vsfs.mindex;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
+
 /**
  * @author Karel Rank
  */
-public interface PivotDistanceTable<D extends Distanceable<D>> {
-    void calculate();
+public class SimplePivotDistanceTable<D extends Distanceable<D>> extends AbstractPivotDistanceTable<D> {
+    private static final Logger logger = LoggerFactory.getLogger(SimplePivotDistanceTable.class);
 
-    Pivot<D> pivotAt(D object, int index);
+    public SimplePivotDistanceTable(double maximumDistance, List<Pivot<D>> pivots, List<D> objects) {
+        super(maximumDistance, pivots, objects);
+    }
 
-    double firstPivotDistance(D object);
+    public SimplePivotDistanceTable(List<Pivot<D>> pivots, List<D> objects) {
+        super(pivots, objects);
+    }
 
-    double distanceAt(D object, int index);
+    @Override
+    public void calculate() {
+        try {
+            for (int i = 0; i < objectsSize; i += SOLVER_GRANULARITY) {
+                final PivotDistanceResult<D> result = new PivotDistanceSolver(i).call();
+                storeResult(result);
+            }
+        } catch (Exception e) {
+            logger.error("Cannot calculate pivot distance table!", e);
 
-    double pivotDistance(D object, int pivotIndex);
+        }
+    }
+
+    private void calculateObjectDistance(D object) {
+    }
 }
