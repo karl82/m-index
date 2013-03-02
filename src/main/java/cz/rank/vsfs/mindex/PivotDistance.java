@@ -83,7 +83,7 @@ public class PivotDistance<D extends Distanceable<D>> implements Comparable<Pivo
             throw new NullPointerException("PivotsDistance for comparison is null");
         }
 
-        return Double.valueOf(distance).compareTo(clusterPivotDistance.getDistance());
+        return Double.compare(distance, clusterPivotDistance.getDistance());
     }
 
 
