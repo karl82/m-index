@@ -47,12 +47,11 @@ public class Index {
     private final List<Integer> indexes;
     private final Set<Integer> indexes2LevelSet;
 
-    public Index(int index, int maxLevel, int maxIndex) {
+    public Index(int maxLevel, int maxIndex) {
         this.indexes = new ArrayList<>(maxLevel);
-        this.indexes.add(index);
         this.maxLevel = maxLevel;
         this.maxIndex = maxIndex;
-        level = 1;
+        level = 0;
         indexes2LevelSet = new HashSet<>();
     }
 

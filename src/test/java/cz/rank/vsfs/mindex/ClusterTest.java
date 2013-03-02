@@ -26,73 +26,37 @@
 
 package cz.rank.vsfs.mindex;
 
-import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 
 /**
  * @author Karel Rank
  */
-public class IndexTest {
-    @DataProvider(name = "clusterIndexTestData")
-    public Object[][] createClusterIndexTestData() {
-        return new Object[][]{
-                {2,
-                 4,
-                 new int[]{0},
-                 0},
-                {2,
-                 4,
-                 new int[]{1},
-                 1},
-                {2,
-                 4,
-                 new int[]{2},
-                 2},
-                {2,
-                 4,
-                 new int[]{3},
-                 3},
-                {2,
-                 4,
-                 new int[]{1,
-                           0},
-                 4},
-                {2,
-                 4,
-                 new int[]{1,
-                           2},
-                 6},
-                {2,
-                 4,
-                 new int[]{2,
-                           1},
-                 9},
-                {3,
-                 3,
-                 new int[]{1,
-                           0,
-                           2},
-                 11},
+public class ClusterTest {
+    @Test
+    public void testFirstLevelCluster() {
+        final Cluster<Point> rootCluster = new RootCluster<>(2, 10);
+        final Cluster<Point> firstLevelCluster = rootCluster
+                .getOrCreateSubCluster(new Pivot<>(1, new Point(0, 0)));
 
-        };
+        assertThat(firstLevelCluster, is(instanceOf(InternalCluster.class)));
+        assertThat(firstLevelCluster.getLevel(), is(1));
     }
 
-    @Test(groups = "unit", dataProvider = "clusterIndexTestData")
-    public void testClusterIndex(int maxLevel, int maxIndexes, int[] indexes, int expectedIndex) {
-        assertThat(createIndex(maxLevel, maxIndexes, indexes).getCalculatedIndex(), is(expectedIndex));
-    }
+    @Test
+    public void testLeafLevelCluster() {
+        final Cluster<Point> rootCluster = new RootCluster<>(2, 10);
+        final Cluster<Point> firstLevelCluster = rootCluster
+                .getOrCreateSubCluster(new Pivot<>(1, new Point(0, 0)));
 
-    private Index createIndex(int maxLevel, int maxIndexes, int[] indexes) {
-        Index index = new Index(maxLevel, maxIndexes);
+        final Cluster<Point> leafLevelCluster = firstLevelCluster
+                .getOrCreateSubCluster(new Pivot<>(1, new Point(0, 0)));
 
-        for (int i = 0; i < indexes.length; i++) {
-            index = index.addLevel(indexes[i]);
-        }
-
-        return index;
+        assertThat(leafLevelCluster, is(instanceOf(LeafCluster.class)));
+        assertThat(leafLevelCluster.getLevel(), is(2));
     }
 
 }

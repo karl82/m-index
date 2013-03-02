@@ -31,16 +31,7 @@ package cz.rank.vsfs.mindex;
  */
 public class RootCluster<D extends Distanceable<D>> extends InternalCluster<D> {
     public RootCluster(int maxLevel, int maxPivots) {
-        super(new Index(0, maxLevel, maxPivots));
-    }
-
-    @Override
-    protected Index nextLevelIndex(Pivot<D> pivot) {
-        return new Index(pivot.getIndex(), getMaxLevel(), getIndex().getMaxIndex());
-    }
-
-    private int getMaxLevel() {
-        return getIndex().getMaxLevel();
+        super(new Index(maxLevel, maxPivots));
     }
 
     @Override
