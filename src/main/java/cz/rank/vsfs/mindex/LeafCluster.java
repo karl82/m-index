@@ -33,4 +33,16 @@ public class LeafCluster<D extends Distanceable<D>> extends InternalCluster<D> {
     public LeafCluster(Cluster<D> parentCluster, Index index) {
         super(parentCluster, index);
     }
+
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("LeafCluster");
+        sb.append("{index=").append(getIndex());
+        sb.append(", rMin=").append(getKeyMin());
+        sb.append(", rMax=").append(getKeyMax());
+        sb.append('}');
+        return sb.toString();
+
+    }
+
 }

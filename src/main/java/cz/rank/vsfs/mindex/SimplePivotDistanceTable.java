@@ -57,7 +57,4 @@ public class SimplePivotDistanceTable<D extends Distanceable<D>> extends Abstrac
 
         }
     }
-
-    private void calculateObjectDistance(D object) {
-    }
 }

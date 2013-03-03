@@ -32,7 +32,6 @@ import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -45,14 +44,13 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Karel Rank
  */
 public class ClusterTreePerfTest {
     public static final String MINDEX_REFERENCE_FILE = "mindex.reference.file";
-    public static final int DEFAULT_TEST_INVOCATIONS = 40;
+    public static final int DEFAULT_TEST_INVOCATIONS = 5;
     private static final Logger logger = LoggerFactory.getLogger(ClusterTreePerfTest.class);
     private static final int[] PIVOTS_COUNT = {10,
                                                20,
@@ -60,18 +58,28 @@ public class ClusterTreePerfTest {
                                                50,
                                                100,
                                                200,
-                                               400};
-    private static final int[] CLUSTER_MAX_LEVEL = {2,
-                                                    3,
-                                                    4,
-                                                    5,
-                                                    10};
-    private static final double[] RANGES = {0.01,
-                                            0.05,
-                                            0.15,
-                                            0.3,
-                                            0.5,
-                                            1.0};
+                                               400
+    };
+    private static final int[] CLUSTER_MAX_LEVEL = {
+            2,
+            3,
+            4,
+            5,
+    };
+    private static final double[] RANGES = {
+            0.01,
+            0.05,
+            0.15,
+            0.3,
+            0.5,
+            1.0
+    };
+    private static final int[] QUERY_OBJECTS = {10,
+                                                20,
+                                                50,
+                                                100,
+                                                1000
+    };
     private final List<Vector> objects = new ArrayList<>();
     private double maximumDistance;
 
@@ -82,6 +90,7 @@ public class ClusterTreePerfTest {
         logger.info("Reading reference data from: " + referenceDataPath);
 
         final List<String> lines = Files.readAllLines(referenceDataPath, Charset.defaultCharset());
+//        final List<String> lines = Files.readAllLines(referenceDataPath, Charset.defaultCharset()).subList(0, 10000);
         logger.info("Read " + lines.size() + " lines");
         for (String line : lines) {
             parseLineAndCreateVector(line);
@@ -93,7 +102,7 @@ public class ClusterTreePerfTest {
 
     private void calculateMaximumDistance() {
         logger.info("Calculating maximum distance...");
-        maximumDistance = new MaximumDistance<>(objects).calculate();
+        maximumDistance = new MaximumDistance<>(objects).calculate() * 1.15d;
         logger.info("Maximum distance is " + maximumDistance);
 
     }
@@ -101,12 +110,13 @@ public class ClusterTreePerfTest {
     private void warmUp() {
         logger.info("Performing JVM warm up...");
         final Slf4JStopWatch stopWatch = new Slf4JStopWatch(PerfLogger.LOGGER);
-        performTest(new TestParams(50, 3, 1, 0.15d), 1, stopWatch, "WARMUP");
-        performTest(new TestParams(50, 3, 1, 0.3d), 1, stopWatch, "WARMUP");
-        performTest(new TestParams(100, 3, 1, 0.1d), 1, stopWatch, "WARMUP");
+        performTest(new TestParams(10, 10000, 3, 1, 0.15d), 1, stopWatch, "WARMUP");
+        performTest(new TestParams(10, 10000, 3, 1, 0.1d), 1, stopWatch, "WARMUP");
+        performTest(new TestParams(20, 10000, 3, 1, 0.1d), 1, stopWatch, "WARMUP");
         logger.info("JVM warm up done...");
     }
 
+/*
     @AfterMethod
     public void performGc() throws InterruptedException {
         logger.info("Performing GC...");
@@ -115,6 +125,7 @@ public class ClusterTreePerfTest {
         TimeUnit.SECONDS.sleep(5);
         logger.info("GC done...");
     }
+*/
 
     private void parseLineAndCreateVector(String line) {
         // Skip empty lines
@@ -143,8 +154,11 @@ public class ClusterTreePerfTest {
         for (Integer dimension : PIVOTS_COUNT) {
             for (Integer objectsCount : CLUSTER_MAX_LEVEL) {
                 for (Double range : RANGES) {
-                    params.add(
-                            new TestParams[]{new TestParams(dimension, objectsCount, DEFAULT_TEST_INVOCATIONS, range)});
+                    for (Integer queryObjects : QUERY_OBJECTS) {
+                        params.add(
+                                new TestParams[]{new TestParams(dimension, queryObjects, objectsCount,
+                                                                DEFAULT_TEST_INVOCATIONS, range)});
+                    }
                 }
             }
         }
@@ -169,30 +183,24 @@ public class ClusterTreePerfTest {
         clusterTree.build();
         stopWatch.stop(prefix + ".build", Integer.toString(invocation));
 
-        int emptyResults = 0;
-        final List<Vector> queryObjects = objects.subList(params.pivotsCount, params.pivotsCount + 1000);
+        final List<Vector> queryObjects = objects.subList(params.pivotsCount, params.pivotsCount + params.queryObjects);
         stopWatch.start(prefix + ".rangeQuery", Integer.toString(invocation));
         for (Vector queryObject : queryObjects) {
             final Collection<Vector> foundObjects = clusterTree.rangeQuery(queryObject, params.range);
-
-            // Avoid dead code
-            if (foundObjects.isEmpty()) {
-                emptyResults++;
-            }
         }
         stopWatch.stop(prefix + ".rangeQuery", Integer.toString(invocation));
-
-        logger.info("Empty results {}", emptyResults);
     }
 
     private static class TestParams {
         private final int pivotsCount;
+        private final int queryObjects;
         private final int clusterMaxLevel;
         private final int invocations;
         private final double range;
 
-        public TestParams(int pivotsCount, int clusterMaxLevel, int invocations, double range) {
+        public TestParams(int pivotsCount, int queryObjects, int clusterMaxLevel, int invocations, double range) {
             this.pivotsCount = pivotsCount;
+            this.queryObjects = queryObjects;
             this.clusterMaxLevel = clusterMaxLevel;
             this.invocations = invocations;
             this.range = range;
@@ -202,6 +210,7 @@ public class ClusterTreePerfTest {
         public String toString() {
             final StringBuilder sb = new StringBuilder();
             sb.append("{pivotsCount=").append(pivotsCount);
+            sb.append(", queryObjects=").append(queryObjects);
             sb.append(", clusterMaxLevel=").append(clusterMaxLevel);
             sb.append(", range=").append(range);
             sb.append('}');

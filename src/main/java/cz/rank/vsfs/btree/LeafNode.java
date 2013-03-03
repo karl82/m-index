@@ -56,7 +56,6 @@ class LeafNode<K extends Comparable<? super K>, V> extends AbstractNode<K, V> {
             values.add(value);
             this.values.add(fixBinPos(pos), values);
         } else {
-//            keys.set(pos, key);
             values.get(pos).add(value);
         }
     }
@@ -120,7 +119,7 @@ class LeafNode<K extends Comparable<? super K>, V> extends AbstractNode<K, V> {
         return range;
     }
 
-    private Collection<? extends V> siblingRange(K from, K to) {
+    private List<? extends V> siblingRange(K from, K to) {
         if (sibling == null) {
             return Collections.emptyList();
         } else {

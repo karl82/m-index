@@ -45,12 +45,8 @@ public class Vector implements Distanceable<Vector> {
         }
     }
 
-    public Vector(Double... values) {
-        this.values = new double[values.length];
-        int i = 0;
-        for (Double value : values) {
-            this.values[i++] = value;
-        }
+    public Vector(double... values) {
+        this.values = values;
     }
 
     @Override
