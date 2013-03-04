@@ -29,11 +29,12 @@ package cz.rank.vsfs.mindex;
 import net.jcip.annotations.Immutable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.Callable;
 
 /**
@@ -106,14 +107,14 @@ public abstract class AbstractPivotDistanceTable<D extends Distanceable<D>> impl
 
     protected class PivotDistanceSolver implements Callable<ParallelPivotDistanceTable.PivotDistanceResult> {
         private final int objectIndex;
-        private final ParallelPivotDistanceTable.PivotDistanceResult result = new ParallelPivotDistanceTable.PivotDistanceResult();
+        private final PivotDistanceResult result = new PivotDistanceResult();
 
         public PivotDistanceSolver(int objectIndex) {
             this.objectIndex = objectIndex;
         }
 
         @Override
-        public ParallelPivotDistanceTable.PivotDistanceResult call() throws Exception {
+        public PivotDistanceResult call() throws Exception {
             for (int i = objectIndex; i < objectIndex + SOLVER_GRANULARITY && i < objectsSize; ++i) {
                 calculateObjectDistance(objects.get(i));
             }
@@ -121,30 +122,18 @@ public abstract class AbstractPivotDistanceTable<D extends Distanceable<D>> impl
         }
 
         private void calculateObjectDistance(D object) {
-            List<PivotDistance<D>> objectDistances = doCalculatePivotDistances(object);
-
-            copyAndSortDistancesByDistance(object, objectDistances);
-            sortDistancesByPivot(object, objectDistances);
-        }
-
-        private List<PivotDistance<D>> doCalculatePivotDistances(D object) {
+            final SortedSet<PivotDistance<D>> objectDistancesByPivot = new TreeSet<PivotDistance<D>>(
+                    distanceComparator);
+            final SortedSet<PivotDistance<D>> objectDistancesByDistance = new TreeSet<>();
             final int size = pivots.size();
-            final List<PivotDistance<D>> objectDistances = new ArrayList<>(size);
             for (int i = 0; i < size; i++) {
-                objectDistances.add(createPivotDistance(object, i));
+                final PivotDistance<D> pivotDistance = createPivotDistance(object, i);
+                objectDistancesByPivot.add(pivotDistance);
+                objectDistancesByDistance.add(pivotDistance);
             }
-            return objectDistances;
-        }
 
-        private void sortDistancesByPivot(D object, List<PivotDistance<D>> objectDistances) {
-            Collections.sort(objectDistances, distanceComparator);
-            result.distancesSortedByPivot.put(object, objectDistances);
-        }
-
-        private void copyAndSortDistancesByDistance(D object, List<PivotDistance<D>> objectDistances) {
-            List<PivotDistance<D>> objectDistancesSortedByDistance = new ArrayList<>(objectDistances);
-            Collections.sort(objectDistancesSortedByDistance);
-            result.distancesSortedByDistance.put(object, objectDistancesSortedByDistance);
+            result.distancesSortedByPivot.put(object, new ArrayList<>(objectDistancesByPivot));
+            result.distancesSortedByDistance.put(object, new ArrayList<>(objectDistancesByDistance));
         }
 
         private PivotDistance<D> createPivotDistance(D object, int i) {
