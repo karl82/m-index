@@ -106,9 +106,9 @@ class LeafNode<K extends Comparable<? super K>, V> extends AbstractNode<K, V> {
         final int fromPos = fixBinPos(Collections.binarySearch(keys, from));
         final int toPos = fixBinPos(Collections.binarySearch(keys, to));
 
-        final List<V> range = new ArrayList<>(maxKeys());
-
         final List<List<V>> matchedValues = values.subList(fromPos, toPos);
+        final List<V> range = new ArrayList<>(matchedValues.size() * 2);
+
         for (List<V> list : matchedValues) {
             range.addAll(list);
         }
