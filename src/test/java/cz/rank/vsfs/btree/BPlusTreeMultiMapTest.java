@@ -196,6 +196,19 @@ public class BPlusTreeMultiMapTest {
         assertThat(range, is(empty()));
     }
 
+    @Test(groups = {"unit"})
+    public void testEmptyRangeQuery2() {
+        BPlusTreeMultiMap<Double, Double> tree = new BPlusTreeMultiMap<>(2);
+
+        for (double d = 0; d < 5; d+=0.1d) {
+            tree.insert(d, d);
+        }
+
+        List<Double> range = tree.rangeSearch(0.01d, 0.02d);
+
+        assertThat(range, is(empty()));
+    }
+
     @Test(groups = {"unit"}, expectedExceptions = IllegalArgumentException.class)
     public void testWrongRangesForRangeQuery() {
         BPlusTreeMultiMap<Integer, Integer> tree = new BPlusTreeMultiMap<>(2);
