@@ -28,6 +28,8 @@ package cz.rank.vsfs.mindex;
 
 import net.jcip.annotations.NotThreadSafe;
 import org.apache.commons.math3.util.FastMath;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -35,6 +37,7 @@ import java.util.Map;
 
 @NotThreadSafe
 public class InternalCluster<D extends Distanceable<D>> implements Cluster<D> {
+    private static final Logger logger = LoggerFactory.getLogger(InternalCluster.class);
     private final Index index;
     private final Cluster<D> parent;
     private final Map<Pivot<D>, Cluster<D>> subClustersMappedToPivots = new HashMap<>();
@@ -106,6 +109,9 @@ public class InternalCluster<D extends Distanceable<D>> implements Cluster<D> {
             cluster = createInternalSubCluster(pivot);
         }
 
+        if (logger.isDebugEnabled()) {
+            logger.debug("Created new cluster: {}", cluster);
+        }
         return cluster;
     }
 
