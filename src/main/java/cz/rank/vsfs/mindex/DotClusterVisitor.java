@@ -32,21 +32,28 @@ package cz.rank.vsfs.mindex;
 public class DotClusterVisitor<D extends Distanceable<D>> implements ClusterVisitor<D> {
     private static final String graphHeader = "digraph G {\n";
     private static final String graphFooter = "}";
-
     private final StringBuilder clusterDefinitions = new StringBuilder();
 
-    @Override
     public String getGraphDefinition() {
         return graphHeader + clusterDefinitions + graphFooter;
     }
 
-    @Override
     public void enterCluster(Cluster<D> cluster) {
         String currentIndex = cluster.getIndex().toString().replaceAll("[\\[\\]]", "\"");
         for (Cluster<D> subCluster : cluster.getSubClusters()) {
             createRelation(currentIndex, subCluster.getIndex().toString().replaceAll("[\\[\\]]", "\""));
             subCluster.accept(this);
         }
+    }
+
+    @Override
+    public void enterInternalCluster(InternalCluster<D> internalCluster) {
+        enterCluster(internalCluster);
+    }
+
+    @Override
+    public void enterLeafCluster(LeafCluster<D> leafCluster) {
+        enterCluster(leafCluster);
     }
 
     private void createRelation(String from, String to) {

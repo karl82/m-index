@@ -37,8 +37,8 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
@@ -180,7 +180,7 @@ public class BPlusTreeMultiMapTest {
 
         List<Object> range = tree.rangeSearch(12, 13);
 
-        assertThat(range, hasItems(object2, object1));
+        assertThat(range, containsInAnyOrder(object2, object1));
     }
 
     @Test(groups = {"unit"})
@@ -200,7 +200,7 @@ public class BPlusTreeMultiMapTest {
     public void testEmptyRangeQuery2() {
         BPlusTreeMultiMap<Double, Double> tree = new BPlusTreeMultiMap<>(2);
 
-        for (double d = 0; d < 5; d+=0.1d) {
+        for (double d = 0; d < 5; d += 0.1d) {
             tree.insert(d, d);
         }
 

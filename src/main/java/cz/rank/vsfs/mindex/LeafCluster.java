@@ -45,4 +45,8 @@ public class LeafCluster<D extends Distanceable<D>> extends InternalCluster<D> {
 
     }
 
+    @Override
+    public void accept(ClusterVisitor<D> visitor) {
+        visitor.enterLeafCluster(this);
+    }
 }

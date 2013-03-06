@@ -120,11 +120,11 @@ public class InternalCluster<D extends Distanceable<D>> implements Cluster<D> {
     }
 
     private LeafCluster<D> createLeafSubCluster(Pivot<D> pivot) {
-        return new LeafCluster<D>(this, nextLevelIndex(pivot));
+        return new LeafCluster<>(this, nextLevelIndex(pivot));
     }
 
     private InternalCluster<D> createInternalSubCluster(Pivot<D> pivot) {
-        return new InternalCluster<D>(this, nextLevelIndex(pivot));
+        return new InternalCluster<>(this, nextLevelIndex(pivot));
     }
 
     protected Index nextLevelIndex(Pivot<D> pivot) {
@@ -158,7 +158,7 @@ public class InternalCluster<D extends Distanceable<D>> implements Cluster<D> {
 
     @Override
     public void accept(ClusterVisitor<D> visitor) {
-        visitor.enterCluster(this);
+        visitor.enterInternalCluster(this);
     }
 
     @Override

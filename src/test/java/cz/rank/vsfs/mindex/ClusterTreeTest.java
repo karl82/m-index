@@ -38,13 +38,12 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static cz.rank.vsfs.mindex.util.Generators.createPivots;
 import static cz.rank.vsfs.mindex.util.Generators.createVectors;
-import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasItems;
 
 /**
  * @author Karel Rank
@@ -56,25 +55,25 @@ public class ClusterTreeTest {
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class,
-          expectedExceptionsMessageRegExp = ".*must be greater than 0.*", groups = {"unit"})
+            expectedExceptionsMessageRegExp = ".*must be greater than 0.*", groups = {"unit"})
     public void testMaximalLevelMustBeGreaterThanOne() {
         final ClusterTree<Point> tree = new ClusterTree<>(0, 5, twoPivots());
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = ".*cannot be empty.*",
-          groups = {"unit"})
+            groups = {"unit"})
     public void testPivotsCannotBeEmpty() {
         final ClusterTree<Point> tree = new ClusterTree<>(1, 5, Collections.<Pivot<Point>>emptyList());
     }
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = ".*cannot be null.*",
-          groups = {"unit"})
+            groups = {"unit"})
     public void testPivotsCannotBeNull() {
         final ClusterTree<Point> tree = new ClusterTree<>(1, 5, null);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class,
-          expectedExceptionsMessageRegExp = ".*must be lower than pivots.*", groups = {"unit"})
+            expectedExceptionsMessageRegExp = ".*must be lower than pivots.*", groups = {"unit"})
     public void testMaximalLevelMustBeLowerThanPivots() {
         final ClusterTree<Point> tree = new ClusterTree<>(3, 5, twoPivots());
     }
@@ -85,7 +84,7 @@ public class ClusterTreeTest {
 
     private List<Pivot<Point>> threePivots() {
         return Arrays.asList(new Pivot<>(0, new Point(0, 0)), new Pivot<>(1, new Point(1, 1)),
-                             new Pivot<>(2, new Point(1, 5)));
+                new Pivot<>(2, new Point(1, 5)));
     }
 
     @Test(groups = {"unit"})
@@ -115,7 +114,7 @@ public class ClusterTreeTest {
 
         final Collection<Point> points = tree.rangeQuery(new Point(1, 1), 0.5d);
 
-        assertThat(points, hasItems(point1, point2));
+        assertThat(points, containsInAnyOrder(point1, point2));
     }
 
     @Test(groups = {"unit"})
@@ -130,7 +129,7 @@ public class ClusterTreeTest {
 
         final Collection<Point> points = tree.rangeQuery(new Point(2.1d, 0.8d), 0.5d);
 
-        assertThat(points, hasItem(point));
+        assertThat(points, containsInAnyOrder(point));
     }
 
     @Test(groups = {"unit"})
@@ -149,7 +148,7 @@ public class ClusterTreeTest {
 
         final Collection<Point> points = tree.rangeQuery(new Point(2.0d, 1.0d), 0.1d);
 
-        assertThat(points, hasItem(point));
+        assertThat(points, containsInAnyOrder(point));
     }
 
     @Test(groups = {"longRunning"})
@@ -176,8 +175,8 @@ public class ClusterTreeTest {
 
         for (int i = 0; i < pointsCount; ++i) {
             points.add(new Point(ThreadLocalRandom.current().nextDouble(-limit, limit),
-                                 ThreadLocalRandom.current().nextDouble(
-                                         -limit, limit)));
+                    ThreadLocalRandom.current().nextDouble(
+                            -limit, limit)));
         }
 
         return points;

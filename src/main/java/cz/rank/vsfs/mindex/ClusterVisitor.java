@@ -30,7 +30,7 @@ package cz.rank.vsfs.mindex;
  * @author Karel Rank
  */
 public interface ClusterVisitor<D extends Distanceable<D>> {
-    String getGraphDefinition();
+    void enterInternalCluster(InternalCluster<D> internalCluster);
 
-    void enterCluster(Cluster<D> cluster);
+    void enterLeafCluster(LeafCluster<D> leafCluster);
 }
