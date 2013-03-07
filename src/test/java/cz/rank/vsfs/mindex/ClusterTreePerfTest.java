@@ -157,7 +157,7 @@ public class ClusterTreePerfTest {
                     for (Integer queryObjects : QUERY_OBJECTS) {
                         params.add(
                                 new TestParams[]{new TestParams(dimension, queryObjects, objectsCount,
-                                                                DEFAULT_TEST_INVOCATIONS, range)});
+                                        DEFAULT_TEST_INVOCATIONS, range)});
                     }
                 }
             }
@@ -177,16 +177,16 @@ public class ClusterTreePerfTest {
 
         List<Pivot<Vector>> pivots = Generators.createPivots(objects.subList(0, params.pivotsCount));
 
-        final ClusterTree<Vector> clusterTree = new ClusterTree<>(params.clusterMaxLevel, 100, pivots, maximumDistance);
-        clusterTree.addAll(objects);
+        final MIndex<Vector> MIndex = new MIndex<>(params.clusterMaxLevel, 100, pivots, maximumDistance);
+        MIndex.addAll(objects);
         stopWatch.start(prefix + ".build", Integer.toString(invocation));
-        clusterTree.build();
+        MIndex.build();
         stopWatch.stop(prefix + ".build", Integer.toString(invocation));
 
         final List<Vector> queryObjects = objects.subList(params.pivotsCount, params.pivotsCount + params.queryObjects);
         stopWatch.start(prefix + ".rangeQuery", Integer.toString(invocation));
         for (Vector queryObject : queryObjects) {
-            final Collection<Vector> foundObjects = clusterTree.rangeQuery(queryObject, params.range);
+            final Collection<Vector> foundObjects = MIndex.rangeQuery(queryObject, params.range);
         }
         stopWatch.stop(prefix + ".rangeQuery", Integer.toString(invocation));
     }

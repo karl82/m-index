@@ -45,18 +45,18 @@ import java.util.Set;
  *
  * @author Karel Rank
  */
-public class ClusterTree<D extends Distanceable<D>> {
-    private static final Logger logger = LoggerFactory.getLogger(ClusterTree.class);
+public class MIndex<D extends Distanceable<D>> {
+    private static final Logger logger = LoggerFactory.getLogger(MIndex.class);
     private final int maxLevel;
     private final List<Pivot<D>> pivots;
     private final List<D> objects;
-    private final Cluster<D> root;
+    private final Cluster<D> clusterRoot;
     private final BPlusTreeMultiMap<Double, D> btreemap;
     private final int pivotsSize;
     private PivotDistanceTable<D> pivotDistanceTable = null;
     private double maximumDistance = Double.MIN_VALUE;
 
-    public ClusterTree(int maxLevel, int btreeLevel, List<Pivot<D>> pivots) {
+    public MIndex(int maxLevel, int btreeLevel, List<Pivot<D>> pivots) {
         this.maxLevel = maxLevel;
         this.pivots = pivots;
 
@@ -66,11 +66,11 @@ public class ClusterTree<D extends Distanceable<D>> {
 
         // Save reallocation
         objects = new ArrayList<>(50000);
-        root = new RootCluster<>(maxLevel, pivotsSize);
+        clusterRoot = new RootCluster<>(maxLevel, pivotsSize);
         btreemap = new BPlusTreeMultiMap<>(btreeLevel);
     }
 
-    public ClusterTree(int maxLevel, int btreeLevel, List<Pivot<D>> pivots, double maximumDistance) {
+    public MIndex(int maxLevel, int btreeLevel, List<Pivot<D>> pivots, double maximumDistance) {
         this.maxLevel = maxLevel;
         this.pivots = pivots;
 
@@ -82,7 +82,7 @@ public class ClusterTree<D extends Distanceable<D>> {
 
         // Save reallocation
         objects = new ArrayList<>(50000);
-        root = new RootCluster<>(maxLevel, pivotsSize);
+        clusterRoot = new RootCluster<>(maxLevel, pivotsSize);
         btreemap = new BPlusTreeMultiMap<>(btreeLevel);
     }
 
@@ -119,26 +119,9 @@ public class ClusterTree<D extends Distanceable<D>> {
         calculateMaximumDistance();
         calculateDistances();
 
-        for (D object : objects) {
-            Cluster<D> currentCluster = root;
-            for (int currentLevel = 0; currentLevel < maxLevel; ++currentLevel) {
-                final Pivot<D> pivot = pivotDistanceTable.pivotAt(object, currentLevel);
+        final ClusterTreeBuilder<D> builder = new MultiLevelClusterTreeBuilder<>(objects, clusterRoot, pivotDistanceTable, btreemap);
 
-                currentCluster = currentCluster.getOrCreateSubCluster(pivot);
-            }
-
-            final double distance = pivotDistanceTable.firstPivotDistance(object);
-            final double objectKey = currentCluster.getCalculatedIndex() + distance;
-
-
-            if (logger.isDebugEnabled()) {
-                logger.debug("Inserting into B+Tree key: {}; obj: {}; cluster: {}", objectKey, object,
-                        currentCluster.getIndex());
-            }
-
-            btreemap.insert(objectKey, object);
-            currentCluster.propagateDistance(objectKey);
-        }
+        builder.build();
     }
 
     private void calculateMaximumDistance() {
@@ -185,7 +168,7 @@ public class ClusterTree<D extends Distanceable<D>> {
 
     public String getClusterGraph() {
         final DotClusterVisitor<D> visitor = new DotClusterVisitor<>();
-        root.accept(visitor);
+        clusterRoot.accept(visitor);
         return visitor.getGraphDefinition();
     }
 
@@ -252,7 +235,7 @@ public class ClusterTree<D extends Distanceable<D>> {
         }
 
         public Collection<D> performQuery() {
-            clusterQueue.addAll(root.getSubClusters());
+            clusterQueue.addAll(clusterRoot.getSubClusters());
             while (!clusterQueue.isEmpty()) {
                 final Cluster<D> cluster = clusterQueue.poll();
 
