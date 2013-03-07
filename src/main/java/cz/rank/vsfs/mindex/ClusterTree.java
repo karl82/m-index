@@ -227,6 +227,16 @@ public class ClusterTree<D extends Distanceable<D>> {
                 return;
             }
 
+            final List<D> objects = rangeSearchForObjects(keyMin);
+            for (D object : objects) {
+                if (!pivotShouldBeFiltered(object, queryObject, queryObjectPivotDistance, normalizedRange) &&
+                        isObjectInRange(object, queryObject, range)) {
+                    foundObjects.add(object);
+                }
+            }
+        }
+
+        private List<D> rangeSearchForObjects(double keyMin) {
             final double keyMinFloor = FastMath.floor(keyMin);
             final List<D> objects = btreemap
                     .rangeSearch(keyMinFloor + firstPivotDistance - normalizedRange,
@@ -237,12 +247,8 @@ public class ClusterTree<D extends Distanceable<D>> {
                         keyMinFloor + firstPivotDistance - normalizedRange,
                         keyMinFloor + firstPivotDistance + normalizedRange, objects.size());
             }
-            for (D object : objects) {
-                if (!pivotShouldBeFiltered(object, queryObject, queryObjectPivotDistance, normalizedRange) &&
-                        isObjectInRange(object, queryObject, range)) {
-                    foundObjects.add(object);
-                }
-            }
+
+            return objects;
         }
 
         public Collection<D> performQuery() {
