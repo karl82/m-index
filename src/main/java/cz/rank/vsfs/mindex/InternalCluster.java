@@ -41,8 +41,8 @@ public class InternalCluster<D extends Distanceable<D>> implements Cluster<D> {
     private final Index index;
     private final Cluster<D> parent;
     private final Map<Pivot<D>, Cluster<D>> subClustersMappedToPivots = new HashMap<>();
-    private double rMin = Double.MAX_VALUE;
-    private double rMax = Double.MIN_VALUE;
+    private double keyMin = Double.MAX_VALUE;
+    private double keyMax = Double.MIN_VALUE;
 
     public InternalCluster(Cluster<D> parent, Index index) {
         this.parent = parent;
@@ -68,11 +68,11 @@ public class InternalCluster<D extends Distanceable<D>> implements Cluster<D> {
     }
 
     private void propagateMaxDistance(double distance) {
-        rMax = FastMath.max(distance, rMax);
+        keyMax = FastMath.max(distance, keyMax);
     }
 
     private void propagateMinDistance(double distance) {
-        rMin = FastMath.min(distance, rMin);
+        keyMin = FastMath.min(distance, keyMin);
     }
 
     private void propagateToParent(double distance) {
@@ -148,12 +148,12 @@ public class InternalCluster<D extends Distanceable<D>> implements Cluster<D> {
 
     @Override
     public double getKeyMin() {
-        return rMin;
+        return keyMin;
     }
 
     @Override
     public double getKeyMax() {
-        return rMax;
+        return keyMax;
     }
 
     @Override
@@ -166,8 +166,8 @@ public class InternalCluster<D extends Distanceable<D>> implements Cluster<D> {
         final StringBuilder sb = new StringBuilder();
         sb.append("InternalCluster");
         sb.append("{index=").append(index);
-        sb.append(", rMin=").append(rMin);
-        sb.append(", rMax=").append(rMax);
+        sb.append(", keyMin=").append(keyMin);
+        sb.append(", keyMax=").append(keyMax);
         sb.append('}');
         return sb.toString();
     }
