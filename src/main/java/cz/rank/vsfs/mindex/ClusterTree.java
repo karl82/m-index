@@ -165,7 +165,7 @@ public class ClusterTree<D extends Distanceable<D>> {
                     "Querying objects which are in range: " + normalizedRange + " from object: " + queryObject);
         }
 
-        final ClusterRangeQuery clusterRangeQuery = new ClusterRangeQuery(queryObject, normalizedRange);
+        final ClusterRangeQuery clusterRangeQuery = new ClusterRangeQuery(queryObject, range, normalizedRange);
         Collection<D> foundObjects = clusterRangeQuery.performQuery();
         if (logger.isDebugEnabled()) {
             logger.debug(
@@ -193,13 +193,15 @@ public class ClusterTree<D extends Distanceable<D>> {
         private final Collection<D> foundObjects = new HashSet<>();
         private final D queryObject;
         private final double range;
+        private final double normalizedRange;
         private final Queue<Cluster<D>> clusterQueue = new LinkedList<>();
         private final PivotDistanceTable<D> queryObjectPivotDistance;
         private final double firstPivotDistance;
 
-        private ClusterRangeQuery(D queryObject, double range) {
+        private ClusterRangeQuery(D queryObject, double range, double normalizedRange) {
             this.queryObject = queryObject;
             this.range = range;
+            this.normalizedRange = normalizedRange;
             queryObjectPivotDistance = calculateDistanceFor(queryObject);
             firstPivotDistance = queryObjectPivotDistance.firstPivotDistance(queryObject);
 
@@ -214,16 +216,16 @@ public class ClusterTree<D extends Distanceable<D>> {
         public void enterLeafCluster(LeafCluster<D> leafCluster) {
             final double keyMinFloor = FastMath.floor(leafCluster.getKeyMin());
             final List<D> objects = btreemap
-                    .rangeSearch(keyMinFloor + firstPivotDistance - range,
-                            keyMinFloor + firstPivotDistance + range);
+                    .rangeSearch(keyMinFloor + firstPivotDistance - normalizedRange,
+                            keyMinFloor + firstPivotDistance + normalizedRange);
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Range search from {} to {} returned {} objects",
-                        keyMinFloor + firstPivotDistance - range,
-                        keyMinFloor + firstPivotDistance + range, objects.size());
+                        keyMinFloor + firstPivotDistance - normalizedRange,
+                        keyMinFloor + firstPivotDistance + normalizedRange, objects.size());
             }
             for (D object : objects) {
-                if (!pivotShouldBeFiltered(object, queryObject, queryObjectPivotDistance, range) &&
+                if (!pivotShouldBeFiltered(object, queryObject, queryObjectPivotDistance, normalizedRange) &&
                         isObjectInRange(object, queryObject, range)) {
                     foundObjects.add(object);
                 }
@@ -235,7 +237,7 @@ public class ClusterTree<D extends Distanceable<D>> {
             while (!clusterQueue.isEmpty()) {
                 final Cluster<D> cluster = clusterQueue.poll();
 
-                if (doublePivotDistanceConstraint(cluster, queryObjectPivotDistance, queryObject, range)) {
+                if (doublePivotDistanceConstraint(cluster, queryObjectPivotDistance, queryObject, normalizedRange)) {
                     if (logger.isDebugEnabled()) {
                         logger.debug("Skipping cluster due doublePivotDistanceConstraint: {}", cluster);
                     }
@@ -248,7 +250,7 @@ public class ClusterTree<D extends Distanceable<D>> {
                 final double rMin = frac(keyMin);
                 final double rMax = frac(keyMax);
 
-                if (rangePivotDistanceConstraint(range, rMin, rMax, firstPivotDistance)) {
+                if (rangePivotDistanceConstraint(normalizedRange, rMin, rMax, firstPivotDistance)) {
                     if (logger.isDebugEnabled()) {
                         logger.debug("Skipping cluster due rangePivotDistanceConstraint: {}", cluster);
                     }
@@ -273,17 +275,17 @@ public class ClusterTree<D extends Distanceable<D>> {
         }
 
         private boolean isObjectInRange(D object, D queryObject, double range) {
-            return queryObject.distance(object) <= range;
+            return queryObject.distance(object) / maximumDistance <= range;
         }
 
-        private boolean pivotShouldBeFiltered(D object, D queryObject, PivotDistanceTable<D> queryObjectPivotDistance, double range) {
+        private boolean pivotShouldBeFiltered(D object, D queryObject, PivotDistanceTable<D> queryObjectPivotDistance, double normalizedRange) {
             double maxDistance = 0;
             boolean shouldBeFiltered = false;
             for (int i = 0; i < pivotsSize && !shouldBeFiltered; ++i) {
                 maxDistance = FastMath.max(maxDistance, FastMath.abs(
                         queryObjectPivotDistance.pivotDistance(queryObject, i) - pivotDistanceTable
                                 .pivotDistance(object, i)));
-                shouldBeFiltered = maxDistance > range;
+                shouldBeFiltered = maxDistance > normalizedRange;
             }
 
             return shouldBeFiltered;
