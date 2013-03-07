@@ -214,7 +214,20 @@ public class ClusterTree<D extends Distanceable<D>> {
 
         @Override
         public void enterLeafCluster(LeafCluster<D> leafCluster) {
-            final double keyMinFloor = FastMath.floor(leafCluster.getKeyMin());
+            final double keyMin = leafCluster.getKeyMin();
+            final double keyMax = leafCluster.getKeyMax();
+            final double rMin = frac(keyMin);
+            final double rMax = frac(keyMax);
+
+            if (rangePivotDistanceConstraint(normalizedRange, rMin, rMax, firstPivotDistance)) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Skipping cluster due rangePivotDistanceConstraint: {}", leafCluster);
+                }
+
+                return;
+            }
+
+            final double keyMinFloor = FastMath.floor(keyMin);
             final List<D> objects = btreemap
                     .rangeSearch(keyMinFloor + firstPivotDistance - normalizedRange,
                             keyMinFloor + firstPivotDistance + normalizedRange);
@@ -240,19 +253,6 @@ public class ClusterTree<D extends Distanceable<D>> {
                 if (doublePivotDistanceConstraint(cluster, queryObjectPivotDistance, queryObject, normalizedRange)) {
                     if (logger.isDebugEnabled()) {
                         logger.debug("Skipping cluster due doublePivotDistanceConstraint: {}", cluster);
-                    }
-
-                    continue;
-                }
-
-                final double keyMin = cluster.getKeyMin();
-                final double keyMax = cluster.getKeyMax();
-                final double rMin = frac(keyMin);
-                final double rMax = frac(keyMax);
-
-                if (rangePivotDistanceConstraint(normalizedRange, rMin, rMax, firstPivotDistance)) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Skipping cluster due rangePivotDistanceConstraint: {}", cluster);
                     }
 
                     continue;

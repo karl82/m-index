@@ -38,12 +38,13 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static cz.rank.vsfs.mindex.util.Generators.createPivots;
 import static cz.rank.vsfs.mindex.util.Generators.createVectors;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 /**
  * @author Karel Rank
@@ -129,7 +130,7 @@ public class ClusterTreeTest {
 
         final Collection<Point> points = tree.rangeQuery(new Point(2.1d, 0.8d), 0.5d);
 
-        assertThat(points, containsInAnyOrder(point));
+        assertThat(points, hasItem(point));
     }
 
     @Test(groups = {"unit"})
@@ -143,12 +144,9 @@ public class ClusterTreeTest {
 
         tree.build();
 
-        final String treeGraph = tree.getTreeGraph();
-        final String clusterGraph = tree.getClusterGraph();
-
         final Collection<Point> points = tree.rangeQuery(new Point(2.0d, 1.0d), 0.1d);
 
-        assertThat(points, containsInAnyOrder(point));
+        assertThat(points, hasItem(point));
     }
 
     @Test(groups = {"longRunning"})
@@ -161,9 +159,6 @@ public class ClusterTreeTest {
         tree.addAll(createPoints(5000, 100));
 
         tree.build();
-
-        final String treeGraph = tree.getTreeGraph();
-        final String clusterGraph = tree.getClusterGraph();
 
         final Collection<Point> points = tree.rangeQuery(new Point(2.0d, 1.0d), 0.5d);
 
@@ -259,6 +254,7 @@ public class ClusterTreeTest {
         final List<Vector> pivotVectors = createVectors(pivotsCount, vectorDimension, 100);
         final ClusterTree<Vector> tree = new ClusterTree<>(maxClusterLevel, btreeDegree, createPivots(pivotVectors));
         final List<Vector> searchVectors = createVectors(100, vectorDimension, 100);
+        tree.addAll(searchVectors);
         tree.addAll(pivotVectors);
         tree.addAll(createVectors(objectsCount, vectorDimension, 100));
 
