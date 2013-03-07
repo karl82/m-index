@@ -49,7 +49,7 @@ public class SimplePivotDistanceTable<D extends Distanceable<D>> extends Abstrac
     public void calculate() {
         try {
             for (int i = 0; i < objectsSize; i += SOLVER_GRANULARITY) {
-                final PivotDistanceResult<D> result = new PivotDistanceSolver(i).call();
+                final PivotDistanceResult result = new PivotDistanceSolver(i).call();
                 storeResult(result);
             }
         } catch (Exception e) {

@@ -70,7 +70,7 @@ public class ParallelPivotDistanceTable<D extends Distanceable<D>> extends Abstr
                 int takenSolvers = 0;
                 while (notAllSolversTaken(takenSolvers)) {
                     try {
-                        PivotDistanceResult result = ecs.take().get();
+                        final PivotDistanceResult result = ecs.take().get();
                         storeResult(result);
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();

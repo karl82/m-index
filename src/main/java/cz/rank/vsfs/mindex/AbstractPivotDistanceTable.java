@@ -98,7 +98,7 @@ public abstract class AbstractPivotDistanceTable<D extends Distanceable<D>> impl
     }
 
     @Immutable
-    private static class PivotDistanceComparator<D extends Distanceable<D>> implements Comparator<PivotDistance<D>> {
+    private class PivotDistanceComparator implements Comparator<PivotDistance<D>> {
         @Override
         public int compare(PivotDistance<D> o1, PivotDistance<D> o2) {
             return o1.getPivot().getIndex() - o2.getPivot().getIndex();
@@ -122,7 +122,7 @@ public abstract class AbstractPivotDistanceTable<D extends Distanceable<D>> impl
         }
 
         private void calculateObjectDistance(D object) {
-            final SortedSet<PivotDistance<D>> objectDistancesByPivot = new TreeSet<PivotDistance<D>>(
+            final SortedSet<PivotDistance<D>> objectDistancesByPivot = new TreeSet<>(
                     distanceComparator);
             final SortedSet<PivotDistance<D>> objectDistancesByDistance = new TreeSet<>();
             final int size = pivots.size();
