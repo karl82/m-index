@@ -41,10 +41,7 @@ import static cz.rank.vsfs.mindex.util.Generators.createVectors;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 
 /**
  * @author Karel Rank
@@ -263,7 +260,7 @@ public class MIndexTest {
         for (Vector vector : searchVectors) {
             final Collection<Vector> points = tree.rangeQuery(vector, 0.15d);
 
-            assertThat(points, is(not(empty())));
+            assertThat(points, contains(vector));
         }
     }
 

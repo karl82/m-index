@@ -119,7 +119,8 @@ public class MIndex<D extends Distanceable<D>> {
         calculateMaximumDistance();
         calculateDistances();
 
-        final ClusterTreeBuilder<D> builder = new MultiLevelClusterTreeBuilder<>(objects, clusterRoot, pivotDistanceTable, btreemap);
+        final ClusterTreeBuilder<D> builder = new DynamicClusterTreeBuilder<>(10, objects, clusterRoot, pivotDistanceTable, btreemap);
+//        final ClusterTreeBuilder builder = new MultiLevelClusterTreeBuilder(objects, clusterRoot, pivotDistanceTable, btreemap);
 
         builder.build();
     }

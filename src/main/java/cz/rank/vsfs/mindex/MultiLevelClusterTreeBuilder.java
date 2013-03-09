@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  */
-public class MultiLevelClusterTreeBuilder<D extends Distanceable<D>> implements ClusterTreeBuilder<D> {
+public class MultiLevelClusterTreeBuilder<D extends Distanceable<D>> extends AbstractClusterTreeBuilder<D> {
     private static final Logger logger = LoggerFactory.getLogger(MultiLevelClusterTreeBuilder.class);
     private final List<D> objects;
     private final Cluster<D> clusterRoot;
@@ -31,7 +31,13 @@ public class MultiLevelClusterTreeBuilder<D extends Distanceable<D>> implements 
             for (int currentLevel = 0; currentLevel < maxLevel; ++currentLevel) {
                 final Pivot<D> pivot = pivotDistanceTable.pivotAt(object, currentLevel);
 
-                currentCluster = currentCluster.getOrCreateSubCluster(pivot);
+                Cluster<D> subCluster = currentCluster.getSubCluster(pivot);
+                if (subCluster == null) {
+                    subCluster = createAndStoreSubCluster(currentCluster, pivot);
+
+                }
+
+                currentCluster = subCluster;
             }
 
             final double distance = pivotDistanceTable.firstPivotDistance(object);
@@ -44,7 +50,25 @@ public class MultiLevelClusterTreeBuilder<D extends Distanceable<D>> implements 
             }
 
             btreemap.insert(objectKey, object);
-            currentCluster.propagateDistance(objectKey);
+            currentCluster.setKey(objectKey);
         }
     }
+
+    private Cluster<D> createAndStoreSubCluster(Cluster<D> cluster, Pivot<D> pivot) {
+        Cluster<D> newCluster;
+        if (atLeafLevel(cluster)) {
+            newCluster = createLeafSubCluster(cluster, pivot);
+        } else {
+            newCluster = createInternalSubCluster(cluster, pivot);
+        }
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Created new cluster: {}", newCluster);
+        }
+
+        cluster.storeSubCluster(pivot, newCluster);
+
+        return newCluster;
+    }
+
 }

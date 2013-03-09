@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 @NotThreadSafe
@@ -41,6 +42,7 @@ public class InternalCluster<D extends Distanceable<D>> implements Cluster<D> {
     private final Index index;
     private final Cluster<D> parent;
     private final Map<Pivot<D>, Cluster<D>> subClustersMappedToPivots = new HashMap<>();
+    private final Collection<D> objects = new HashSet<>();
     private double keyMin = Double.MAX_VALUE;
     private double keyMax = Double.MIN_VALUE;
 
@@ -60,25 +62,17 @@ public class InternalCluster<D extends Distanceable<D>> implements Cluster<D> {
     }
 
     @Override
-    public void propagateDistance(double distance) {
-        propagateMinDistance(distance);
-        propagateMaxDistance(distance);
-
-        propagateToParent(distance);
+    public void setKey(double key) {
+        setMinKey(key);
+        setMaxKey(key);
     }
 
-    private void propagateMaxDistance(double distance) {
+    private void setMaxKey(double distance) {
         keyMax = FastMath.max(distance, keyMax);
     }
 
-    private void propagateMinDistance(double distance) {
+    private void setMinKey(double distance) {
         keyMin = FastMath.min(distance, keyMin);
-    }
-
-    private void propagateToParent(double distance) {
-        if (parent != null) {
-            parent.propagateDistance(distance);
-        }
     }
 
     @Override
@@ -87,48 +81,23 @@ public class InternalCluster<D extends Distanceable<D>> implements Cluster<D> {
     }
 
     @Override
-    public Cluster<D> getOrCreateSubCluster(Pivot<D> pivot) {
-        Cluster<D> cluster = subClustersMappedToPivots.get(pivot);
-
-        if (cluster == null) {
-            cluster = createSubCluster(pivot);
-            storeSubCluster(pivot, cluster);
-        }
-        return cluster;
-    }
-
-    private void storeSubCluster(Pivot<D> pivot, Cluster<D> cluster) {
+    public void storeSubCluster(Pivot<D> pivot, Cluster<D> cluster) {
         subClustersMappedToPivots.put(pivot, cluster);
     }
 
-    private Cluster<D> createSubCluster(Pivot<D> pivot) {
-        Cluster<D> cluster;
-        if (leafLevel()) {
-            cluster = createLeafSubCluster(pivot);
-        } else {
-            cluster = createInternalSubCluster(pivot);
-        }
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Created new cluster: {}", cluster);
-        }
-        return cluster;
+    @Override
+    public int getObjectsCount() {
+        return objects.size();
     }
 
-    private boolean leafLevel() {
-        return index.getLevel() + 1 == index.getMaxLevel();
+    @Override
+    public Cluster<D> getParent() {
+        return parent;
     }
 
-    private LeafCluster<D> createLeafSubCluster(Pivot<D> pivot) {
-        return new LeafCluster<>(this, nextLevelIndex(pivot));
-    }
-
-    private InternalCluster<D> createInternalSubCluster(Pivot<D> pivot) {
-        return new InternalCluster<>(this, nextLevelIndex(pivot));
-    }
-
-    protected Index nextLevelIndex(Pivot<D> pivot) {
-        return index.addLevel(pivot.getIndex());
+    @Override
+    public Collection<D> getObjects() {
+        return objects;
     }
 
     @Override
@@ -159,6 +128,21 @@ public class InternalCluster<D extends Distanceable<D>> implements Cluster<D> {
     @Override
     public void accept(ClusterVisitor<D> visitor) {
         visitor.enterInternalCluster(this);
+    }
+
+    @Override
+    public int getMaxLevel() {
+        return getIndex().getMaxLevel();
+    }
+
+    @Override
+    public Cluster<D> getSubCluster(Pivot<D> pivot) {
+        return subClustersMappedToPivots.get(pivot);
+    }
+
+    @Override
+    public void addObject(D object) {
+        objects.add(object);
     }
 
     @Override

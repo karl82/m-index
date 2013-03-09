@@ -30,8 +30,14 @@ package cz.rank.vsfs.mindex;
  * @author Karel Rank
  */
 public class LeafCluster<D extends Distanceable<D>> extends InternalCluster<D> {
+    public static final Cluster NO_SUBCLUSTERS = new LeafCluster();
+
     public LeafCluster(Cluster<D> parentCluster, Index index) {
         super(parentCluster, index);
+    }
+
+    private LeafCluster() {
+        super(null, new Index(1, 1));
     }
 
     public String toString() {
@@ -43,6 +49,17 @@ public class LeafCluster<D extends Distanceable<D>> extends InternalCluster<D> {
         sb.append('}');
         return sb.toString();
 
+    }
+
+    /**
+     * Always returns {@link #NO_SUBCLUSTERS}
+     *
+     * @param pivot
+     * @return {@link #NO_SUBCLUSTERS}
+     */
+    @Override
+    public Cluster<D> getSubCluster(Pivot<D> pivot) {
+        return NO_SUBCLUSTERS;
     }
 
     @Override

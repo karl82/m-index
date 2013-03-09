@@ -36,11 +36,9 @@ public interface Cluster<D extends Distanceable<D>> {
 
     Collection<Cluster<D>> getSubClusters();
 
-    Cluster<D> getOrCreateSubCluster(Pivot<D> pivot);
-
     int getCalculatedIndex();
 
-    void propagateDistance(double distance);
+    void setKey(double distance);
 
     int getLevel();
 
@@ -51,4 +49,18 @@ public interface Cluster<D extends Distanceable<D>> {
     double getKeyMax();
 
     void accept(ClusterVisitor<D> visitor);
+
+    int getMaxLevel();
+
+    Cluster<D> getSubCluster(Pivot<D> pivot);
+
+    void addObject(D object);
+
+    void storeSubCluster(Pivot<D> pivot, Cluster<D> cluster);
+
+    int getObjectsCount();
+
+    Cluster<D> getParent();
+
+    Collection<D> getObjects();
 }
