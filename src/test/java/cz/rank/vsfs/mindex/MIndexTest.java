@@ -49,31 +49,31 @@ import static org.hamcrest.Matchers.hasItem;
 public class MIndexTest {
     @Test(groups = {"unit"})
     public void testMaximalLevel() {
-        final MIndex<Point> tree = new MIndex<>(2, 5, twoPivots());
+        final MIndex<Point> tree = new MultiLevelMIndex<>(2, 5, twoPivots());
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class,
             expectedExceptionsMessageRegExp = ".*must be greater than 0.*", groups = {"unit"})
     public void testMaximalLevelMustBeGreaterThanOne() {
-        final MIndex<Point> tree = new MIndex<>(0, 5, twoPivots());
+        final MIndex<Point> tree = new MultiLevelMIndex<>(0, 5, twoPivots());
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = ".*cannot be empty.*",
             groups = {"unit"})
     public void testPivotsCannotBeEmpty() {
-        final MIndex<Point> tree = new MIndex<>(1, 5, Collections.<Pivot<Point>>emptyList());
+        final MIndex<Point> tree = new MultiLevelMIndex<>(1, 5, Collections.<Pivot<Point>>emptyList());
     }
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = ".*cannot be null.*",
             groups = {"unit"})
     public void testPivotsCannotBeNull() {
-        final MIndex<Point> tree = new MIndex<>(1, 5, null);
+        final MIndex<Point> tree = new MultiLevelMIndex<>(1, 5, null);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class,
             expectedExceptionsMessageRegExp = ".*must be lower than pivots.*", groups = {"unit"})
     public void testMaximalLevelMustBeLowerThanPivots() {
-        final MIndex<Point> tree = new MIndex<>(3, 5, twoPivots());
+        final MIndex<Point> tree = new MultiLevelMIndex<>(3, 5, twoPivots());
     }
 
     private List<Pivot<Point>> twoPivots() {
@@ -87,7 +87,7 @@ public class MIndexTest {
 
     @Test(groups = {"unit"})
     public void testRangeQuery2ndLevel() {
-        final MIndex<Point> tree = new MIndex<>(2, 5, twoPivots());
+        final MIndex<Point> tree = new MultiLevelMIndex<>(2, 5, twoPivots());
         final Point point = new Point(1, 1);
         tree.add(point);
         tree.add(new Point(0, 0));
@@ -101,7 +101,7 @@ public class MIndexTest {
 
     @Test(groups = {"unit"})
     public void testRangeQuery2ndLevelDuplicatedPoints() {
-        final MIndex<Point> tree = new MIndex<>(2, 5, twoPivots());
+        final MIndex<Point> tree = new MultiLevelMIndex<>(2, 5, twoPivots());
         final Point point1 = new Point(1, 1);
         final Point point2 = new Point(1, 1);
         tree.add(point1);
@@ -118,7 +118,7 @@ public class MIndexTest {
     @Test(groups = {"unit"})
     public void testRangeQuery3rdLevel() {
         final List<Point> pivotPoints = createPoints(100, 3);
-        final MIndex<Point> tree = new MIndex<>(3, 5, createPivots(pivotPoints));
+        final MIndex<Point> tree = new MultiLevelMIndex<>(3, 5, createPivots(pivotPoints));
         final Point point = new Point(2, 1);
         tree.addAll(pivotPoints);
         tree.add(point);
@@ -133,7 +133,7 @@ public class MIndexTest {
     @Test(groups = {"unit"})
     public void testRangeQuery3rdLevelTensPivots() {
         final List<Point> pivotPoints = createPoints(10, 100);
-        final MIndex<Point> tree = new MIndex<>(3, 5, createPivots(pivotPoints));
+        final MIndex<Point> tree = new MultiLevelMIndex<>(3, 5, createPivots(pivotPoints));
         final Point point = new Point(2, 1);
         tree.add(point);
         tree.addAll(pivotPoints);
@@ -149,7 +149,7 @@ public class MIndexTest {
     @Test(groups = {"longRunning"})
     public void testRangeQuery3rdLevelHundredPivots() {
         final List<Point> pivotPoints = createPoints(100, 100);
-        final MIndex<Point> tree = new MIndex<>(3, 5, createPivots(pivotPoints));
+        final MIndex<Point> tree = new MultiLevelMIndex<>(3, 5, createPivots(pivotPoints));
         final Point point = new Point(2, 1);
         tree.add(point);
         tree.addAll(pivotPoints);
@@ -249,7 +249,7 @@ public class MIndexTest {
     @Test(groups = {"longRunning"}, dataProvider = "rangeQueryData")
     public void testRangeQuery(int pivotsCount, int objectsCount, int vectorDimension, int maxClusterLevel, int btreeDegree) {
         final List<Vector> pivotVectors = createVectors(pivotsCount, vectorDimension, 100);
-        final MIndex<Vector> tree = new MIndex<>(maxClusterLevel, btreeDegree, createPivots(pivotVectors));
+        final MIndex<Vector> tree = new MultiLevelMIndex<>(maxClusterLevel, btreeDegree, createPivots(pivotVectors));
         final List<Vector> searchVectors = createVectors(100, vectorDimension, 100);
         tree.addAll(searchVectors);
         tree.addAll(pivotVectors);

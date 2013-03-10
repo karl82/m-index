@@ -48,10 +48,10 @@ import java.util.List;
 /**
  * @author Karel Rank
  */
-public class ClusterTreePerfTest {
+public class MIndexPerfTest {
     public static final String MINDEX_REFERENCE_FILE = "mindex.reference.file";
     public static final int DEFAULT_TEST_INVOCATIONS = 5;
-    private static final Logger logger = LoggerFactory.getLogger(ClusterTreePerfTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(MIndexPerfTest.class);
     private static final int[] PIVOTS_COUNT = {10,
                                                20,
                                                30,
@@ -177,7 +177,7 @@ public class ClusterTreePerfTest {
 
         List<Pivot<Vector>> pivots = Generators.createPivots(objects.subList(0, params.pivotsCount));
 
-        final MIndex<Vector> MIndex = new MIndex<>(params.clusterMaxLevel, 100, pivots, maximumDistance);
+        final MIndex<Vector> MIndex = new MultiLevelMIndex<>(params.clusterMaxLevel, 100, pivots, maximumDistance);
         MIndex.addAll(objects);
         stopWatch.start(prefix + ".build", Integer.toString(invocation));
         MIndex.build();
