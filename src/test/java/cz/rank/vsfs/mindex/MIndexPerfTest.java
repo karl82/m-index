@@ -26,15 +26,9 @@
 
 package cz.rank.vsfs.mindex;
 
-import cz.rank.vsfs.mindex.util.Generators;
-import cz.rank.vsfs.mindex.util.PerfLogger;
-import org.perf4j.StopWatch;
-import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,31 +36,30 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
  * @author Karel Rank
  */
-public class MIndexPerfTest {
+public abstract class MIndexPerfTest {
     public static final String MINDEX_REFERENCE_FILE = "mindex.reference.file";
     public static final int DEFAULT_TEST_INVOCATIONS = 5;
-    private static final Logger logger = LoggerFactory.getLogger(MIndexPerfTest.class);
-    private static final int[] PIVOTS_COUNT = {10,
-                                               20,
-                                               30,
-                                               50,
-                                               100,
-                                               200,
-                                               400
+    protected static final int[] PIVOTS_COUNT = {
+            10,
+            20,
+            30,
+            50,
+            100,
+            200,
+            400
     };
-    private static final int[] CLUSTER_MAX_LEVEL = {
+    protected static final int[] CLUSTER_MAX_LEVEL = {
             2,
             3,
             4,
             5,
     };
-    private static final double[] RANGES = {
+    protected static final double[] RANGES = {
             0.01,
             0.05,
             0.15,
@@ -74,14 +67,16 @@ public class MIndexPerfTest {
             0.5,
             1.0
     };
-    private static final int[] QUERY_OBJECTS = {10,
-                                                20,
-                                                50,
-                                                100,
-                                                1000
+    protected static final int[] QUERY_OBJECTS = {
+            10,
+            20,
+            50,
+            100,
+            1000
     };
-    private final List<Vector> objects = new ArrayList<>();
-    private double maximumDistance;
+    private static final Logger logger = LoggerFactory.getLogger(MIndexPerfTest.class);
+    protected final List<Vector> objects = new ArrayList<>();
+    protected double maximumDistance;
 
     @BeforeClass
     public void loadReferenceDataAndWarmUp() throws IOException {
@@ -90,7 +85,6 @@ public class MIndexPerfTest {
         logger.info("Reading reference data from: " + referenceDataPath);
 
         final List<String> lines = Files.readAllLines(referenceDataPath, Charset.defaultCharset());
-//        final List<String> lines = Files.readAllLines(referenceDataPath, Charset.defaultCharset()).subList(0, 10000);
         logger.info("Read " + lines.size() + " lines");
         for (String line : lines) {
             parseLineAndCreateVector(line);
@@ -107,25 +101,7 @@ public class MIndexPerfTest {
 
     }
 
-    private void warmUp() {
-        logger.info("Performing JVM warm up...");
-        final Slf4JStopWatch stopWatch = new Slf4JStopWatch(PerfLogger.LOGGER);
-        performTest(new TestParams(10, 10000, 3, 1, 0.15d), 1, stopWatch, "WARMUP");
-        performTest(new TestParams(10, 10000, 3, 1, 0.1d), 1, stopWatch, "WARMUP");
-        performTest(new TestParams(20, 10000, 3, 1, 0.1d), 1, stopWatch, "WARMUP");
-        logger.info("JVM warm up done...");
-    }
-
-/*
-    @AfterMethod
-    public void performGc() throws InterruptedException {
-        logger.info("Performing GC...");
-        System.gc();
-
-        TimeUnit.SECONDS.sleep(5);
-        logger.info("GC done...");
-    }
-*/
+    protected abstract void warmUp();
 
     private void parseLineAndCreateVector(String line) {
         // Skip empty lines
@@ -145,76 +121,5 @@ public class MIndexPerfTest {
         }
 
         return doubleValues;
-    }
-
-    @DataProvider(name = "clusterTreeParams")
-    public Object[][] clusterTreeParams() {
-        List<TestParams[]> params = new ArrayList<>();
-
-        for (Integer dimension : PIVOTS_COUNT) {
-            for (Integer objectsCount : CLUSTER_MAX_LEVEL) {
-                for (Double range : RANGES) {
-                    for (Integer queryObjects : QUERY_OBJECTS) {
-                        params.add(
-                                new TestParams[]{new TestParams(dimension, queryObjects, objectsCount,
-                                        DEFAULT_TEST_INVOCATIONS, range)});
-                    }
-                }
-            }
-        }
-        return params.toArray(new Object[params.size()][1]);
-    }
-
-    @Test(groups = "perf", dataProvider = "clusterTreeParams")
-    public void testClusterTree(TestParams params) {
-        final Slf4JStopWatch stopWatch = new Slf4JStopWatch(PerfLogger.LOGGER);
-        for (int i = 1; i < params.invocations + 1; i++) {
-            performTest(params, i, stopWatch, params.toString());
-        }
-    }
-
-    private void performTest(TestParams params, int invocation, StopWatch stopWatch, String prefix) {
-
-        List<Pivot<Vector>> pivots = Generators.createPivots(objects.subList(0, params.pivotsCount));
-
-        final MIndex<Vector> MIndex = new MultiLevelMIndex<>(params.clusterMaxLevel, 100, pivots, maximumDistance);
-        MIndex.addAll(objects);
-        stopWatch.start(prefix + ".build", Integer.toString(invocation));
-        MIndex.build();
-        stopWatch.stop(prefix + ".build", Integer.toString(invocation));
-
-        final List<Vector> queryObjects = objects.subList(params.pivotsCount, params.pivotsCount + params.queryObjects);
-        stopWatch.start(prefix + ".rangeQuery", Integer.toString(invocation));
-        for (Vector queryObject : queryObjects) {
-            final Collection<Vector> foundObjects = MIndex.rangeQuery(queryObject, params.range);
-        }
-        stopWatch.stop(prefix + ".rangeQuery", Integer.toString(invocation));
-    }
-
-    private static class TestParams {
-        private final int pivotsCount;
-        private final int queryObjects;
-        private final int clusterMaxLevel;
-        private final int invocations;
-        private final double range;
-
-        public TestParams(int pivotsCount, int queryObjects, int clusterMaxLevel, int invocations, double range) {
-            this.pivotsCount = pivotsCount;
-            this.queryObjects = queryObjects;
-            this.clusterMaxLevel = clusterMaxLevel;
-            this.invocations = invocations;
-            this.range = range;
-        }
-
-        @Override
-        public String toString() {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("{pivotsCount=").append(pivotsCount);
-            sb.append(", queryObjects=").append(queryObjects);
-            sb.append(", clusterMaxLevel=").append(clusterMaxLevel);
-            sb.append(", range=").append(range);
-            sb.append('}');
-            return sb.toString();
-        }
     }
 }
