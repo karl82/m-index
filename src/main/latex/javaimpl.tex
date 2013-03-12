@@ -1,0 +1,71 @@
+\chapter{M-Index implementace v~jazyce Java}
+
+
+\section{Výhody jazyka Java}
+
+Jazyk Java je silně typovaný jazyk\@. Tento jazyk není interpretovaný,
+výsledkem překladu je \emph{bytecode}\@. Tento \emph{bytecode} běží
+v~tzv. Java Virtual Machine (JVM\nomenclature{JVM}{Java Virtual Machine})\@.
+Díky JVM může kód psaný \emph{,,write once, run anywhere''}\@.
+
+Hlavní klíčové vlastnosti, jak jazyka Java, JVM a JDK\nomenclature{JDK}{Java Development Kit}
+jsou tyto: automatická alokace a dealokace paměti, objektovost, generika,
+kompilace \emph{bytecode} do nativních instrukcí procesoru, bohatá
+knihovna tříd v~základním JDK\ldots{}
+
+
+\subsection{Automatická alokace a dealokace paměti}
+
+V jazyce Java neexistují ukazatele, pouze reference. V~jazycích C/C++
+se musí vývojář starat o~správu paměti pomocí funkcí \emph{malloc},
+\emph{free} (jazyk C a C++), resp. operátorů \emph{new} a \emph{delete}
+(jazyk C++)\@. V~jazyce Java tuto starost přebírá tzv. \emph{garbage
+collector} (GC\nomenclature{GC}{garbage collector}), který sleduje
+reference na jednotlivé alokovaní objekty v~paměti JVM. Pokud GC
+zjistí, že na objekt nejsou žádné reference, uvolní pamět daného objektu%
+\footnote{Podobná technika/pattern je součástí C++11 pomocí \emph{shared\_ptr},
+kde se používá \emph{reference counting}%
+}\@. Díky automatické správě paměti je vývoj výrazně rychlejší a výsledný
+kód bezpečnější (nehrozí buffer overflow nebo underflow)
+
+
+\subsection{Generika}
+
+Obdobně jako v~C++ jsou \emph{templates}, jazyk Java má \emph{generics}.
+Jsou zde rozdíly
+
+
+\subsection{Kompilace \emph{bytecode} do nativních instrukcí procesoru}
+
+JVM je v~heap procesor. Kvůli emulaci a virtualizaci procesoru je
+běh samotného \emph{bytecode} pomalý. JVM proto umožňuje překompilovat
+za běhu \emph{bytecode} do nativních instrukcí procesoru, nad kterým
+JVM běží\@. Samozřejmostí je optimalizace při několika průchodech
+kódem\@. Toto je velmi důležitá vlastnost, která při špatné interpretaci
+zásadním způsobem ovlivní případná měření výkonnosti\@. Proto je
+nutné několikrát spustit test během jednoho běhu JVM (více viz.~\prettyref{sub:M=00011B=000159en=0000ED-v=0000FDkonu-vJava})\@.
+
+
+\subsection{Bohatá knihovna tříd v~základním JDK}
+
+Java je dodávána s~rozsáhlou knihovnou JDK\@. Obsahuje vše nutné
+pro práci se síťovou komunikací, práci s~textem -- regulární výrazy,
+XML, RPC\nomenclature{RPC}{Remote Procedure Call}, soubory a souborový
+systém a také velmi propracovanou knihovnou kontejnerů -- \emph{Java
+Collections Framework }(JFC\nomenclature{JFC}{Java Collections Framework})%
+\footnote{V~jazyce Java se používá pro termín\emph{ container} (C++) termín
+\emph{collection} %
+}\@. Její rozhraní (\emph{interfaces}) a jejich implementace jsou
+použity při implementaci B-tree, \emph{cluster tree}.
+
+
+\section{Měření výkonu v~Java\label{sub:M=00011B=000159en=0000ED-v=0000FDkonu-vJava}}
+
+
+\section{Návrh a UML}
+
+
+\section{Výsledky testů}
+
+
+\section{Srovnání výkonu implementací v~C++, C\# a Java}

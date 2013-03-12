@@ -1,0 +1,106 @@
+\chapter{Úvod}
+
+V~posledních několika dekádách došlo ke~změně v~potřebách vyhledávání.
+Už se nepožaduje/nestačí pouze exaktní nebo přibližné vyhledání textu
+v~textu. S~příchodem masivního ukládání obrázků, zvukových záznamů
+a videí nelze používat ,\uv{klasické}' postupy pro indexování a následné
+vyhledávání, ale musí se používat podobnostní vyhledávání. Praktické
+použití je např.~rozpoznávání řeči, rozpoznávání tváří, atd\ldots{}
+
+Jednou z~metod pro indexování a vyhledávání v~multimediálních databázích
+je M-Index\cite{Novak:2009:MIE:1637863.1638184}\@. Autoři této
+metody, která vychází z~jiné indexovací metody iDistance\cite{Jagadish:2005:IAB:1071610.1071612},
+jsou Martin Novák a Michal Baťko z~Masarykovi univerzity Brno\@.
+M-index podstatných způsobem vylepšuje výkon při vyhledávání, použitím
+jiných metod rozdělení datové prostoru i samotného vyhledávání pomocí
+základních metod range query a hledání K nejbližších sousedů (KNN
+search)\@.
+
+Metrický index definuje \emph{univerzální mapovací schéma} z obecného
+metrického prostoru do reálných čísel\@. Co je nejdůležitější, toto
+schéma zachovává blízkost dat, tedy mapuje podobné metrické prvky
+do~blízkých čísel\@. Indexovací a vyhledávací mechanismus M-Index-u
+používá množinu referenčních prvků (pivotů) a optimálně využívá všechny
+známé principy pro dělení, větvení a filtrování v~metrickém prostoru\@.
+
+Charakter mapy M-Indexu umožňuje použít dobře známé techniky jako
+je B+tree\cite{Cormen:2001:IA:580470} nebo distribuované
+hašovací tabulky\@.
+
+V~této práci detailně vysvětluji principy M-Index-u, jeho implementaci
+v~jazyce Java a porovnávám výkonnost implementací M-Index v~jazycích
+Java, C++ a C\#. Předpokladem je, že na stejném stroji a na stejné
+množině dat, implementace v~C++ zpracuje požadavky v~nejkratším
+čase. Následována implementací v~C\# nebo v~Java. Podle mého názoru,
+lze zrychlit běh programu v~jazyce Java tím, že se dodatečně povolí
+agresivní optimalizace a \uv{zahřátím} JVM. Toto zkoumám na závěr této práce.
+
+\section{Multimediální databáze}
+
+Multimediální databáze je databázový systém, který umožňuje spravovat
+multimediální data\@.~Multimediální data jsou nestrukturovaná data,
+vyznačující se velkým objemem\@.~Typy a použití těchto databází
+jsou různé, např.:
+
+
+\paragraph{Autentifikační Multimediální Databáze}
+
+Skenování oční duhovky a vyhodnocování autentičnosti\@. Lze použít
+i v~medicíně při diagnostikování nemocí
+
+
+\paragraph{Balistická databáze }
+
+Porovnávání otisků na nábojnicích z~místa činu a kohoutkem střelné
+zbraně, např.~systém Drugfire\cite{drugfire}
+
+
+\paragraph{\ldots{}}
+
+
+\subsection{Problémy spojené s~multimediálníma databázemi}
+
+V~multimediální databázi narážíme na několik problémů odlišných od
+,,klasických'' RDBMS, případně oproti \emph{key-value }databázím\cite{no-sql}:
+\begin{itemize}
+\item prokletí počtu dimenzí (\emph{curse of dimensionality})\cite{Bellman195706}
+\item multimediální soubory (objekty) jsou velké
+\item datové struktury jsou pro jeden typ multimédií --- zvukový záznam
+má jiná kritéria než obraz
+\item problém indexování takových objektů
+\end{itemize}
+
+\section{Metrický prostor}
+
+
+\subsection{Předpoklady pro metrické vyhledávaní}
+
+\emph{Metrický prostor }$\mathcal{M}$ je pár $\mathcal{M}=(\mathcal{D},d)$,
+kde $\mathcal{D}$ je \emph{doména} prvků a $d$ je \emph{funkce vzdálenosti}
+$d\;:\;\mathcal{D}\times\mathcal{D}\rightarrow\mathbb{R}$ splňující
+následující požadavky pro všechny $o,p,q\in\mathcal{D}$:
+
+\begin{align*}
+d(o,p) & \geq0 &  & \textrm{(nezápornost)}\\
+d(o,p) & =0\Longleftrightarrow o=p &  & \textrm{(identita)}\\
+d(o,p) & =d(p,o) &  & \textrm{(symetrie)}\\
+d(o,q) & \leq d(o,p)+d(p,q) &  & \textrm{(trojúhelníková nerovnost)}
+\end{align*}
+
+
+
+\subsection{Podobností hledávání}
+
+Metrický prostor jako model podobnosti je typicky prohledáván podle
+vzoru \emph{example-by-query} \textendash{} dotaz je vytvořen dle
+\emph{prvku} $d\in D$ a daného \emph{omezení} na data, která mají
+být vybrána z~indexované množiny$X\subseteq D$\@. Nejjednodušší
+jsou dva typy dotazů: \emph{range~query}~$R(q,r)$\footnote{Range Query je podrobně popsán viz. \vref{sec:Range-Query}
+}, který vybere všechny prvky $o\subseteq X$ ve vzdálenosti $r$~od~$q$
+(např. $\left\{ o\subseteq X\mid d(q,o)\leq r\right\} $), a \emph{nearest
+neighbors query} $kNN(q,k)$, který vrátí $k$~nejbližších prvků
+od $q$~z~$X$\@.
+
+M-Index využívá několika struktur\@. V následujících částí se budeme
+zabývat popisem pravidel (algoritmů), které jsou zapotřebí k~utvoření
+a správného používání M-Indexu.

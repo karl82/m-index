@@ -1,0 +1,267 @@
+\chapter{Datové struktury a algoritmy}
+
+
+\section{B-tree}
+
+B-tree\cite{Cormen:2001:IA:580470} je zobecnělý binární strom s~možností
+mít více jak 2 potomky. Jeho optimalizován pro čtení a zápis velkého
+objemu dat, takže je se hojně používá v~databázích a souborových
+systémech.
+
+\begin{figure}[t]
+\centering{}\caption{B-tree}
+\end{figure}
+
+
+
+\subsection{Definice}
+
+B-tree $T$ je kořenový strom (s kořenem $root[T]$) s~následujícími
+vlastnostmi:
+\begin{enumerate}
+\item Každý uzel $x$ obsahuje následující prvky:
+
+\begin{enumerate}
+\item $n[x]$ - počet klíčů uložených v~uzlu $x$,
+\item $n[x]$ samotných klíčů, uložených v~neklesajícím pořadí, tedy $key_{1}[x]\leq key_{2}[x]\leq\cdots\leq key_{n[x]}[x]$,
+\item $leaf[x]$ typu boolean, který je TRUE pokud $x$ je list a FALSE
+pokud je $x$ interní uzel\@.
+\end{enumerate}
+\item Každý vnitřní uzel $x$ obsahuje $n[x]+1$ ukazatelů%
+\footnote{v~případě jazyka Java \emph{referencí}%
+} $c_{1}[x],c_{2}[x],\ldots,c_{n[x]+1}[x]$ na jeho potomky (\emph{children})\@.
+Uzly listů nemají žádné potomky -- jejich $c_{i}$ prvky jsou nedefinovány\@.
+\item Klíče $key_{i}[x]$ oddělují rozsahy klíčů uložených v~každém podstromu:
+pokud $k_{i}$ je libovolný klíč uložený v~podstromu s~kořenem $c_{i}[x]$,
+pak
+\[
+k_{1}\leq key_{1}[x]\leq k_{2}\leq key_{2}[x]\leq\cdots\leq key_{n[x]}[x]\leq k_{n[x]+1}.
+\]
+
+\item Všechny listy mají stejnou hloubku, která se nazývá výška stromu $h$\@.
+\item Jsou definovány spodní a horní hranice na množství klíčů, které může
+uzel obsahovat\@. Tyto hranice můžou být vyjádřeny pomocí fixního
+čísla $t\geq2$ zvaného \emph{minimální stupeň} B-tree:
+
+\begin{enumerate}
+\item Každý uzel jiný než kořen musí mít aspoň $t-1$ klíčů\@. Každý interní
+uzel jiný než kořen proto má aspoň $t$ potomků\@. Pokud není strom
+prázdný, potom kořen má aspoň jeden klíč\@.
+\item Každý uzel obsahuje nanejvýš $2t-1$ klíčů\@. Proto interní uzel
+může mít nejvýše $2t$ potomků\@. Řekneme, že uzel je plný, pokud
+obsahuje přesně $2t-1$ klíčů\@.
+\end{enumerate}
+\end{enumerate}
+
+\subsection{Asymptotická složitost}
+
+\begin{tabular}{|c|c|}
+\hline 
+Operace & Asymptotická složitost\tabularnewline
+\hline 
+\hline 
+SEARCH & $\mathcal{O}(\log n)$\tabularnewline
+\hline 
+INSERT & $\mathcal{O}(\log n)$\tabularnewline
+\hline 
+DELETE & $\mathcal{O}(\log n)$\tabularnewline
+\hline 
+\end{tabular}
+
+
+\subsection{Prohledávání B-tree (B-Tree-Search)}
+
+Prohledávání B-tree je velmi podobné jako prohledávání binárního stromu\@.
+Pouze místo binárního větvení v~každém uzlu, se provádí vícecestné
+větvení podle počtu potomků uzlu\@.
+
+Vstupem je ukazatel na kořenový uzel podstromu $x$ a klíč $k$, který
+má být prohledán v~podstromu\@. První volání je tedy B-Tree-Search($root[T],k$).
+Pokud je $k$ v~B-tree, pak vyhledávání vrátí uspořádanou dvojici
+$(y,i)$, kde $y$ je ukazatel na uzel a $i$ je pozice, takže $key_{i}[y]=k$\@.
+Jinak je vrácena \uv{prázdná} dvojice%
+\footnote{Původně je v~\cite{Cormen:2001:IA:580470} NIL, jenže obecně vracení
+NIL, NULL a 0 ukazatelů/referencí komplikuje pozdější práci s~návratovou
+hodnotou metody. Robert~C.~Martin doporučuje v~ místo prázdné
+reference, vracet \uv{prázdný} objekt.
+
+V~praxi dost často dochází ke zneužívání návratové hodnoty v~podobě
+NULL, jako dalšího stavu. Místo předpokladu na existující objekt,
+je nutno dělat kontrolu na neexistující objekt. Jaký je rozdíl mezi
+vrácením prázdné kolekce/kontejneru nebo nulového ukazatele?%
+}\@.
+
+\begin{algorithm}[t]
+\SetAlgoLined
+\SetKwData{EMPTYTUPLE}{EMPTY\_TUPLE}
+\SetKwFunction{BTreeSearch}{B-Tree-Search}
+
+$i \longleftarrow 1$
+\While{$i \leq n[x]$ {\bf and} $k \le key_i[x]$}{
+	$i \longleftarrow i+1$}
+\If{$i \leq n[x]$ {\bf and} $k = key_i[x]$}{
+	\Return{x, i}}
+\eIf{leaf[x]}{
+	\Return{\EMPTYTUPLE}}{
+        \Return{\BTreeSearch{$c_i[x], k$}}}
+
+\caption{B-Tree-Search(x,k)}
+\end{algorithm}
+
+
+
+\subsection{Operace INSERT}
+
+Vkládání do B-tree je výrazně složitější než stejná operace pro binární
+strom\@. Podobně jako u~binárního stromu, hledáme pozici listu,
+kde uložíme klíč. Bohužel u~B-tree nemůžeme jednoduše vytvořit nový
+uzel pro list a ten vložit, protože výsledný strom by nebyl validní
+B-tree\@. Místo toho se vloží klíč už do existujícího listu\@. Protože
+nelze vložit klíč do plného listu, zavedeme operaci rozdělení (\emph{split})
+plného uzlu $y$ (s~$2t-1$ klíči) okolo svého \emph{mediánu klíčů}
+$key_{t}[y]$ na dva uzly, každý mající $t-1$ klíčů\@. \emph{Medián
+klíč} se přesune do rodiče $y$ k~identifikaci dělícího bodu mezi
+dvěma novými stromy\@. Pokud je rodič $y$ také plný, musí být nejdříve
+rozdělen před vložením nového klíče. Dělení plných uzlů může tedy
+vypropagovat celým stromem nahoru.
+
+
+\subsubsection{Rozdělení uzlu v~B-tree}
+
+Vstupem pro proceduru B-Tree-Split-Child je neplný vnitřní uzel $x$,
+index $i$ a uzel $y$, tak že $y=c_{i}[x]$ je plným potomkem $x$\@.
+Procedura poté rozdělí potomka na dva a upraví $x$ tak, že má dalšího
+potomka.
+
+Složitost je $\Theta(t)$\@.
+
+\begin{figure}[t]
+\caption{Rozdělení (\emph{split}) uzlu}
+\end{figure}
+
+
+\begin{algorithm}[t]
+\SetAlgoLined
+\SetKwFunction{BTreeSplitChild}{B-Tree-Split-Child}
+\SetKwFunction{AllocateNode}{Allocate-Node}
+{$z \longleftarrow \AllocateNode$}
+$leaf[z] \longleftarrow leaf[y]$
+n[z] = t-1
+for j = 1 to t-1
+	do key_j[z] = key_(j+t)[y]
+if not leaf[y]
+	then for j = 1 to t
+		do c_j[z] = c_(j+t)[y]
+n[y] = t-1
+for j = n[x]+1 downto i+1
+	do c_(j+1)[x] = c_j[x]
+c_(i+1)[x] = z
+for j = n[x] downto i
+	do key_(j+1)[x] = key_j[x]
+key_i[x] = key_t[y]
+n[x] = n[x]+1
+\caption{B-Tree-Split-Child(x, i, y)}
+\end{algorithm}
+
+
+
+\subsubsection{Vložení klíčů do B-tree jedním průchodem stromem}
+
+K~vložení klíče $k$ do B-tree $T$ o~výšce $h$ jedním průchodem
+potřebujeme $O(th)=O(t\log_{t}n)$\@. B-Tree-Insert používá B-Tree-Split-Child
+k~zajištění toho, že rekurse nikdy nedojde k~plnému uzlu\@.
+
+\begin{algorithm}[t]
+\begin{lstlisting}
+B-Tree-Insert(T,k)
+r = root[T]
+if n[r] = 2t-1
+	then s = AllocateNode
+		root[T] = s
+		leaf[s] = FALSE
+		n[s] = 0
+		c_1[s] = r
+		B-Tree-Split-Child(s, 1, r)
+		B-Tree-Insert-Nonfull(s,k)
+	else B-Tree-Insert-Nonfull(r,k)
+\end{lstlisting}
+
+
+\caption{B-Tree-Insert}
+\end{algorithm}
+
+
+Procedura B-Tree-Insert-Nonfull se vnořuje podle potřeby do stromu,
+v~každém okamžiku garantující, že uzel do kterého se vnořila, není
+plný díky volání B-Tree-Split-Child\@.
+
+Rekursivní procedura B-Tree-Insert-Nonfull vloží klíč $k$ do uzlu
+$x$, který je předpokládán neplný v~okamžiku volání procedury\@.
+Díky B-Tree-Insert a rekursivní B-Tree-Insert-Nonfull je tento předpoklad
+zajištěn\@.
+
+\begin{algorithm}[t]
+\begin{lstlisting}
+B-Tree-Insert-Nonfull(x,k)
+i = n[x]
+if leaf[x]
+	then while i >= 1 and k < key_i[x]
+			do key_(i+1)[x] = key_i[x]
+				i = i-1
+		key_(i+1)[x] = k
+		n[x] = n[x]+1
+	else while i >= 1 and k < key_i[x]
+			do i = i-1
+		i = i+1
+		if n[c_i[x]] = 2t-1
+			then B-Tree-Split-Child(x,i,c_i[x])
+				if k > key_i[x]
+					then i = i+1
+		B-Tree-Insert-Nonfull(c_i[x],k)
+\end{lstlisting}
+
+
+\caption{B-Tree-Insert-Nonfull}
+\end{algorithm}
+
+
+
+\subsubsection{Operace DELETE}
+
+Není nutná pro potřeby této práce a její popis je vynechána\@. Detailní
+popis je možné najít v~\cite{Cormen:2001:IA:580470}\@.
+
+
+\subsection{B$^{\text{+}}$-tree\label{sub:B-plus-tree}}
+
+B$^{\text{+}}$-tree je varianta B-tree, která ukládá hodnoty až do
+listů stromu. Do interních uzlů ukládá pouze informace o~klíčích
+a ukazatelích na potomky. Tento typ maximalizuje větvení interních
+uzlů.
+
+Je použit v~souborových systémech, např. NTFS, Reiser FS, JFS. Dále
+v~databázích PostgreSQL, MySQL, Firebird, Oracle etc\ldots{}
+
+\begin{figure}[t]
+\caption{B+-tree}
+\end{figure}
+
+
+
+\subsubsection{Asymptotická složitost}
+
+\begin{tabular}{|c|c|}
+\hline 
+Operace & Asymptotická složitost\tabularnewline
+\hline 
+\hline 
+SEARCH & $\mathcal{O}(\log n)$\tabularnewline
+\hline 
+INSERT & $\mathcal{O}(\log n)$\tabularnewline
+\hline 
+DELETE & $\mathcal{O}(\log n)$\tabularnewline
+\hline 
+\end{tabular}
+
+
+\subsection{Voronoi rozdělení}
