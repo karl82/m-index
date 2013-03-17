@@ -7,8 +7,18 @@
 \usepackage[onehalfspacing]{setspace}
 \usepackage{graphicx}
 \usepackage{prettyref}
+\usepackage[czech]{varioref}
 \usepackage[czech,lined,boxed]{algorithm2e}
 \usepackage[]{nomencl}
+
+% czech prettyref
+\newrefformat{eq}{\textup{(\ref{#1})}}
+\newrefformat{lem}{Lemma \ref{#1}}
+\newrefformat{thm}{Teorém \ref{#1}}
+\newrefformat{cha}{Kapitola \ref{#1}}
+\newrefformat{sec}{Section \ref{#1}}
+\newrefformat{tab}{Tabulka \ref{#1} na straně \pageref{#1}}
+\newrefformat{fig}{Obrázek \ref{#1} na straně \pageref{#1}}
 
 \begin{document}
 \include{title}
