@@ -244,18 +244,19 @@ Není nutná pro potřeby této práce a její popis je vynechána\@. Detailní
 popis je možné najít v~\cite{Cormen:2001:IA:580470}\@.
 
 
-\subsection{B$^{\text{+}}$-tree\label{sec:B-plus-tree}}
+\subsection{\BPTree\label{sec:B-plus-tree}}
 
-B$^{\text{+}}$-tree je varianta B-tree, která ukládá hodnoty až do
+\BPTree je varianta B-tree, která ukládá hodnoty až do
 listů stromu. Do interních uzlů ukládá pouze informace o~klíčích
 a ukazatelích na potomky. Tento typ maximalizuje větvení interních
 uzlů.
 
 Je použit v~souborových systémech, např. NTFS, Reiser FS, JFS. Dále
 v~databázích PostgreSQL, MySQL, Firebird, Oracle etc\ldots{}
+%% add references
 
 \begin{figure}[t]
-\caption{B+-tree}
+\caption{\BPTree}
 \end{figure}
 
 
