@@ -95,17 +95,18 @@ vrácením prázdné kolekce/kontejneru nebo nulového ukazatele?%
 \SetAlgoLined
 \SetKwData{EMPTYTUPLE}{EMPTY\_TUPLE}
 \SetKwFunction{BTreeSearch}{B-Tree-Search}
+\SetKw{KwAnd}{and}
 
-$i \longleftarrow 1$
-\While{$i \leq n[x]$ {\bf and} $k \le key_i[x]$}{
+$i \longleftarrow 1$\\
+\While{$i \leq n[x]$ \KwAnd $k \le key_i[x]$}{
 	$i \longleftarrow i+1$}
-\If{$i \leq n[x]$ {\bf and} $k = key_i[x]$}{
+\If{$i \leq n[x]$ \KwAnd $k = key_i[x]$}{
 	\Return{x, i}}
 \eIf{leaf[x]}{
 	\Return{\EMPTYTUPLE}}{
         \Return{\BTreeSearch{$c_i[x], k$}}}
 
-\caption{B-Tree-Search(x,k)}
+\caption{B-Tree-Search($x,k$)}
 \end{algorithm}
 
 
@@ -144,23 +145,27 @@ Složitost je $\Theta(t)$\@.
 \SetAlgoLined
 \SetKwFunction{BTreeSplitChild}{B-Tree-Split-Child}
 \SetKwFunction{AllocateNode}{Allocate-Node}
-{$z \longleftarrow \AllocateNode$}
-$leaf[z] \longleftarrow leaf[y]$
-n[z] = t-1
-for j = 1 to t-1
-	do key_j[z] = key_(j+t)[y]
-if not leaf[y]
-	then for j = 1 to t
-		do c_j[z] = c_(j+t)[y]
-n[y] = t-1
-for j = n[x]+1 downto i+1
-	do c_(j+1)[x] = c_j[x]
-c_(i+1)[x] = z
-for j = n[x] downto i
-	do key_(j+1)[x] = key_j[x]
-key_i[x] = key_t[y]
-n[x] = n[x]+1
-\caption{B-Tree-Split-Child(x, i, y)}
+\SetKw{Not}{not}
+\SetKw{KwDownto}{downto}
+
+{$z \longleftarrow \AllocateNode$}\\
+{$leaf[z] \longleftarrow leaf[y]$}\\
+{$n[z] \longleftarrow t-1$}\\
+\For{ $j \longleftarrow 1$ \KwTo $t-1$}{
+	$key_j[z] \longleftarrow key_{(j+t)}[y]$}
+\If{ \Not $leaf[y]$}{
+	\For{$j \longleftarrow 1$ \KwTo $t$}{
+		$c_j[z] \longleftarrow c_{(j+t)}[y]$}
+}
+$n[y] \longleftarrow t-1$\\
+\For{$j \longleftarrow n[x]+1$ \KwDownto $i+1$}{
+	$c_{(j+1)}[x] \longleftarrow c_j[x]$}
+$c_{(i+1)}[x] \longleftarrow z$\\
+\For{$j \longleftarrow n[x]$ \KwDownto $i$}{
+	$key_{(j+1)}[x] \longleftarrow key_j[x]$}
+$key_i[x] \longleftarrow key_t[y]$\\
+$n[x] \longleftarrow n[x]+1$
+\caption{B-Tree-Split-Child($x, i, y$)}
 \end{algorithm}
 
 
@@ -172,22 +177,25 @@ potřebujeme $O(th)=O(t\log_{t}n)$\@. B-Tree-Insert používá B-Tree-Split-Chil
 k~zajištění toho, že rekurse nikdy nedojde k~plnému uzlu\@.
 
 \begin{algorithm}[t]
-\begin{lstlisting}
-B-Tree-Insert(T,k)
-r = root[T]
-if n[r] = 2t-1
-	then s = AllocateNode
-		root[T] = s
-		leaf[s] = FALSE
-		n[s] = 0
-		c_1[s] = r
-		B-Tree-Split-Child(s, 1, r)
-		B-Tree-Insert-Nonfull(s,k)
-	else B-Tree-Insert-Nonfull(r,k)
-\end{lstlisting}
+\SetAlgoLined
+\SetKwFunction{BTreeInsert}{B-Tree-Insert}
+\SetKwFunction{BTreeSplitChild}{B-Tree-Split-Child}
+\SetKwFunction{BTreeInsertNonfull}{B-Tree-Insert-Nonfull}
+\SetKwFunction{AllocateNode}{Allocate-Node}
+\SetKw{FALSE}{FALSE}
 
+$r\longleftarrow root[T]$
+\eIf{$n[r] = 2t-1$}{
+	$s \longleftarrow \AllocateNode$\\
+		$root[T] \longleftarrow s$\\
+		$leaf[s] \longleftarrow \FALSE$\\
+		$n[s] \longleftarrow 0$\\
+		$c_1[s] \longleftarrow r$\\
+		\BTreeSplitChild{s, 1, r}\\
+		\BTreeInsertNonfull{s,k}
+}{\BTreeInsertNonfull{r,k}}
 
-\caption{B-Tree-Insert}
+\caption{B-Tree-Insert($T,k$)}
 \end{algorithm}
 
 
@@ -201,27 +209,31 @@ Díky B-Tree-Insert a rekursivní B-Tree-Insert-Nonfull je tento předpoklad
 zajištěn\@.
 
 \begin{algorithm}[t]
-\begin{lstlisting}
-B-Tree-Insert-Nonfull(x,k)
-i = n[x]
-if leaf[x]
-	then while i >= 1 and k < key_i[x]
-			do key_(i+1)[x] = key_i[x]
-				i = i-1
-		key_(i+1)[x] = k
-		n[x] = n[x]+1
-	else while i >= 1 and k < key_i[x]
-			do i = i-1
-		i = i+1
-		if n[c_i[x]] = 2t-1
-			then B-Tree-Split-Child(x,i,c_i[x])
-				if k > key_i[x]
-					then i = i+1
-		B-Tree-Insert-Nonfull(c_i[x],k)
-\end{lstlisting}
+\SetAlgoLined
+\SetKwFunction{BTreeSplitChild}{B-Tree-Split-Child}
+\SetKwFunction{BTreeInsertNonfull}{B-Tree-Insert-Nonfull}
+\SetKw{KwAnd}{and}
 
+$i \longleftarrow n[x]$\\
+\eIf{leaf[x]}{
+	\While{$i >= 1$ \KwAnd $k < key_i[x]$}{
+			$key_{(i+1)}[x] \longleftarrow key_i[x]$\\
+				$i \longleftarrow i-1$}
+		$key_{(i+1)}[x] \longleftarrow k$\\
+		$n[x] \longleftarrow n[x]+1$
+}{\While{$i >= 1$ \KwAnd $k < key_i[x]$}{
+			$i \longleftarrow i-1$}
+		$i \longleftarrow i+1$\\
+		\If{$n[c_i[x]] \longleftarrow 2t-1$}{
+			\BTreeSplitChild{x,i,$c_i[x]$}\\
+				\If{$k > key_i[x]$}{
+					$i \longleftarrow i+1$}
+}
 
-\caption{B-Tree-Insert-Nonfull}
+\BTreeInsertNonfull{$c_i[x]$,k}
+}
+
+\caption{B-Tree-Insert-Nonfull($x,k$)}
 \end{algorithm}
 
 
