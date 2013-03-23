@@ -6,7 +6,7 @@
 Jazyk Java je silně typovaný jazyk\@. Tento jazyk není interpretovaný,
 výsledkem překladu je \emph{bytecode}\@. Tento \emph{bytecode} běží
 v~tzv. Java Virtual Machine (JVM\nomenclature{JVM}{Java Virtual Machine})\@.
-Díky JVM může kód psaný \emph{,,write once, run anywhere''}\@.
+Díky JVM může kód psaný \emph{\uv{write once, run anywhere}}\@.
 
 Hlavní klíčové vlastnosti, jak jazyka Java, JVM a JDK\nomenclature{JDK}{Java Development Kit}
 jsou tyto: automatická alokace a dealokace paměti, objektovost, generika,
@@ -21,11 +21,11 @@ se musí vývojář starat o~správu paměti pomocí funkcí \emph{malloc},
 \emph{free} (jazyk C a C++), resp. operátorů \emph{new} a \emph{delete}
 (jazyk C++)\@. V~jazyce Java tuto starost přebírá tzv. \emph{garbage
 collector} (GC\nomenclature{GC}{garbage collector}), který sleduje
-reference na jednotlivé alokovaní objekty v~paměti JVM. Pokud GC
+reference na jednotlivé alokované objekty v~paměti JVM. Pokud GC
 zjistí, že na objekt nejsou žádné reference, uvolní pamět daného objektu%
 \footnote{Podobná technika/pattern je součástí C++11 pomocí \emph{shared\_ptr},
-kde se používá \emph{reference counting}%
-}\@. Díky automatické správě paměti je vývoj výrazně rychlejší a výsledný
+kde se používá \emph{reference counting} \cite{ISO:2012:CPP}
+}. Díky automatické správě paměti je vývoj výrazně rychlejší a výsledný
 kód bezpečnější (nehrozí buffer overflow nebo underflow)
 
 
