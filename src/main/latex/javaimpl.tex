@@ -1,12 +1,12 @@
 \chapter{M-Index implementace v~jazyce Java}
 
 
-\section{Výhody jazyka Java}
+\section{Jazyk Java, JVM}
 
-Jazyk Java je silně typovaný jazyk\@. Tento jazyk není interpretovaný,
-výsledkem překladu je \emph{bytecode}\@. Tento \emph{bytecode} běží
-v~tzv. Java Virtual Machine (JVM\nomenclature{JVM}{Java Virtual Machine})\@.
-Díky JVM může kód psaný \emph{\uv{write once, run anywhere}}\@.
+Jazyk Java je silně typovaný jazyk. Tento jazyk není interpretovaný,
+výsledkem překladu je \emph{bytecode}. Tento \emph{bytecode} běží
+v~tzv. Java Virtual Machine (JVM\nomenclature{JVM}{Java Virtual Machine}).
+Díky JVM může kód zkompilovaný na jedné platformě (ať už Windows nebo Unix a 32bit nebo 64bit) bežet na jiné. \footnote{\emph{\uv{Write once, run anywhere}}\cite{lindholm2013java}}
 
 Hlavní klíčové vlastnosti, jak jazyka Java, JVM a JDK\nomenclature{JDK}{Java Development Kit}
 jsou tyto: automatická alokace a dealokace paměti, objektovost, generika,
@@ -14,36 +14,57 @@ kompilace \emph{bytecode} do nativních instrukcí procesoru, bohatá
 knihovna tříd v~základním JDK\ldots{}
 
 
-\subsection{Automatická alokace a dealokace paměti}
+\subsection{Automatická alokace a dealokace paměti, garbage collection}
 
 V jazyce Java neexistují ukazatele, pouze reference. V~jazycích C/C++
 se musí vývojář starat o~správu paměti pomocí funkcí \emph{malloc},
 \emph{free} (jazyk C a C++), resp. operátorů \emph{new} a \emph{delete}
-(jazyk C++)\@. V~jazyce Java tuto starost přebírá tzv. \emph{garbage
+(jazyk C++). V~jazyce Java, resp. v JVM \cite{lindholm2013java} tuto starost přebírá tzv. \emph{garbage
 collector} (GC\nomenclature{GC}{garbage collector}), který sleduje
-reference na jednotlivé alokované objekty v~paměti JVM. Pokud GC
-zjistí, že na objekt nejsou žádné reference, uvolní pamět daného objektu%
-\footnote{Podobná technika/pattern je součástí C++11 pomocí \emph{shared\_ptr},
-kde se používá \emph{reference counting} \cite{ISO:2012:CPP}
-}. Díky automatické správě paměti je vývoj výrazně rychlejší a výsledný
-kód bezpečnější (nehrozí buffer overflow nebo underflow)
+dosažitelnost alokovaných objektů v~paměti JVM. Pokud GC
+zjistí, že objekt není dosažitelný z jiných objektů, uvolní pamět daného objektu.
+\footnote{Podobná technika/pattern je součástí C++11 pomocí \emph{std::shared\_ptr},
+kde se používá \emph{reference counting} \cite{ISO:2012:CPP}. Tato technika není použitelná v případě cyklických referencí. Při výskytu cyklických referencí by se měl použít i \emph{std::weak\_ptr}.
+}
 
+Díky automatické správě paměti je vývoj výrazně rychlejší a výsledný
+kód bezpečnější (nehrozí \emph{buffer overflow} nebo \emph{buffer underflow}). Není ovšem ochráněný proti
+memory leaks.
+
+\subsubsection{Jak funguje GC}
+GC se spouští v okamžiku, kdy není dostatek paměti pro nové objekty nebo již alokované objekty dosáhnout určité hranice. Obecně GC probíhá ve 3. fázích:
+\begin{itemize}
+  \item Mark
+  \item Sweep
+  \item Compaction (nepovinná)
+\end{itemize}
+
+\begin{description}
+  \item[Mark] 
+  \item[Sweep] 
+  \item[Compaction]
+\end{description}
+% describe GC phases
 
 \subsection{Generika}
 
-Obdobně jako v~C++ jsou \emph{templates}, jazyk Java má \emph{generics}.
-Jsou zde rozdíly
+Obdobně jako v~C++ jsou \emph{templates}\cite{ISO:2012:CPP}, jazyk Java má \emph{generics} \cite{gosling2013java}.
+Jsou zde rozdíly:
+\begin{itemize}
+  \item v Java se informace o typu ztrácí během kompilace
+  \item nelze jako typový parametr použít primitivní typ -- \emph{int, char, byte, long, double, float \ldots}
+  \item nelze použít netypový parametr
+\end{itemize}
 
 
 \subsection{Kompilace \emph{bytecode} do nativních instrukcí procesoru}
 
-JVM je v~heap procesor. Kvůli emulaci a virtualizaci procesoru je
-běh samotného \emph{bytecode} pomalý. JVM proto umožňuje překompilovat
+JVM je heap procesor. Kvůli emulaci a virtualizaci procesoru je
+běh samotného \emph{bytecode} relativně pomalý. JVM proto překompilovává
 za běhu \emph{bytecode} do nativních instrukcí procesoru, nad kterým
-JVM běží\@. Samozřejmostí je optimalizace při několika průchodech
-kódem\@. Toto je velmi důležitá vlastnost, která při špatné interpretaci
-zásadním způsobem ovlivní případná měření výkonnosti\@. Proto je
-nutné několikrát spustit test během jednoho běhu JVM (více viz.~\prettyref{sub:M=00011B=000159en=0000ED-v=0000FDkonu-vJava})\@.
+aktuálně JVM běží. V JVM od Oracle se nazýva JIT\nomenclature{JIT}{Just In Time} Compiler\cite{hunt2011java}. Samozřejmostí je optimalizace při několika průchodech
+kódem -- např. \emph{method inlining}, \emph{loop unrolling} nebo \emph{dead code elimination}\cite{hunt2011java}. Toto jsou velmi důležité vlastnosti, které mohou zásadním způsobem
+ovlivnit měření výkonnosti programu. Více viz.~\prettyref{sub:M=00011B=000159en=0000ED-v=0000FDkonu-vJava}).
 
 
 \subsection{Bohatá knihovna tříd v~základním JDK}
@@ -58,11 +79,14 @@ Collections Framework }(JFC\nomenclature{JFC}{Java Collections Framework})%
 }\@. Její rozhraní (\emph{interfaces}) a jejich implementace jsou
 použity při implementaci B-tree, \emph{cluster tree}.
 
+\section{Návrh a UML}
+\subsection{\BPTree}
+\subsection{M-Index}
+\subsubsection{Výpočet maximální vzdálenosti mezi prvky}
+\subsubsection{Výpočet vzdáleností mezi pivoty a prvky}
+\subsubsection{Range Query}
 
 \section{Měření výkonu v~Java\label{sub:M=00011B=000159en=0000ED-v=0000FDkonu-vJava}}
-
-
-\section{Návrh a UML}
 
 
 \section{Výsledky testů}
