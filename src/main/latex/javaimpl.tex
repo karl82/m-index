@@ -4,7 +4,7 @@
 \section{Jazyk Java, JVM}
 
 Jazyk Java je silně typovaný jazyk. Tento jazyk není interpretovaný,
-výsledkem překladu je \emph{bytecode}. Tento \emph{bytecode} běží
+výsledkem překladu je \emph{bytecode}. Až tento \emph{bytecode} je interpretovaný
 v~tzv. Java Virtual Machine (JVM\nomenclature{JVM}{Java Virtual Machine}).
 Díky JVM může kód zkompilovaný na jedné platformě (ať už Windows nebo Unix a 32bit nebo 64bit) bežet na jiné. \footnote{\emph{\uv{Write once, run anywhere}}\cite{lindholm2013java}}
 
@@ -14,17 +14,17 @@ kompilace \emph{bytecode} do nativních instrukcí procesoru, bohatá
 knihovna tříd v~základním JDK\ldots{}
 
 
-\subsection{Automatická alokace a dealokace paměti, garbage collection}
+\subsection{Automatická správa paměti -- garbage collection}
 
-V jazyce Java neexistují ukazatele, pouze reference. V~jazycích C/C++
+V~jazyce Java neexistují ukazatele, pouze reference. V~jazycích C/C++
 se musí vývojář starat o~správu paměti pomocí funkcí \emph{malloc},
 \emph{free} (jazyk C a C++), resp. operátorů \emph{new} a \emph{delete}
-(jazyk C++). V~jazyce Java, resp. v JVM \cite{lindholm2013java} tuto starost přebírá tzv. \emph{garbage
+(jazyk C++). V~jazyce Java, resp. v~JVM \cite{lindholm2013java} tuto starost přebírá tzv. \emph{garbage
 collector} (GC\nomenclature{GC}{garbage collector}), který sleduje
 dosažitelnost alokovaných objektů v~paměti JVM. Pokud GC
-zjistí, že objekt není dosažitelný z jiných objektů, uvolní pamět daného objektu.
+zjistí, že objekt není dosažitelný z~jiných objektů, uvolní pamět daného objektu.
 \footnote{Podobná technika/pattern je součástí C++11 pomocí \emph{std::shared\_ptr},
-kde se používá \emph{reference counting} \cite{ISO:2012:CPP}. Tato technika není použitelná v případě cyklických referencí. Při výskytu cyklických referencí by se měl použít i \emph{std::weak\_ptr}.
+kde se používá \emph{reference counting} \cite{ISO:2012:CPP}. Tato technika není použitelná v~případě cyklických referencí. Při výskytu cyklických referencí by se měl použít i \emph{std::weak\_ptr}.
 }
 
 Díky automatické správě paměti je vývoj výrazně rychlejší a výsledný
@@ -32,7 +32,7 @@ kód bezpečnější (nehrozí \emph{buffer overflow} nebo \emph{buffer underflo
 memory leaks.
 
 \subsubsection{Jak funguje GC}
-GC se spouští v okamžiku, kdy není dostatek paměti pro nové objekty nebo již alokované objekty dosáhnout určité hranice. Obecně GC probíhá ve 3. fázích:
+GC se spouští v~okamžiku, kdy není dostatek paměti pro nové objekty nebo již alokované objekty dosáhnout určité hranice. Obecně GC probíhá ve 3. fázích:
 \begin{itemize}
   \item Mark
   \item Sweep
@@ -48,36 +48,34 @@ GC se spouští v okamžiku, kdy není dostatek paměti pro nové objekty nebo j
 
 \subsection{Generika}
 
-Obdobně jako v~C++ jsou \emph{templates}\cite{ISO:2012:CPP}, jazyk Java má \emph{generics} \cite{gosling2013java}.
+Obdobně jako v~C++ jsou \emph{templates}\cite{ISO:2012:CPP}, jazyk Java má \emph{generics}.\footnote{Uvedeny ve verzi 1.5 \cite{gosling2013java}.}
 Jsou zde rozdíly:
 \begin{itemize}
-  \item v Java se informace o typu ztrácí během kompilace
-  \item nelze jako typový parametr použít primitivní typ -- \emph{int, char, byte, long, double, float \ldots}
+  \item v~Java se informace o~typu ztrácí během kompilace
+  \item nelze jako typový parametr použít primitivní typ -- \type{int, char, byte, long, double, float} \ldots{}
   \item nelze použít netypový parametr
 \end{itemize}
-
 
 \subsection{Kompilace \emph{bytecode} do nativních instrukcí procesoru}
 
 JVM je heap procesor. Kvůli emulaci a virtualizaci procesoru je
-běh samotného \emph{bytecode} relativně pomalý. JVM proto překompilovává
-za běhu \emph{bytecode} do nativních instrukcí procesoru, nad kterým
-aktuálně JVM běží. V JVM od Oracle se nazýva JIT\nomenclature{JIT}{Just In Time} Compiler\cite{hunt2011java}. Samozřejmostí je optimalizace při několika průchodech
+běh samotného \emph{bytecode} relativně pomalý. JVM proto překládá
+za běhu \emph{bytecode} do nativních instrukcí procesoru, nad který
+aktuálně JVM běží. V~JVM od Oracle %citation http://www.oracle.com/technetwork/java/index.html
+ se nazýva JIT\nomenclature{JIT}{Just In Time} Compiler\cite{hunt2011java}. Samozřejmostí je optimalizace při několika průchodech
 kódem -- např. \emph{method inlining}, \emph{loop unrolling} nebo \emph{dead code elimination}\cite{hunt2011java}. Toto jsou velmi důležité vlastnosti, které mohou zásadním způsobem
-ovlivnit měření výkonnosti programu. Více viz.~\prettyref{sub:M=00011B=000159en=0000ED-v=0000FDkonu-vJava}).
+ovlivnit měření výkonnosti programu. Více viz.~\prettyref{sec:vykonvjava}).
 
 
 \subsection{Bohatá knihovna tříd v~základním JDK}
 
-Java je dodávána s~rozsáhlou knihovnou JDK\@. Obsahuje vše nutné
-pro práci se síťovou komunikací, práci s~textem -- regulární výrazy,
-XML, RPC\nomenclature{RPC}{Remote Procedure Call}, soubory a souborový
+Java je dodávána s~rozsáhlou knihovnou JDK. Obsahuje vše nutné
+pro síťovou komunikaci (RPC\nomenclature{RPC}{Remote Procedure Call}), práci s~textem -- regulární výrazy,
+XML, soubory a souborový
 systém a také velmi propracovanou knihovnou kontejnerů -- \emph{Java
-Collections Framework }(JFC\nomenclature{JFC}{Java Collections Framework})%
+Collections Framework }(JFC\nomenclature{JFC}{Java Collections Framework})
 \footnote{V~jazyce Java se používá pro termín\emph{ container} (C++) termín
-\emph{collection} %
-}\@. Její rozhraní (\emph{interfaces}) a jejich implementace jsou
-použity při implementaci B-tree, \emph{cluster tree}.
+\emph{collection}}.
 
 \section{Návrh a UML}
 \subsection{\BPTree}
@@ -86,8 +84,27 @@ použity při implementaci B-tree, \emph{cluster tree}.
 \subsubsection{Výpočet vzdáleností mezi pivoty a prvky}
 \subsubsection{Range Query}
 
-\section{Měření výkonu v~Java\label{sub:M=00011B=000159en=0000ED-v=0000FDkonu-vJava}}
+\section{Měření výkonu v~Java\label{sec:vykonvjava}}
 
+Abychom porozuměli úskalí měření výkonu kódu v JVM, je nejprve nutné si přiblížit, co se děje uvnitř JVM, jak probíhá kompilace a optimalizace kódu.
+
+\subsection{Class loading}
+
+Všechny třídy jsou zkompilovány do \filename{.class} souborů. Ty mohou být následně zabaleny do JAR\nomenclature{JAR}{Java ARchive}, což je v podstatě ZIP archív. JVM při startu vyhledá tzv. Main-Class a k ní všechny zavislé třídy a k ním další zavislé třídy v tzv. \emph{classpath}. U každé třídy provede statickou inicializaci. Toto vyhledávání není omezeno pouze na úvodní spuštění JVM. Volání \method{Class.forName()}, \method{ClassLoader.loadClass()}, \emph{Reflection API} a \method{JNI\_FindClass} může vyvolat class loading kdykoliv za běhu programu, pokud požadovaná třída není již nahrána\cite{gosling2013java}\cite{lindholm2013java}.
+
+Další fází při class loadingu je i verifikace \emph{byte code}. Standardní kompilátory Java (\cmd{javac}) vytvářejí validní \filename{.class} soubory a typově bezpečný kód. Jenže JVM se nemůže spolehnout, že soubor, který nahrála je správný. Proto musí ověřit, že je vše v pořádku -- ať již instrukce zadané v \filename{.class} souboru nebo typová bezpečnost.
+
+Výše popsaný class loading je velmi náročný na I/O operace a zásadním způsobem ovlivní výsledek měření, pokud se nepředejde class loadingu během měření.
+
+\subsection{JIT}
+Na rozdíl od C/C++ předkladačů negeneruje 
+\begin{description}
+\item[method inlining]
+\item[dead code elimination]
+\item[loop unrolling]
+\item[záměna volání rozhraní konrétní implementací]
+\end{description}
+\subsection{Zahřátí JVM}
 
 \section{Výsledky testů}
 

@@ -16,7 +16,7 @@ systémech.
 
 \subsection{Definice}
 
-B-tree $T$ je kořenový strom (s kořenem $root[T]$) s~následujícími
+B-tree $T$ je kořenový strom (s~kořenem $root[T]$) s~následujícími
 vlastnostmi:
 \begin{enumerate}
 \item Každý uzel $x$ obsahuje následující prvky:
@@ -238,18 +238,20 @@ $i \longleftarrow n[x]$\\
 
 
 
-\subsubsection{Operace DELETE}
+\subsection{Operace DELETE}
 
-Není nutná pro potřeby této práce a její popis je vynechána\@. Detailní
-popis je možné najít v~\cite{Cormen:2001:IA:580470}\@.
+Není nutná pro potřeby této práce a její popis je vynechán. Detailní
+popis je možné najít v~\cite{Cormen:2001:IA:580470}.
 
 
-\subsection{\BPTree\label{sec:B-plus-tree}}
+\section{\BPTree\label{sec:B-plus-tree}}
 
-\BPTree je varianta B-tree, která ukládá hodnoty až do
+\BPTree{} je varianta B-tree, která ukládá hodnoty až do
 listů stromu. Do interních uzlů ukládá pouze informace o~klíčích
-a ukazatelích na potomky. Tento typ maximalizuje větvení interních
-uzlů.
+a ukazatelích na potomky. Každý koncový uzel udržuje ukazatel na další
+koncový uzel. To umožňuje velmi elegantně vytvořit vyhledávání v rozsahu.
+
+Tento typ maximalizuje větvení interních uzlů.
 
 Je použit v~souborových systémech, např. NTFS \cite{Carrier:2005:FSF:1051914}, btrfs, ZFS \cite{Powell:2012:ZBQ:2328941.2328946} atd\ldots{}
 Dále v~databázích PostgreSQL \cite{Geschwinde:2001:PDH:580250}, Oracle \cite{Kyte:2003:EOD:1593880} atd\ldots{}
@@ -277,4 +279,4 @@ DELETE & $\mathcal{O}(\log n)$\tabularnewline
 \end{tabular}
 
 
-\subsection{Voronoi rozdělení}
+\section{Voronoi rozdělení}
