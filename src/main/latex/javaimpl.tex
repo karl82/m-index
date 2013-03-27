@@ -4,27 +4,27 @@
 \section{Jazyk Java, JVM}
 
 Jazyk Java je silně typovaný jazyk. Tento jazyk není interpretovaný,
-výsledkem překladu je \emph{bytecode}. Až tento \emph{bytecode} je interpretovaný
+výsledkem překladu je \bytecode{}.\footnote{\bytecode{} jsou instrukce pro JVM. Více viz. \prettyref{sub:JIT}} Až tento \bytecode{} je interpretován
 v~tzv. Java Virtual Machine (JVM\nomenclature{JVM}{Java Virtual Machine}).
-Díky JVM může kód zkompilovaný na jedné platformě (ať už Windows nebo Unix a 32bit nebo 64bit) bežet na jiné. \footnote{\emph{\uv{Write once, run anywhere}}\cite{lindholm2013java}}
+Díky JVM může kód přeložený na jedné platformě (ať už Windows nebo Unix a 32bit nebo 64bit) bežet na jiné. \footnote{\emph{\uv{Write once, run anywhere}}\cite{lindholm2013java}}
 
 Hlavní klíčové vlastnosti, jak jazyka Java, JVM a JDK\nomenclature{JDK}{Java Development Kit}
 jsou tyto: automatická alokace a dealokace paměti, objektovost, generika,
-kompilace \emph{bytecode} do nativních instrukcí procesoru, bohatá
+překlad \bytecode{} do nativních instrukcí procesoru, bohatá
 knihovna tříd v~základním JDK\ldots{}
 
 
 \subsection{Automatická správa paměti -- garbage collection}
 
 V~jazyce Java neexistují ukazatele, pouze reference. V~jazycích C/C++
-se musí vývojář starat o~správu paměti pomocí funkcí \emph{malloc},
-\emph{free} (jazyk C a C++), resp. operátorů \emph{new} a \emph{delete}
+se musí vývojář starat o~správu paměti pomocí funkcí \method{malloc},
+\method{free} (jazyk C a C++), resp. operátorů \method{new} a \method{delete}
 (jazyk C++). V~jazyce Java, resp. v~JVM \cite{lindholm2013java} tuto starost přebírá tzv. \emph{garbage
 collector} (GC\nomenclature{GC}{garbage collector}), který sleduje
 dosažitelnost alokovaných objektů v~paměti JVM. Pokud GC
 zjistí, že objekt není dosažitelný z~jiných objektů, uvolní pamět daného objektu.
-\footnote{Podobná technika/pattern je součástí C++11 pomocí \emph{std::shared\_ptr},
-kde se používá \emph{reference counting} \cite{ISO:2012:CPP}. Tato technika není použitelná v~případě cyklických referencí. Při výskytu cyklických referencí by se měl použít i \emph{std::weak\_ptr}.
+\footnote{Podobná technika/pattern je součástí C++11 pomocí \type{std::shared\_ptr},
+kde se používá \emph{reference counting} \cite{ISO:2012:CPP}. Tato technika není použitelná v~případě cyklických referencí. Při výskytu cyklických referencí by se měl použít i \type{std::weak\_ptr}.
 }
 
 Díky automatické správě paměti je vývoj výrazně rychlejší a výsledný
@@ -51,20 +51,22 @@ GC se spouští v~okamžiku, kdy není dostatek paměti pro nové objekty nebo j
 Obdobně jako v~C++ jsou \emph{templates}\cite{ISO:2012:CPP}, jazyk Java má \emph{generics}.\footnote{Uvedeny ve verzi 1.5 \cite{gosling2013java}.}
 Jsou zde rozdíly:
 \begin{itemize}
-  \item v~Java se informace o~typu ztrácí během kompilace
+  \item v~Java se informace o~typu ztrácí během překladu. Překladač nahrazuje výskyt generika za konkrétní typ (třída, rozhraní)
   \item nelze jako typový parametr použít primitivní typ -- \type{int, char, byte, long, double, float} \ldots{}
   \item nelze použít netypový parametr
 \end{itemize}
 
-\subsection{Kompilace \emph{bytecode} do nativních instrukcí procesoru}
+Zřejmě největším přínosem je typová bezpečnost při práci s kolekcemi a možnosti typové specializace.
+
+\subsection{Překlad \bytecode{} do nativních instrukcí procesoru}
 
 JVM je heap procesor. Kvůli emulaci a virtualizaci procesoru je
-běh samotného \emph{bytecode} relativně pomalý. JVM proto překládá
-za běhu \emph{bytecode} do nativních instrukcí procesoru, nad který
+běh samotného \bytecode{} relativně pomalý. JVM proto překládá
+za běhu \bytecode{} do nativních instrukcí procesoru, nad kterým
 aktuálně JVM běží. V~JVM od Oracle %citation http://www.oracle.com/technetwork/java/index.html
  se nazýva JIT\nomenclature{JIT}{Just In Time} Compiler\cite{hunt2011java}. Samozřejmostí je optimalizace při několika průchodech
-kódem -- např. \emph{method inlining}, \emph{loop unrolling} nebo \emph{dead code elimination}\cite{hunt2011java}. Toto jsou velmi důležité vlastnosti, které mohou zásadním způsobem
-ovlivnit měření výkonnosti programu. Více viz.~\prettyref{sec:vykonvjava}).
+kódem -- např. \emph{function inlining}, \emph{loop unrolling} nebo \emph{dead code elimination}\cite{hunt2011java}. Toto jsou velmi důležité vlastnosti, které mohou zásadním způsobem
+ovlivnit měření výkonnosti programu. Více viz.~\prettyref{sec:vykonvjava}.
 
 
 \subsection{Bohatá knihovna tříd v~základním JDK}
@@ -74,39 +76,63 @@ pro síťovou komunikaci (RPC\nomenclature{RPC}{Remote Procedure Call}), práci 
 XML, soubory a souborový
 systém a také velmi propracovanou knihovnou kontejnerů -- \emph{Java
 Collections Framework }(JFC\nomenclature{JFC}{Java Collections Framework})
-\footnote{V~jazyce Java se používá pro termín\emph{ container} (C++) termín
+\footnote{V~jazyce Java se používá pro termín \emph{container} (C++) termín
 \emph{collection}}.
 
 \section{Návrh a UML}
+V celém návrhu jsem se snažil co nejvíce používat objektově orientovaný princip. Tzn. že jsem se maximálně snažil omezit používaní nižších kontrukcí jazyka Java jako jsou pole a spíše využívat knihovny JDK a vyšších konstrukcí jako jsou seznamy, fronty. Při některých výpočtech bylo možné použít \emph{rozděl a panuj}\cite{Cormen:2001:IA:580470}\footnote{V anj. \emph{Divide-and-Conquer}} s využitím \emph{Executor Framework} z JDK.
+
+V popisováných algoritmech (ať už \BPTree{} nebo M-Index) je často uváděna proměnná \type{leaf}. Z hlediska objektového návrhu se mění algoritmus na
+
 \subsection{\BPTree}
 \subsection{M-Index}
 \subsubsection{Výpočet maximální vzdálenosti mezi prvky}
+Výpočet maximální vzdálenosti je NP problém, kdy se musí spočítat vzájemné vzdálenosti všech prvků v množině a vybrat tu vzdálenost, která je největší. K výpočtu lze použít \emph{rozděl a panuj}, takže je celý výpočet pararelní.
+
+Funcionalita je implementována ve třídě 
 \subsubsection{Výpočet vzdáleností mezi pivoty a prvky}
 \subsubsection{Range Query}
 
 \section{Měření výkonu v~Java\label{sec:vykonvjava}}
 
-Abychom porozuměli úskalí měření výkonu kódu v JVM, je nejprve nutné si přiblížit, co se děje uvnitř JVM, jak probíhá kompilace a optimalizace kódu.
+Abychom porozuměli úskalí měření výkonu kódu v JVM, je nejprve nutné si přiblížit, co se děje uvnitř JVM, jak probíhá překlad a optimalizace kódu.
 
 \subsection{Class loading}
 
-Všechny třídy jsou zkompilovány do \filename{.class} souborů. Ty mohou být následně zabaleny do JAR\nomenclature{JAR}{Java ARchive}, což je v podstatě ZIP archív. JVM při startu vyhledá tzv. Main-Class a k ní všechny zavislé třídy a k ním další zavislé třídy v tzv. \emph{classpath}. U každé třídy provede statickou inicializaci. Toto vyhledávání není omezeno pouze na úvodní spuštění JVM. Volání \method{Class.forName()}, \method{ClassLoader.loadClass()}, \emph{Reflection API} a \method{JNI\_FindClass} může vyvolat class loading kdykoliv za běhu programu, pokud požadovaná třída není již nahrána\cite{gosling2013java}\cite{lindholm2013java}.
+Všechny třídy jsou přeloženy do \classfile{} souborů. Ty mohou být následně zabaleny do JAR\nomenclature{JAR}{Java ARchive}, což je v podstatě ZIP archív. JVM při startu vyhledá tzv. Main-Class a k ní všechny zavislé třídy a k ním další zavislé třídy v tzv. \emph{classpath}. U každé třídy provede statickou inicializaci. Toto vyhledávání není omezeno pouze na úvodní spuštění JVM. Volání \method{Class.forName()}, \method{ClassLoader.loadClass()}, \emph{Reflection API} a \method{JNI\_FindClass} může vyvolat class loading kdykoliv za běhu programu, pokud požadovaná třída není již nahrána\cite{gosling2013java}\cite{lindholm2013java}.
 
-Další fází při class loadingu je i verifikace \emph{byte code}. Standardní kompilátory Java (\cmd{javac}) vytvářejí validní \filename{.class} soubory a typově bezpečný kód. Jenže JVM se nemůže spolehnout, že soubor, který nahrála je správný. Proto musí ověřit, že je vše v pořádku -- ať již instrukce zadané v \filename{.class} souboru nebo typová bezpečnost.
+Další fází při class loadingu je i verifikace \bytecode{}. Všechny překladače Java (\javac{}) vytvářejí validní \classfile{} soubory a typově bezpečný kód. Jenže JVM se nemůže spolehnout, že soubor, který nahrála je správný. Proto musí ověřit, že je vše v pořádku -- ať již instrukce zadané v \classfile{} souboru nebo typová bezpečnost.
 
 Výše popsaný class loading je velmi náročný na I/O operace a zásadním způsobem ovlivní výsledek měření, pokud se nepředejde class loadingu během měření.
 
-\subsection{JIT}
-Na rozdíl od C/C++ předkladačů negeneruje 
+\subsection{JIT\label{sub:JIT}}
+Tradiční překladače (např. C/C++) generují z vyššího programovacího jazyka strojově zavíslý kód. Tento kód má finální podobu a všechny možné optimalizace je zapotřebí udělat během překladu. Případně použít profilování výsledné binárky a znovu nechat překladač znovu přeložít kód s využitím profilovacích dat. Těmto překladačům se říká také statické. Výsledný kód je optimalizován pro danou platformu.
+
+Java používá překladač \javac{}, který z vysoko úrovňového jazyka vytvoří \classfile{}, který obsahuje \bytecode{}. JVM tento \bytecode{} následně dynamicky za běhu překládá do strojově zavislého kódu pomocí JIT.
+
+\subsubsection{Jak funguje překladač}
+Každý překladač má podobnou strukturu. Musí mít na vstupu modul pro převod zdrojového kódu do tzv. \emph{intermediate representation (IR)}\nomenclature{IR}{Intermediate Representation}.\footnote{Existují různé typy IR. Pro každou fázi překladu se dokonce může použít jiný IR.} IR je mezistupeň před blablabla... Všechny překladače dělají největší optimalizace právě na IR. Množina možných optimalizací může být velmi široká a je často omezena množstvím času nutném k provedení dané optimalizace. Mezi jednoduché optimalizace patří zjednodušování logických výrazů, nahrazování proměnných konstatami a function inlining. Složitější optimalizace jsou většinou spojeny se smyčkami -- loop unrolling, odstraňování kontroly rozsahu smyčky atd\ldots{}
+
+Když jsou tyto optimaliace hotovy, další modul vezme danou IR a převede ji do strojové podoby. Zde nastávají další optimalizace v podobě přiřazování hodnot do registrů procesoru, výběr vhodných instrukcí atd\ldots{}
+
+\subsubsection{Kdy JIT překládá do strojového kódu\label{subsub:whenJIT}}
+JIT nepřekládá každou instrukci v \bytecode{} ihned do strojového kódu. Většina instrukcí je na začátku interpretována. Až v okamžiku, kdy daná instrukce se stane \emph{hot}, JIT ji zařadí pro překlad. JVM totiž udržuje u každé metody čítač volání. Pokuda daná metoda je volána více krát, stane se \emph{hot} a tím se vyvolá i její překlad. Hranice překladu je ve výchozím nastavení 10000.\footnote{Parameter pro JVM, který ovlivňuje toto nastavení je XXXX} Zjednodušeně řečeno: aby došlo k překladu libovolné metody do strojového kódu, musí být daná metoda volána aspoň 10000.
+
+JIT během překladu dělá samozřejmě optimalizace popsaných výše.
+
 \begin{description}
-\item[method inlining]
+\item[function inlining] 
 \item[dead code elimination]
 \item[loop unrolling]
 \item[záměna volání rozhraní konrétní implementací]
 \end{description}
+
 \subsection{Zahřátí JVM}
 
-\section{Výsledky testů}
+Pokud bychom začali měřit jednotlivé části kódu ihned po startu JVM, neměřili bysme výkonnost samotného kódu, ale i čas za jak dlouho JVM zavede jednotlivé \classfile soubory, za jak dlouho JIT přeloží a optimalizuje instrukce \bytecode{} do strojového kódu. Pravděpodobně by se i naměřené hodnoty pro stejné testované parametry lišily, protože by k překladu docházelo v průběhu nebo mezi jednotlivými měřenímy. Proto je nutné udělat i tzv. \emph{zahřáti JVM}.\footnote{v anj. \emph{JVM warm-up}}
 
+Zahřátí se provádí tak, že se zavolá měřený kód tolikrát, aby se stal \emph{hot}.\footnote{viz. \prettyref{subsub:whenJIT}} Po tomto zahřátí, by již měl být měřený kód optimalizová a převeden do strojového kódu a měření by němělo být ovlivněno.
+
+\section{Metoda a výsledky měření}
 
 \section{Srovnání výkonu implementací v~C++, C\# a Java}
