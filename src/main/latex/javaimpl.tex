@@ -56,7 +56,7 @@ Jsou zde rozdíly:
   \item nelze použít netypový parametr
 \end{itemize}
 
-Zřejmě největším přínosem je typová bezpečnost při práci s kolekcemi a možnosti typové specializace.
+Zřejmě největším přínosem je typová bezpečnost při práci s~kolekcemi a možnosti typové specializace.
 
 \subsection{Překlad \bytecode{} do nativních instrukcí procesoru}
 
@@ -80,50 +80,103 @@ Collections Framework }(JFC\nomenclature{JFC}{Java Collections Framework})
 \emph{collection}}.
 
 \section{Návrh a implementace}
-V celém návrhu jsem se snažil co nejvíce používat objektově orientovaný princip. Tzn. že jsem se maximálně snažil omezit používaní nižších konstrukcí jazyka Java jako jsou pole a spíše využívat knihovny JDK a vyšších konstrukcí jako jsou seznamy, fronty. Všechny implementované třídy a rozhraní jsou typově parametrizované viz. \prettyref{sub:generika}.
+V~celém návrhu jsem se snažil co nejvíce používat objektově orientovaný princip. Tzn. že jsem se maximálně snažil omezit používaní nižších konstrukcí jazyka Java jako jsou pole a spíše využívat knihovny JDK a vyšších konstrukcí jako jsou seznamy, fronty. Všechny implementované třídy a rozhraní jsou typově parametrizované viz. \prettyref{sub:generika}.
 
-Při některých výpočtech bylo možné použít \emph{rozděl a panuj}\cite{Cormen:2001:IA:580470}\footnote{V anj. \emph{Divide-and-Conquer}} s využitím \emph{Executor Framework} z JDK.
+Při některých výpočtech bylo možné použít \emph{rozděl a panuj}\cite{Cormen:2001:IA:580470}\footnote{V anj. \emph{Divide-and-Conquer}} s~využitím \emph{Executor Framework} z~JDK.
 
-V popisovaných algoritmech (ať už \BPTree{} nebo M-Index) je často uváděna proměnná \type{leaf}, resp. zda je daná struktura list. Z hlediska objektového návrhu se mění chování třídy podle její datové složky, což nesvědčí o dobrém objektovém návrhu. K odstranění tohoto jsem použil \emph{Replace Type Code with Subclasses}\cite{fowler1999refactoring} pro \BPTree. V případě M-Index Range Query jsem použil \emph{Visitor pattern}\cite{gamma1995design}.
+V~popisovaných algoritmech (ať už \BPTree{} nebo M-Index) je často uváděna proměnná \type{leaf}, resp. zda je daná struktura list. Z~hlediska objektového návrhu se mění chování třídy podle její datové složky, což nesvědčí o~dobrém objektovém návrhu. K~odstranění tohoto jsem použil \emph{Replace Type Code with Subclasses}\cite{fowler1999refactoring} pro \BPTree. V~případě M-Index Range Query jsem použil \emph{Visitor pattern}\cite{gamma1995design}.
 
 Dalš
 \subsection{\BPTree}
-Implementace \BPTree{} se nachází v třídě \type{cz.rank.vsfs.btree.BPlusTreeMultiMap}. Tato mapa je typově parametrizována pro klíč a hodnotu. Protože strom musí setříděný, musí klíč implementovat rozhraní \type{java.lang.Comparable}. Mapa umožňuje ukládat více objektů pod stejným klíčem\footnote{V C++ je obdobný kontejner \type{std::multimap}\cite{ISO:2012:CPP}} a umožňuje vyhledání v rozsahu.
+Implementace \BPTree{} se nachází v~třídě \linebreak \type{cz.rank.vsfs.btree.BPlusTreeMultiMap}. Tato mapa je typově parametrizována pro klíč a hodnotu. Protože strom musí být setříděný, musí klíč implementovat rozhraní \type{java.lang.Comparable}. Mapa umožňuje ukládat více objektů pod stejným klíčem\footnote{V C++ je obdobný kontejner \type{std::multimap}\cite{ISO:2012:CPP}. V~JDK žádná takováto kolekce není.} a umožňuje vyhledání v~intervalu.
+
+Implementace mazání objektů z~mapy není potřebná pro M-Index a není tudíž ani implementována.
+
+Celý \BPTree je uložen v~hlavní paměti.
 
 \subsection{M-Index}
-Celá implementace M-Index pracuje s objekty, které implementují rozhraní \type{cz.rank.vsfs.mindex.Distanceable}. Je to úplně jiný přístup, než byl použit 
-\subsubsection{Výpočet maximální vzdálenosti mezi prvky}
-Výpočet maximální vzdálenosti je NP problém, kdy se musí spočítat vzájemné vzdálenosti všech prvků v množině a vybrat tu vzdálenost, která je největší. K výpočtu lze použít \emph{rozděl a panuj}, takže je celý výpočet paralelní.
+Celá implementace M-Index pracuje s~objekty, které implementují rozhraní \type{cz.rank.vsfs.mindex.Distanceable}. Tím je zajištěna případná znovupoužitelnost kódu pro jiné datové typy než je vektor.
 
-Funkcionalita je implementována ve třídě \type{cz.rank.vsfs.mindex.MaximumDistance}. Vzdálenost může být spočítána pouze nad objekty, které implementují rozhraní \type{cz.rank.vsfs.mindex.Distanceable}.
+\subsubsection{Výpočet maximální vzdálenosti mezi prvky}
+Výpočet maximální vzdálenosti je NP problém, kdy se musí spočítat vzájemné vzdálenosti všech prvků v~množině a vybrat tu vzdálenost, která je největší. K~výpočtu lze použít \emph{rozděl a panuj}, takže je celý výpočet paralelní a doba výpočtu se lineárně snižuje s~počtem výpočetních vláken.
+
+Funkcionalita je implementována ve třídě \type{cz.rank.vsfs.mindex.MaximumDistance}. Vzdálenost může být spočítána pouze nad objekty, které implementují rozhraní \type{Distanceable}.
+
+
 \subsubsection{Výpočet vzdáleností mezi pivoty a prvky}
+K~výpočtu a seřazení vzdáleností pivotů od objektu slouží třídy implementující rozhraní \type{cz.rank.vsfs.mindex.PivotDistanceTable}. Implementovány jsou tři třídy s~tímto rozhraním.
+
+\begin{figure}
+\centering
+\begin{mpost}[use,mpsettings={input metauml;}]
+
+Interface.A("PivotDistanceTable")
+	("+calculate()",
+	 "+pivotAt(object:D, index:int):Pivot<D>",
+	 "+firstPivotDistance(object:D):double",
+	 "+distanceAt(object:D, index:int):double",
+	 "+pivotDistance(object:D, pivotIndex:int):double",
+);
+
+ClassTemplate.TA("Distanceable<D>")(A);
+
+AbstractClass.B("AbstractPivotDistanceTable")
+	()();
+ClassTemplate.TB("Distanceable<D>")(B);
+Class.C("ParallelPivotDistanceTable")
+	()();
+ClassTemplate.TC("Distanceable<D>")(C);
+
+Class.D("SimplePivotDistanceTable")
+	()();
+ClassTemplate.TD("Distanceable<D>")(D);
+
+topToBottom.midx(30)(A,B,C);
+leftToRight(80)(C,D);
+
+drawObjects(A, B, C, D, TA, TB, TC, TD);
+clink(realization)(B,A);
+clink(inheritance)(C,B);
+clink(inheritance)(D,B);
+
+\end{mpost}
+
+\caption{\type{PivotDistanceTable} UML diagram}
+\end{figure}
+
+\begin{description}
+\item[ParallelPivotDistanceTable] Rozdělí úlohu na menší části podle objektů pomocí \emph{rozděl a panuj} a výpočet je paralelizován za použití všech dostupných jader systému. Tato třída je využita při konstrukci samotného M-Index.
+\item[SimplePivotDistanceTable] Podobně jako \type{ParallelPivotDistanceTable} vypočte vzdálenosti objektu od pivotů, ale pouze pro jeden objekt a výpočet není paralelní. Tato třída se používá v~samotném \emph{Range Query} dotazu. Pokud by se použil \type{ParallelPivotDistanceTable}, tak režije spojená s~vytvářením úloh pro exekutory, vytvořením vláken, by byla výrazně vyšší než samotný výpočet vzdáleností jednoho objektu.
+\item[AbstractPivotDistanceTable] Je společným předkem obou výše uvedených tříd a obsahuje společný kód, který potomci využívají.
+\end{description}
+
 \subsubsection{Cluster tree}
 \subsubsection{Range Query}
 
 \section{Měření výkonu v~Java\label{sec:vykonvjava}}
 
-Abychom porozuměli úskalí měření výkonu kódu v JVM, je nejprve nutné si přiblížit, co se děje uvnitř JVM, jak probíhá překlad a optimalizace kódu.
+Abychom porozuměli úskalí měření výkonu kódu v~JVM, je nejprve nutné si přiblížit, co se děje uvnitř JVM, jak probíhá překlad a optimalizace kódu.
 
 \subsection{Zavádění tříd}
 
-Všechny třídy jsou přeloženy do \classfile{} souborů. Ty mohou být následně zabaleny do JAR\nomenclature{JAR}{Java ARchive}, což je v podstatě ZIP archív. JVM při startu vyhledá tzv. Main-Class a k ní všechny závislé třídy a k nim další závislé třídy v tzv. \emph{classpath}. U každé třídy se provede statická inicializace. Toto vyhledávání není omezeno pouze na úvodní spuštění JVM. Volání \method{Class.forName()}, \method{ClassLoader.loadClass()}, \emph{Reflection API} a \method{JNI\_FindClass} může vyvolat \emph{zavádění tříd}\footnote{V anj. \emph{class loading}} kdykoliv za běhu programu, pokud požadovaná třída není již nahrána\cite{gosling2013java}\cite{lindholm2013java}.
+Všechny třídy jsou přeloženy do \classfile{} souborů. Ty mohou být následně zabaleny do JAR\nomenclature{JAR}{Java ARchive}, což je v~podstatě ZIP archív. JVM při startu vyhledá tzv. Main-Class a k~ní všechny závislé třídy a k~nim další závislé třídy v~tzv. \emph{classpath}. U~každé třídy se provede statická inicializace. Toto vyhledávání není omezeno pouze na úvodní spuštění JVM. Volání \method{Class.forName()}, \method{ClassLoader.loadClass()}, \emph{Reflection API} a \method{JNI\_FindClass} může vyvolat \emph{zavádění tříd}\footnote{V anj. \emph{class loading}} kdykoliv za běhu programu, pokud požadovaná třída není již nahrána\cite{gosling2013java}\cite{lindholm2013java}.
 
-Další fází při \emph{zavádění tříd} je i verifikace \bytecode{}. Všechny překladače Java (\javac{}) vytvářejí validní \classfile{} soubory a typově bezpečný kód. Jenže JVM se nemůže spolehnout, že soubor, který nahrála je správný. Proto musí ověřit, že je vše v pořádku -- ať již instrukce zadané v \classfile{} souboru nebo typová bezpečnost.
+Další fází při \emph{zavádění tříd} je i verifikace \bytecode{}. Všechny překladače Java (\javac{}) vytvářejí validní \classfile{} soubory a typově bezpečný kód. Jenže JVM se nemůže spolehnout, že soubor, který nahrála je správný. Proto musí ověřit, že je vše v~pořádku -- ať již instrukce zadané v~\classfile{} souboru nebo typová bezpečnost.
 
 Výše popsaný proces \emph{zavádění tříd} je velmi náročný na I/O operace a zásadním způsobem ovlivní výsledek měření, pokud se nepředejde tomuto zavádění během měření.
 
 \subsection{JIT\label{sub:JIT}}
-Tradiční překladače (např. C/C++) generují z vyššího programovacího jazyka strojově závislý kód. Tento kód má finální podobu a všechny možné optimalizace je zapotřebí udělat během překladu. Případně použít profilování výsledné binárky a znovu nechat překladač znovu přeložit kód s využitím profilovacích dat. Těmto překladačům se říká také statické. Výsledný kód je optimalizován pro danou platformu.
+Tradiční překladače (např. C/C++) generují z~vyššího programovacího jazyka strojově závislý kód. Tento kód má finální podobu a všechny možné optimalizace je zapotřebí udělat během překladu. Případně použít profilování výsledné binárky a znovu nechat překladač znovu přeložit kód s~využitím profilovacích dat. Těmto překladačům se říká také statické. Výsledný kód je optimalizován pro danou platformu.
 
-Java používá překladač \javac{}, který z vysoko úrovňového jazyka vytvoří \classfile{}, který obsahuje \bytecode{}. JVM tento \bytecode{} následně dynamicky za běhu překládá do strojově závislého kódu pomocí JIT.
+Java používá překladač \javac{}, který z~vysoko úrovňového jazyka vytvoří \classfile{}, který obsahuje \bytecode{}. JVM tento \bytecode{} následně dynamicky za běhu překládá do strojově závislého kódu pomocí JIT.
 
 \subsubsection{Jak funguje překladač}
-Každý překladač má podobnou strukturu. Musí mít na vstupu modul pro převod zdrojového kódu do tzv. \emph{intermediate representation (IR)}\nomenclature{IR}{Intermediate Representation}.\footnote{Existují různé typy IR. Pro každou fázi překladu se dokonce může použít jiný IR.} IR je mezistupeň před blablabla... Všechny překladače dělají největší optimalizace právě na IR. Množina možných optimalizací může být velmi široká a je často omezena množstvím času nutném k provedení dané optimalizace. Mezi jednoduché optimalizace patří zjednodušování logických výrazů, nahrazování proměnných konstantami a function inlining. Složitější optimalizace jsou většinou spojeny se smyčkami -- loop unrolling, odstraňování kontroly rozsahu smyčky atd\ldots{}
+Každý překladač má podobnou strukturu. Musí mít na vstupu modul pro převod zdrojového kódu do tzv. \emph{intermediate representation (IR)}\nomenclature{IR}{Intermediate Representation}.\footnote{Existují různé typy IR. Pro každou fázi překladu se dokonce může použít jiný IR.} IR je mezistupeň před blablabla... Všechny překladače dělají největší optimalizace právě na IR. Množina možných optimalizací může být velmi široká a je často omezena množstvím času nutném k~provedení dané optimalizace. Mezi jednoduché optimalizace patří zjednodušování logických výrazů, nahrazování proměnných konstantami a function inlining. Složitější optimalizace jsou většinou spojeny se smyčkami -- loop unrolling, odstraňování kontroly rozsahu smyčky atd\ldots{}
 
-Když jsou tyto optimalizace hotovy, další modul vezme danou IR a převede ji do strojové podoby. Zde nastávají další optimalizace v podobě přiřazování hodnot do registrů procesoru, výběr vhodných instrukcí atd\ldots{}
+Když jsou tyto optimalizace hotovy, další modul vezme danou IR a převede ji do strojové podoby. Zde nastávají další optimalizace v~podobě přiřazování hodnot do registrů procesoru, výběr vhodných instrukcí atd\ldots{}
 
 \subsubsection{Kdy JIT překládá do strojového kódu\label{subsub:whenJIT}}
-JIT nepřekládá každou instrukci v \bytecode{} ihned do strojového kódu. Většina instrukcí je na začátku interpretována. Až v okamžiku, kdy daná instrukce se stane \emph{hot}, JIT ji zařadí pro překlad. JVM totiž udržuje u každé metody čítač volání. Pokud daná metoda je volána více krát, stane se \emph{hot} a tím se vyvolá i její překlad. Hranice překladu je ve výchozím nastavení 10000.\footnote{Parametr pro Oracle JVM, který ovlivňuje toto nastavení je \cmd{-XX:CompileThreshold=}} Zjednodušeně řečeno: aby došlo k překladu libovolné metody do strojového kódu, musí být daná metoda volána aspoň 10000.
+JIT nepřekládá každou instrukci v~\bytecode{} ihned do strojového kódu. Většina instrukcí je na začátku interpretována. Až v~okamžiku, kdy daná instrukce se stane \emph{hot}, JIT ji zařadí pro překlad. JVM totiž udržuje u~každé metody čítač volání. Pokud daná metoda je volána více krát, stane se \emph{hot} a tím se vyvolá i její překlad. Hranice překladu je ve výchozím nastavení 10000.\footnote{Parametr pro Oracle JVM, který ovlivňuje toto nastavení je \cmd{-XX:CompileThreshold=}} Zjednodušeně řečeno: aby došlo k~překladu libovolné metody do strojového kódu, musí být daná metoda volána aspoň 10000.
 
 JIT během překladu dělá samozřejmě optimalizace popsaných výše.
 
@@ -136,7 +189,7 @@ JIT během překladu dělá samozřejmě optimalizace popsaných výše.
 
 \subsection{Zahřátí JVM}
 
-Pokud bychom začali měřit jednotlivé části kódu ihned po startu JVM, neměřili bychom výkonnost samotného kódu, ale i čas za jak dlouho JVM zavede jednotlivé \classfile soubory, za jak dlouho JIT přeloží a optimalizuje instrukce \bytecode{} do strojového kódu. Pravděpodobně by se i naměřené hodnoty pro stejné testované parametry lišily, protože by k překladu docházelo v průběhu nebo mezi jednotlivými měřeními. Proto je nutné udělat i tzv. \emph{zahřáti JVM}.\footnote{v anj. \emph{JVM warm-up}}
+Pokud bychom začali měřit jednotlivé části kódu ihned po startu JVM, neměřili bychom výkonnost samotného kódu, ale i čas za jak dlouho JVM zavede jednotlivé \classfile soubory, za jak dlouho JIT přeloží a optimalizuje instrukce \bytecode{} do strojového kódu. Pravděpodobně by se i naměřené hodnoty pro stejné testované parametry lišily, protože by k~překladu docházelo v~průběhu nebo mezi jednotlivými měřeními. Proto je nutné udělat i tzv. \emph{zahřáti JVM}.\footnote{v anj. \emph{JVM warm-up}}
 
 Zahřátí se provádí tak, že se zavolá měřený kód tolikrát, aby se stal \emph{hot}.\footnote{viz. \prettyref{subsub:whenJIT}} Po tomto zahřátí, by již měl být měřený kód optimalizován a převeden do strojového kódu a měření by nemělo být ovlivněno.
 

@@ -23,14 +23,14 @@ vlastnostmi:
 
 \begin{enumerate}
 \item $n[x]$ - počet klíčů uložených v~uzlu $x$,
-\item $n[x]$ samotných klíčů, uložených v~neklesajícím pořadí, tedy $key_{1}[x]\leq key_{2}[x]\leq\cdots\leq key_{n[x]}[x]$,
+\item $n[x]$ samotných klíčů, uložených v~neklesajícím pořadí, tedy \linebreak $key_{1}[x]\leq key_{2}[x]\leq\cdots\leq key_{n[x]}[x]$,
 \item $leaf[x]$ typu boolean, který je TRUE pokud $x$ je list a FALSE
 pokud je $x$ interní uzel\@.
 \end{enumerate}
-\item Každý vnitřní uzel $x$ obsahuje $n[x]+1$ ukazatelů%
-\footnote{v~případě jazyka Java \emph{referencí}%
-} $c_{1}[x],c_{2}[x],\ldots,c_{n[x]+1}[x]$ na jeho potomky (\emph{children})\@.
-Uzly listů nemají žádné potomky -- jejich $c_{i}$ prvky jsou nedefinovány\@.
+\item Každý vnitřní uzel $x$ obsahuje $n[x]+1$ ukazatelů
+\footnote{v~případě jazyka Java \emph{referencí}
+} $c_{1}[x],c_{2}[x],\ldots{},c_{n[x]+1}[x]$ na jeho potomky (\emph{children}).
+Uzly listů nemají žádné potomky -- jejich $c_{i}$ prvky jsou nedefinovány.
 \item Klíče $key_{i}[x]$ oddělují rozsahy klíčů uložených v~každém podstromu:
 pokud $k_{i}$ je libovolný klíč uložený v~podstromu s~kořenem $c_{i}[x]$,
 pak
@@ -249,7 +249,7 @@ popis je možné najít v~\cite{Cormen:2001:IA:580470}.
 \BPTree{} je varianta B-tree, která ukládá hodnoty až do
 listů stromu. Do interních uzlů ukládá pouze informace o~klíčích
 a ukazatelích na potomky. Každý koncový uzel udržuje ukazatel na další
-koncový uzel. To umožňuje velmi elegantně vytvořit vyhledávání v rozsahu.
+koncový uzel. To umožňuje velmi elegantně vytvořit vyhledávání v~rozsahu.
 
 Tento typ maximalizuje větvení interních uzlů.
 
@@ -279,4 +279,4 @@ DELETE & $\mathcal{O}(\log n)$\tabularnewline
 
 
 \section{Voroného diagram}
-Voroného diagram je rozdělení prostoru na oblasti, které obsahují k sobě nejbližší body\cite{dorst2010geometric}.
+Voroného diagram je rozdělení prostoru na oblasti, které obsahují k~sobě nejbližší body\cite{dorst2010geometric}.
