@@ -40,7 +40,7 @@ M-Index zobecňuje iDistance tak, že může být použita na~obecné metrické
 prostory -- ne jenom na vektorový prostor\@. Toho je dosaženo tím,
 že se vybere množina $n$~pivotů $p_{0},p_{1},\ldots,p_{n-1}$ a
 apriori ze vzorový množiny $S\subseteq\mathcal{D}$ a poté aplikováním
-Voronoi-ho dělení a rozdělení prostoru na $n$~clusterů. \prettyref{fig:M-Index-level-one} ukazuje
+Voroného dělení a rozdělení prostoru na $n$~clusterů. \prettyref{fig:M-Index-level-one} ukazuje
 příklad takového rozdělení ve 2D pro 4 pivoty ($n=4)$.
 
 \begin{figure}[t]
@@ -68,11 +68,11 @@ je permutace indexů tak, že
 d(p_{(0)_{o}},o)\leq d(p_{(1)_{o}},o)\leq\cdots\leq d(p_{(n-1)_{o}},o)
 \]
 Jinak: řada $p_{(0)_{o}},p_{(1)_{o}},\ldots,p_{(n-1)_{o}}$ je seřazena
-podle vzdáleností mezi pivotama a prvkem $o$\@.
+podle vzdáleností mezi pivoty a prvkem $o$\@.
 
 M-Index s~$l$ stupni, kde $l$ je celé číslo $1\leq l\leq n$, rozděluje
 prostor $\mathcal{D}$ do $n\cdot(n-1)\cdot\cdots\cdot(n-l+1)$ clusterů
-za použití rekursivního Voronoi-ho dělení: Na prvním stupni, každý
+za použití rekursivního Voroného dělení: Na prvním stupni, každý
 prvek $o\in\mathcal{D}$ je přiřazen k~jeho nejbližšímu pivotu $p_{(0)_{o}}$--
 takto se utvoří clustery $C_{i}$\@. Na druhém stupni se každý cluster
 $C_{i}$ rozdělí na $n-1$ clusterů tou samou procedurou použitím
@@ -169,7 +169,7 @@ vynechán, pokud
 \[
 d(p_{i},q)-d(p_{(0)_{q}},q)>2\cdot r
 \]
-kde $p_{(0)_{q}}$ je pivot nejbližší ke~$q$\@. Protože Voronoi-ovo
+kde $p_{(0)_{q}}$ je pivot nejbližší ke~$q$\@. Protože Voroného
 dělení je opakováno $l$-krát pro stupeň $l$, toto pravidlo může
 být opakováno $l$-krát pro cluster $C_{i_{0},\ldots,i_{l-1}}$\@.
 Na každém stupni $j,\,1\leq l\leq l$ jsou pivoty $p_{i_{0},\ldots,i_{j-2}}$
@@ -208,12 +208,12 @@ V~předchozích sekcích byly uvedeny algoritmy a mechanismy, které
 nutí k~použití různých specifických datových struktur\@. Obecně,
 datové prvky mohou být uloženy v~jakékoliv struktuře, která je indexuje
 podle jejich M-Index klíčů. Ideální je efektivní vyhodnocování přes
-intervalové dotazy -- B$^{\text{+}}$-tree\cite{Cormen:2001:IA:580470}%
-\footnote{detailní popis B$^{\text{+}}$-tree viz \prettyref{sub:B-plus-tree}%
+intervalové dotazy -- \BPTree{}\cite{Cormen:2001:IA:580470}%
+\footnote{detailní popis \BPTree{} viz \prettyref{sub:B-plus-tree}%
 } je typickým představitelem takovéto struktury\@.
 
 Implementace stromu clusterů (\emph{cluster tree}) je jednoduchá\@.
 Záznam pro cluster $C_{i_{0},\ldots,i_{l-1}}$ je z: $l$, pole $\left\langle i_{0},\ldots,i_{l-1}\right\rangle $
 a buď ukazatelů na podstromy $\left\langle sub_{0},\ldots,sub_{n-1}\right\rangle $
 v~případě vnitřního uzlu nebo $r_{min},\, r_{max}$ pro záznam listu\@.
-Strom clusterů by měl být udržován v~hlavní paměti\@.
+Strom clusterů by měl být udržován v~hlavní paměti.

@@ -6,7 +6,7 @@
 Jazyk Java je silně typovaný jazyk. Tento jazyk není interpretovaný,
 výsledkem překladu je \bytecode{}.\footnote{\bytecode{} jsou instrukce pro JVM. Více viz. \prettyref{sub:JIT}} Až tento \bytecode{} je interpretován
 v~tzv. Java Virtual Machine (JVM\nomenclature{JVM}{Java Virtual Machine}).
-Díky JVM může kód přeložený na jedné platformě (ať už Windows nebo Unix a 32bit nebo 64bit) bežet na jiné. \footnote{\emph{\uv{Write once, run anywhere}}\cite{lindholm2013java}}
+Díky JVM může kód přeložený na jedné platformě (ať už Windows nebo Unix a 32bit nebo 64bit) běžet na jiné. \footnote{\emph{\uv{Write once, run anywhere}}\cite{lindholm2013java}}
 
 Hlavní klíčové vlastnosti, jak jazyka Java, JVM a JDK\nomenclature{JDK}{Java Development Kit}
 jsou tyto: automatická alokace a dealokace paměti, objektovost, generika,
@@ -46,7 +46,7 @@ GC se spouští v~okamžiku, kdy není dostatek paměti pro nové objekty nebo j
 \end{description}
 % describe GC phases
 
-\subsection{Generika}
+\subsection{Generika\label{sub:generika}}
 
 Obdobně jako v~C++ jsou \emph{templates}\cite{ISO:2012:CPP}, jazyk Java má \emph{generics}.\footnote{Uvedeny ve verzi 1.5 \cite{gosling2013java}.}
 Jsou zde rozdíly:
@@ -63,8 +63,8 @@ Zřejmě největším přínosem je typová bezpečnost při práci s kolekcemi 
 JVM je heap procesor. Kvůli emulaci a virtualizaci procesoru je
 běh samotného \bytecode{} relativně pomalý. JVM proto překládá
 za běhu \bytecode{} do nativních instrukcí procesoru, nad kterým
-aktuálně JVM běží. V~JVM od Oracle %citation http://www.oracle.com/technetwork/java/index.html
- se nazýva JIT\nomenclature{JIT}{Just In Time} Compiler\cite{hunt2011java}. Samozřejmostí je optimalizace při několika průchodech
+aktuálně JVM běží. V~JVM od Oracle
+ se nazývá JIT\nomenclature{JIT}{Just In Time} Compiler\cite{hunt2011java}. Samozřejmostí je optimalizace při několika průchodech
 kódem -- např. \emph{function inlining}, \emph{loop unrolling} nebo \emph{dead code elimination}\cite{hunt2011java}. Toto jsou velmi důležité vlastnosti, které mohou zásadním způsobem
 ovlivnit měření výkonnosti programu. Více viz.~\prettyref{sec:vykonvjava}.
 
@@ -79,44 +79,51 @@ Collections Framework }(JFC\nomenclature{JFC}{Java Collections Framework})
 \footnote{V~jazyce Java se používá pro termín \emph{container} (C++) termín
 \emph{collection}}.
 
-\section{Návrh a UML}
-V celém návrhu jsem se snažil co nejvíce používat objektově orientovaný princip. Tzn. že jsem se maximálně snažil omezit používaní nižších kontrukcí jazyka Java jako jsou pole a spíše využívat knihovny JDK a vyšších konstrukcí jako jsou seznamy, fronty. Při některých výpočtech bylo možné použít \emph{rozděl a panuj}\cite{Cormen:2001:IA:580470}\footnote{V anj. \emph{Divide-and-Conquer}} s využitím \emph{Executor Framework} z JDK.
+\section{Návrh a implementace}
+V celém návrhu jsem se snažil co nejvíce používat objektově orientovaný princip. Tzn. že jsem se maximálně snažil omezit používaní nižších konstrukcí jazyka Java jako jsou pole a spíše využívat knihovny JDK a vyšších konstrukcí jako jsou seznamy, fronty. Všechny implementované třídy a rozhraní jsou typově parametrizované viz. \prettyref{sub:generika}.
 
-V popisováných algoritmech (ať už \BPTree{} nebo M-Index) je často uváděna proměnná \type{leaf}. Z hlediska objektového návrhu se mění algoritmus na
+Při některých výpočtech bylo možné použít \emph{rozděl a panuj}\cite{Cormen:2001:IA:580470}\footnote{V anj. \emph{Divide-and-Conquer}} s využitím \emph{Executor Framework} z JDK.
 
+V popisovaných algoritmech (ať už \BPTree{} nebo M-Index) je často uváděna proměnná \type{leaf}, resp. zda je daná struktura list. Z hlediska objektového návrhu se mění chování třídy podle její datové složky, což nesvědčí o dobrém objektovém návrhu. K odstranění tohoto jsem použil \emph{Replace Type Code with Subclasses}\cite{fowler1999refactoring} pro \BPTree. V případě M-Index Range Query jsem použil \emph{Visitor pattern}\cite{gamma1995design}.
+
+Dalš
 \subsection{\BPTree}
-\subsection{M-Index}
-\subsubsection{Výpočet maximální vzdálenosti mezi prvky}
-Výpočet maximální vzdálenosti je NP problém, kdy se musí spočítat vzájemné vzdálenosti všech prvků v množině a vybrat tu vzdálenost, která je největší. K výpočtu lze použít \emph{rozděl a panuj}, takže je celý výpočet pararelní.
+Implementace \BPTree{} se nachází v třídě \type{cz.rank.vsfs.btree.BPlusTreeMultiMap}. Tato mapa je typově parametrizována pro klíč a hodnotu. Protože strom musí setříděný, musí klíč implementovat rozhraní \type{java.lang.Comparable}. Mapa umožňuje ukládat více objektů pod stejným klíčem\footnote{V C++ je obdobný kontejner \type{std::multimap}\cite{ISO:2012:CPP}} a umožňuje vyhledání v rozsahu.
 
-Funcionalita je implementována ve třídě 
+\subsection{M-Index}
+Celá implementace M-Index pracuje s objekty, které implementují rozhraní \type{cz.rank.vsfs.mindex.Distanceable}. Je to úplně jiný přístup, než byl použit 
+\subsubsection{Výpočet maximální vzdálenosti mezi prvky}
+Výpočet maximální vzdálenosti je NP problém, kdy se musí spočítat vzájemné vzdálenosti všech prvků v množině a vybrat tu vzdálenost, která je největší. K výpočtu lze použít \emph{rozděl a panuj}, takže je celý výpočet paralelní.
+
+Funkcionalita je implementována ve třídě \type{cz.rank.vsfs.mindex.MaximumDistance}. Vzdálenost může být spočítána pouze nad objekty, které implementují rozhraní \type{cz.rank.vsfs.mindex.Distanceable}.
 \subsubsection{Výpočet vzdáleností mezi pivoty a prvky}
+\subsubsection{Cluster tree}
 \subsubsection{Range Query}
 
 \section{Měření výkonu v~Java\label{sec:vykonvjava}}
 
 Abychom porozuměli úskalí měření výkonu kódu v JVM, je nejprve nutné si přiblížit, co se děje uvnitř JVM, jak probíhá překlad a optimalizace kódu.
 
-\subsection{Class loading}
+\subsection{Zavádění tříd}
 
-Všechny třídy jsou přeloženy do \classfile{} souborů. Ty mohou být následně zabaleny do JAR\nomenclature{JAR}{Java ARchive}, což je v podstatě ZIP archív. JVM při startu vyhledá tzv. Main-Class a k ní všechny zavislé třídy a k ním další zavislé třídy v tzv. \emph{classpath}. U každé třídy provede statickou inicializaci. Toto vyhledávání není omezeno pouze na úvodní spuštění JVM. Volání \method{Class.forName()}, \method{ClassLoader.loadClass()}, \emph{Reflection API} a \method{JNI\_FindClass} může vyvolat class loading kdykoliv za běhu programu, pokud požadovaná třída není již nahrána\cite{gosling2013java}\cite{lindholm2013java}.
+Všechny třídy jsou přeloženy do \classfile{} souborů. Ty mohou být následně zabaleny do JAR\nomenclature{JAR}{Java ARchive}, což je v podstatě ZIP archív. JVM při startu vyhledá tzv. Main-Class a k ní všechny závislé třídy a k nim další závislé třídy v tzv. \emph{classpath}. U každé třídy se provede statická inicializace. Toto vyhledávání není omezeno pouze na úvodní spuštění JVM. Volání \method{Class.forName()}, \method{ClassLoader.loadClass()}, \emph{Reflection API} a \method{JNI\_FindClass} může vyvolat \emph{zavádění tříd}\footnote{V anj. \emph{class loading}} kdykoliv za běhu programu, pokud požadovaná třída není již nahrána\cite{gosling2013java}\cite{lindholm2013java}.
 
-Další fází při class loadingu je i verifikace \bytecode{}. Všechny překladače Java (\javac{}) vytvářejí validní \classfile{} soubory a typově bezpečný kód. Jenže JVM se nemůže spolehnout, že soubor, který nahrála je správný. Proto musí ověřit, že je vše v pořádku -- ať již instrukce zadané v \classfile{} souboru nebo typová bezpečnost.
+Další fází při \emph{zavádění tříd} je i verifikace \bytecode{}. Všechny překladače Java (\javac{}) vytvářejí validní \classfile{} soubory a typově bezpečný kód. Jenže JVM se nemůže spolehnout, že soubor, který nahrála je správný. Proto musí ověřit, že je vše v pořádku -- ať již instrukce zadané v \classfile{} souboru nebo typová bezpečnost.
 
-Výše popsaný class loading je velmi náročný na I/O operace a zásadním způsobem ovlivní výsledek měření, pokud se nepředejde class loadingu během měření.
+Výše popsaný proces \emph{zavádění tříd} je velmi náročný na I/O operace a zásadním způsobem ovlivní výsledek měření, pokud se nepředejde tomuto zavádění během měření.
 
 \subsection{JIT\label{sub:JIT}}
-Tradiční překladače (např. C/C++) generují z vyššího programovacího jazyka strojově zavíslý kód. Tento kód má finální podobu a všechny možné optimalizace je zapotřebí udělat během překladu. Případně použít profilování výsledné binárky a znovu nechat překladač znovu přeložít kód s využitím profilovacích dat. Těmto překladačům se říká také statické. Výsledný kód je optimalizován pro danou platformu.
+Tradiční překladače (např. C/C++) generují z vyššího programovacího jazyka strojově závislý kód. Tento kód má finální podobu a všechny možné optimalizace je zapotřebí udělat během překladu. Případně použít profilování výsledné binárky a znovu nechat překladač znovu přeložit kód s využitím profilovacích dat. Těmto překladačům se říká také statické. Výsledný kód je optimalizován pro danou platformu.
 
-Java používá překladač \javac{}, který z vysoko úrovňového jazyka vytvoří \classfile{}, který obsahuje \bytecode{}. JVM tento \bytecode{} následně dynamicky za běhu překládá do strojově zavislého kódu pomocí JIT.
+Java používá překladač \javac{}, který z vysoko úrovňového jazyka vytvoří \classfile{}, který obsahuje \bytecode{}. JVM tento \bytecode{} následně dynamicky za běhu překládá do strojově závislého kódu pomocí JIT.
 
 \subsubsection{Jak funguje překladač}
-Každý překladač má podobnou strukturu. Musí mít na vstupu modul pro převod zdrojového kódu do tzv. \emph{intermediate representation (IR)}\nomenclature{IR}{Intermediate Representation}.\footnote{Existují různé typy IR. Pro každou fázi překladu se dokonce může použít jiný IR.} IR je mezistupeň před blablabla... Všechny překladače dělají největší optimalizace právě na IR. Množina možných optimalizací může být velmi široká a je často omezena množstvím času nutném k provedení dané optimalizace. Mezi jednoduché optimalizace patří zjednodušování logických výrazů, nahrazování proměnných konstatami a function inlining. Složitější optimalizace jsou většinou spojeny se smyčkami -- loop unrolling, odstraňování kontroly rozsahu smyčky atd\ldots{}
+Každý překladač má podobnou strukturu. Musí mít na vstupu modul pro převod zdrojového kódu do tzv. \emph{intermediate representation (IR)}\nomenclature{IR}{Intermediate Representation}.\footnote{Existují různé typy IR. Pro každou fázi překladu se dokonce může použít jiný IR.} IR je mezistupeň před blablabla... Všechny překladače dělají největší optimalizace právě na IR. Množina možných optimalizací může být velmi široká a je často omezena množstvím času nutném k provedení dané optimalizace. Mezi jednoduché optimalizace patří zjednodušování logických výrazů, nahrazování proměnných konstantami a function inlining. Složitější optimalizace jsou většinou spojeny se smyčkami -- loop unrolling, odstraňování kontroly rozsahu smyčky atd\ldots{}
 
-Když jsou tyto optimaliace hotovy, další modul vezme danou IR a převede ji do strojové podoby. Zde nastávají další optimalizace v podobě přiřazování hodnot do registrů procesoru, výběr vhodných instrukcí atd\ldots{}
+Když jsou tyto optimalizace hotovy, další modul vezme danou IR a převede ji do strojové podoby. Zde nastávají další optimalizace v podobě přiřazování hodnot do registrů procesoru, výběr vhodných instrukcí atd\ldots{}
 
 \subsubsection{Kdy JIT překládá do strojového kódu\label{subsub:whenJIT}}
-JIT nepřekládá každou instrukci v \bytecode{} ihned do strojového kódu. Většina instrukcí je na začátku interpretována. Až v okamžiku, kdy daná instrukce se stane \emph{hot}, JIT ji zařadí pro překlad. JVM totiž udržuje u každé metody čítač volání. Pokuda daná metoda je volána více krát, stane se \emph{hot} a tím se vyvolá i její překlad. Hranice překladu je ve výchozím nastavení 10000.\footnote{Parameter pro JVM, který ovlivňuje toto nastavení je XXXX} Zjednodušeně řečeno: aby došlo k překladu libovolné metody do strojového kódu, musí být daná metoda volána aspoň 10000.
+JIT nepřekládá každou instrukci v \bytecode{} ihned do strojového kódu. Většina instrukcí je na začátku interpretována. Až v okamžiku, kdy daná instrukce se stane \emph{hot}, JIT ji zařadí pro překlad. JVM totiž udržuje u každé metody čítač volání. Pokud daná metoda je volána více krát, stane se \emph{hot} a tím se vyvolá i její překlad. Hranice překladu je ve výchozím nastavení 10000.\footnote{Parametr pro Oracle JVM, který ovlivňuje toto nastavení je \cmd{-XX:CompileThreshold=}} Zjednodušeně řečeno: aby došlo k překladu libovolné metody do strojového kódu, musí být daná metoda volána aspoň 10000.
 
 JIT během překladu dělá samozřejmě optimalizace popsaných výše.
 
@@ -124,14 +131,14 @@ JIT během překladu dělá samozřejmě optimalizace popsaných výše.
 \item[function inlining] 
 \item[dead code elimination]
 \item[loop unrolling]
-\item[záměna volání rozhraní konrétní implementací]
+\item[záměna volání rozhraní konkrétní implementací]
 \end{description}
 
 \subsection{Zahřátí JVM}
 
-Pokud bychom začali měřit jednotlivé části kódu ihned po startu JVM, neměřili bysme výkonnost samotného kódu, ale i čas za jak dlouho JVM zavede jednotlivé \classfile soubory, za jak dlouho JIT přeloží a optimalizuje instrukce \bytecode{} do strojového kódu. Pravděpodobně by se i naměřené hodnoty pro stejné testované parametry lišily, protože by k překladu docházelo v průběhu nebo mezi jednotlivými měřenímy. Proto je nutné udělat i tzv. \emph{zahřáti JVM}.\footnote{v anj. \emph{JVM warm-up}}
+Pokud bychom začali měřit jednotlivé části kódu ihned po startu JVM, neměřili bychom výkonnost samotného kódu, ale i čas za jak dlouho JVM zavede jednotlivé \classfile soubory, za jak dlouho JIT přeloží a optimalizuje instrukce \bytecode{} do strojového kódu. Pravděpodobně by se i naměřené hodnoty pro stejné testované parametry lišily, protože by k překladu docházelo v průběhu nebo mezi jednotlivými měřeními. Proto je nutné udělat i tzv. \emph{zahřáti JVM}.\footnote{v anj. \emph{JVM warm-up}}
 
-Zahřátí se provádí tak, že se zavolá měřený kód tolikrát, aby se stal \emph{hot}.\footnote{viz. \prettyref{subsub:whenJIT}} Po tomto zahřátí, by již měl být měřený kód optimalizová a převeden do strojového kódu a měření by němělo být ovlivněno.
+Zahřátí se provádí tak, že se zavolá měřený kód tolikrát, aby se stal \emph{hot}.\footnote{viz. \prettyref{subsub:whenJIT}} Po tomto zahřátí, by již měl být měřený kód optimalizován a převeden do strojového kódu a měření by nemělo být ovlivněno.
 
 \section{Metoda a výsledky měření}
 

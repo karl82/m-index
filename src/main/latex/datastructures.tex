@@ -3,7 +3,7 @@
 
 \section{B-tree}
 
-B-tree\cite{Cormen:2001:IA:580470} je zobecnělý binární strom s~možností
+B-tree\cite{Cormen:2001:IA:580470} je zobecněný binární strom s~možností
 mít více jak 2 potomky. Jeho optimalizován pro čtení a zápis velkého
 objemu dat, takže je se hojně používá v~databázích a souborových
 systémech.
@@ -82,8 +82,8 @@ $(y,i)$, kde $y$ je ukazatel na uzel a $i$ je pozice, takže $key_{i}[y]=k$\@.
 Jinak je vrácena \uv{prázdná} dvojice%
 \footnote{Původně je v~\cite{Cormen:2001:IA:580470} NIL, jenže obecně vracení
 NIL, NULL a 0 ukazatelů/referencí komplikuje pozdější práci s~návratovou
-hodnotou metody. Robert~C.~Martin doporučuje v~ místo prázdné
-reference, vracet \uv{prázdný} objekt.
+hodnotou metody. Robert~C.~Martin doporučuje místo prázdné
+reference, vracet \uv{prázdný} objekt\cite{martin2009clean}.
 
 V~praxi dost často dochází ke zneužívání návratové hodnoty v~podobě
 NULL, jako dalšího stavu. Místo předpokladu na existující objekt,
@@ -123,8 +123,8 @@ plného uzlu $y$ (s~$2t-1$ klíči) okolo svého \emph{mediánu klíčů}
 $key_{t}[y]$ na dva uzly, každý mající $t-1$ klíčů\@. \emph{Medián
 klíč} se přesune do rodiče $y$ k~identifikaci dělícího bodu mezi
 dvěma novými stromy\@. Pokud je rodič $y$ také plný, musí být nejdříve
-rozdělen před vložením nového klíče. Dělení plných uzlů může tedy
-vypropagovat celým stromem nahoru.
+rozdělen před vložením nového klíče. Dělení plných uzlů se může tedy
+propagovat celým stromem nahoru.
 
 
 \subsubsection{Rozdělení uzlu v~B-tree}
@@ -255,7 +255,6 @@ Tento typ maximalizuje větvení interních uzlů.
 
 Je použit v~souborových systémech, např. NTFS \cite{Carrier:2005:FSF:1051914}, btrfs, ZFS \cite{Powell:2012:ZBQ:2328941.2328946} atd\ldots{}
 Dále v~databázích PostgreSQL \cite{Geschwinde:2001:PDH:580250}, Oracle \cite{Kyte:2003:EOD:1593880} atd\ldots{}
-%% add references
 
 \begin{figure}[t]
 \caption{\BPTree}
@@ -279,4 +278,5 @@ DELETE & $\mathcal{O}(\log n)$\tabularnewline
 \end{tabular}
 
 
-\section{Voronoi rozdělení}
+\section{Voroného diagram}
+Voroného diagram je rozdělení prostoru na oblasti, které obsahují k sobě nejbližší body\cite{dorst2010geometric}.
