@@ -131,13 +131,15 @@ Class.D("SimplePivotDistanceTable")
 	()();
 ClassTemplate.TD("Distanceable<D>")(D);
 
-topToBottom.midx(30)(A,B,C);
+Group.g(C,D);
+
+topToBottom.midx(30)(A,B,g);
 leftToRight(80)(C,D);
 
-drawObjects(A, B, C, D, TA, TB, TC, TD);
+drawObjects(A, B, g, TA, TB, TC, TD);
 clink(realization)(B,A);
-clink(inheritance)(C,B);
-clink(inheritance)(D,B);
+link(inheritance)(pathStepY(C.n,B.s,10));
+link(inheritance)(pathStepY(D.n,B.s,10));
 
 \end{mpost}
 
