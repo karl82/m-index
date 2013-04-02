@@ -40,11 +40,10 @@ GC se spouští v~okamžiku, kdy není dostatek paměti pro nové objekty nebo j
 \end{itemize}
 
 \begin{description}
-  \item[Mark] 
-  \item[Sweep] 
-  \item[Compaction]
+  \item[Mark] \todo{Popsat co je Mark}
+  \item[Sweep] \todo{Popsat co je Sweep}
+  \item[Compaction] \todo{Popsat co je Compaction}
 \end{description}
-% describe GC phases
 
 \subsection{Generika\label{sub:generika}}
 
@@ -153,8 +152,48 @@ link(inheritance)(pathStepY(D.n,B.s,10));
 \end{description}
 
 \subsubsection{Cluster tree}
-\subsubsection{Range Query}
 
+\begin{figure}
+\centering
+\begin{mpost}[use,mpsettings={input metauml;}]
+
+Interface.Cluster("Cluster")
+	("+getIndex():Index",
+	 "+accept(visitor:ClusterVisitor<D>)",
+	 "+getLevel():int",
+,
+);
+
+ClassTemplate.TA("Distanceable<D>")(Cluster);
+
+AbstractClass.B("AbstractPivotDistanceTable")
+	()();
+ClassTemplate.TB("Distanceable<D>")(B);
+Class.C("ParallelPivotDistanceTable")
+	()();
+ClassTemplate.TC("Distanceable<D>")(C);
+
+Class.D("SimplePivotDistanceTable")
+	()();
+ClassTemplate.TD("Distanceable<D>")(D);
+
+Group.g(C,D);
+
+topToBottom.midx(30)(A,B,g);
+leftToRight(80)(C,D);
+
+drawObjects(A, B, g, TA, TB, TC, TD);
+clink(realization)(B,A);
+link(inheritance)(pathStepY(C.n,B.s,10));
+link(inheritance)(pathStepY(D.n,B.s,10));
+
+\end{mpost}
+
+\caption{\type{Cluster} UML diagram}
+\end{figure}
+
+\subsubsection{Range Query}
+\todo{Popsat Range Query}
 \section{Měření výkonu v~Java\label{sec:vykonvjava}}
 
 Abychom porozuměli úskalí měření výkonu kódu v~JVM, je nejprve nutné si přiblížit, co se děje uvnitř JVM, jak probíhá překlad a optimalizace kódu.
@@ -173,14 +212,14 @@ Tradiční překladače (např. C/C++) generují z~vyššího programovacího ja
 Java používá překladač \javac{}, který z~vysoko úrovňového jazyka vytvoří \classfile{}, který obsahuje \bytecode{}. JVM tento \bytecode{} následně dynamicky za běhu překládá do strojově závislého kódu pomocí JIT.
 
 \subsubsection{Jak funguje překladač}
-Každý překladač má podobnou strukturu. Musí mít na vstupu modul pro převod zdrojového kódu do tzv. \emph{intermediate representation (IR)}\nomenclature{IR}{Intermediate Representation}.\footnote{Existují různé typy IR. Pro každou fázi překladu se dokonce může použít jiný IR.} IR je mezistupeň před blablabla... Všechny překladače dělají největší optimalizace právě na IR. Množina možných optimalizací může být velmi široká a je často omezena množstvím času nutném k~provedení dané optimalizace. Mezi jednoduché optimalizace patří zjednodušování logických výrazů, nahrazování proměnných konstantami a function inlining. Složitější optimalizace jsou většinou spojeny se smyčkami -- loop unrolling, odstraňování kontroly rozsahu smyčky atd\ldots{}
+Každý překladač má podobnou strukturu. Musí mít na vstupu modul pro převod zdrojového kódu do tzv. \emph{intermediate representation (IR)}\nomenclature{IR}{Intermediate Representation}.\footnote{Existují různé typy IR. Pro každou fázi překladu se dokonce může použít jiný IR.} IR je mezistupeň před \todo{Popsat co je IR} Všechny překladače dělají největší optimalizace právě na IR. Množina možných optimalizací může být velmi široká a je často omezena množstvím času nutném k~provedení dané optimalizace. Mezi jednoduché optimalizace patří zjednodušování logických výrazů, nahrazování proměnných konstantami a function inlining. Složitější optimalizace jsou většinou spojeny se smyčkami -- loop unrolling, odstraňování kontroly rozsahu smyčky atd\ldots{}
 
 Když jsou tyto optimalizace hotovy, další modul vezme danou IR a převede ji do strojové podoby. Zde nastávají další optimalizace v~podobě přiřazování hodnot do registrů procesoru, výběr vhodných instrukcí atd\ldots{}
 
 \subsubsection{Kdy JIT překládá do strojového kódu\label{subsub:whenJIT}}
 JIT nepřekládá každou instrukci v~\bytecode{} ihned do strojového kódu. Většina instrukcí je na začátku interpretována. Až v~okamžiku, kdy daná instrukce se stane \emph{hot}, JIT ji zařadí pro překlad. JVM totiž udržuje u~každé metody čítač volání. Pokud daná metoda je volána více krát, stane se \emph{hot} a tím se vyvolá i její překlad. Hranice překladu je ve výchozím nastavení 10000.\footnote{Parametr pro Oracle JVM, který ovlivňuje toto nastavení je \cmd{-XX:CompileThreshold=}} Zjednodušeně řečeno: aby došlo k~překladu libovolné metody do strojového kódu, musí být daná metoda volána aspoň 10000.
 
-JIT během překladu dělá samozřejmě optimalizace popsaných výše.
+JIT během překladu dělá samozřejmě optimalizace popsané výše.
 
 \begin{description}
 \item[function inlining] 
@@ -189,6 +228,8 @@ JIT během překladu dělá samozřejmě optimalizace popsaných výše.
 \item[záměna volání rozhraní konkrétní implementací]
 \end{description}
 
+\subsection{GC během měření}
+\todo{Popsat zda je GC ok během měření nebo ne}
 \subsection{Zahřátí JVM}
 
 Pokud bychom začali měřit jednotlivé části kódu ihned po startu JVM, neměřili bychom výkonnost samotného kódu, ale i čas za jak dlouho JVM zavede jednotlivé \classfile soubory, za jak dlouho JIT přeloží a optimalizuje instrukce \bytecode{} do strojového kódu. Pravděpodobně by se i naměřené hodnoty pro stejné testované parametry lišily, protože by k~překladu docházelo v~průběhu nebo mezi jednotlivými měřeními. Proto je nutné udělat i tzv. \emph{zahřáti JVM}.\footnote{v anj. \emph{JVM warm-up}}
@@ -196,5 +237,15 @@ Pokud bychom začali měřit jednotlivé části kódu ihned po startu JVM, nem�
 Zahřátí se provádí tak, že se zavolá měřený kód tolikrát, aby se stal \emph{hot}.\footnote{viz. \prettyref{subsub:whenJIT}} Po tomto zahřátí, by již měl být měřený kód optimalizován a převeden do strojového kódu a měření by nemělo být ovlivněno.
 
 \section{Metoda a výsledky měření}
-
+\subsection{Jak se měřilo}
+\todo{Popsat co se měřilo}
+\subsection{Parametry měření}
+\todo{Popsat všechny parametry}
+\subsection{Výsledky měření}
+\todo{Grafy a tabulky s výsledky}
+\missingfigure{Graf s range 0.15 a pro max level}
 \section{Srovnání výkonu implementací v~C++, C\# a Java}
+\subsection{Srovnání implementací}
+\todo{Porovnat implementaci p. Kmnuníčka s mojí}
+\subsection{Srovnání výsledků měření}
+\todo{Vybrat stejné parametru měření a porovnat je navzájem}

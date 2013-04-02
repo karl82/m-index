@@ -1,4 +1,4 @@
-\documentclass[a4paper, 12pt]{report}
+\documentclass[a4paper,12pt,oneside]{book}
 \usepackage[utf8]{inputenc}
 \usepackage[czech]{babel}
 \usepackage[shellescape,latex]{gmp}
@@ -11,6 +11,7 @@
 \usepackage[czech]{varioref}
 \usepackage[czech,lined,boxed]{algorithm2e}
 \usepackage[]{nomencl}
+\usepackage{todonotes}
 
 % czech prettyref
 \newrefformat{eq}{\textup{(\ref{#1})}}
@@ -42,15 +43,21 @@
 \newcommand{\bytecode}{\emph{bytecode}}
 
 \begin{document}
+\frontmatter
 \include{title}
 \include{dedication}
+\include{declaration}
+\include{abstract}
+\include{keywords}
 \tableofcontents
-
+\listoftodos
+\mainmatter
 \include{intro}
 \include{mindex}
 \include{datastructures}
 \include{javaimpl}
 \include{proofs}
+\backmatter
 \nocite{*}
 \begingroup
 \inputencoding{latin1}
