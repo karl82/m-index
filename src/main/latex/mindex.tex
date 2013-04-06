@@ -179,9 +179,9 @@ Znalostí minimální a maximální vzdáleností mezi pivoty v~clusteru
 (který jsou uloženy v~listech stromu), můžeme uplatnit \emph{RangePivot
 Distance Constraint}\cite{similaritysearch2006} a nemusíme přistupovat
 ke clusteru $C_{p,*}$ pokud
-\begin{alignat*}{2}
-d(p,q)+r<r_{min} & \textrm{nebo} & d(p,q)-r>r_{max}
-\end{alignat*}
+\[
+d(p,q)+r<r_{min} \wedge d(p,q)-r>r_{max}
+\]
 kde $r_{min}$ a $r_{max}$ je minimální a maximální vzdálenost prvků
 v~daném clusteru\@.
 
