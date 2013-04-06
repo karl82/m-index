@@ -40,21 +40,26 @@ test {
 
 ext.perfTestCounter = 0;
 
-ext.defaultTestJvmArgs = ['-verbose:gc', '-XX:+PrintGCDetails', '-XX:+PrintGCTimeStamps', '-Xloggc:gc.log']
+ext.defaultTestJvmArgs = ['-Xmn2048m', '-verbose:gc', '-XX:+PrintGCDetails', '-XX:+PrintGCApplicationStoppedTime', '-XX:+PrintGCTimeStamps', '-Xloggc:gc.log']
 ext.testsJvmArgs =
-    [['-XX:+AggressiveOpts', ''], ['-XX:+UseCompressedOops', '-XX:-UseCompressedOops']/*,['-XX:-UseParallelOldGC', '-XX:-UseConcMarkSweepGC', '-XX:+UseConcMarkSweepGC']*/].combinations()
+    [['-XX:+AggressiveOpts', ''], ['-XX:+UseCompressedOops', '-XX:-UseCompressedOops'], ['-XX:+UseG1GC', '-XX:-UseParallelOldGC', '-XX:+UseParallelGC', '-XX:+UseSerialGC',
+            [['-XX:+UseConcMarkSweepGC'], ['-XX:-UseParNewGC', '-XX:+UseParNewGC']].combinations()]].combinations()
 
 
 testsJvmArgs.each { testJvmArgs ->
     task "perfTest${perfTestCounter++}"(type: Test) {
         include '**/*PerfTest*'
 
+        dependsOn { test }
+        minHeapSize = "6192m"
         maxHeapSize = "6192m"
 
         // Reference file for M-Index performance testing
         systemProperty 'mindex.reference.file', 'src/test/resources/ColorHistogram.txt'
 
         jvmArgs = (testJvmArgs << defaultTestJvmArgs).flatten()
+
+        logger.quiet("Created ${name} with jvmArgs: ${jvmArgs}")
 
         useTestNG()
 
