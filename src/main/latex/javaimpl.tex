@@ -204,7 +204,29 @@ Pro změření rozdílu použití více-stupňového \MIndex u~a \MIndex u~s~dyn
 Obě třídy mají téměř totožný konstruktor, pouze u~\type{DynamicClusterTreeBuilder} je navíc parametr pro maximální zaplnění koncového clusteru. Více viz \prettyref{sec:Dynamic-Cluster-Tree}.
 
 \subsubsection{Range Query}
-\todo{Popsat Range Query}
+Díky nezávislosti dotazu na typu clusteru (více-stupňový vs. s dynamickými stupni) je \emph{Range Query} je implementována v třídě \type{MIndex}, která je společný rodič pro \type{MultiLevelMIndex} a \type{DynamicMIndex}. V metodě rangeQuery není celá logika vyhledávání. V této metodě se inicializuje ClusterRangeQuery, která implementuje samotné vyhledávání. Toto řešení jsem zvolil kvůli oddělení zodpovědnosti vyhledávání a uchovávání informací o \MIndex u.\footnote{Jedná se o tzv. \emph{Single Responsibility Principle\nomenclature{SRO}{Single Responsibility Principle}}\cite{martin2003agile}}
+
+V podstatě je téměř doslovně přepsán algoritmus popsaný v \prettyref{sec:Range-Query}. Jak bylo již zmíněno v začátku této sekce, k odstranění nutnosti identifikování typu clusteru za běhu\footnote{V jazyce Java k identifikaci typu slouží operátor \method{instanceof}\cite{gosling2013java}, obdobně jako v \CC{} je operátor \method{typeid}\cite{ISO:2012:CPP}} je použit \emph{Visitor Pattern}. \prettyref{fig:rangequery-visitor-seq} popisuje toto volání detailně.
+
+
+%\begin{figure}
+%\centering
+%\begin{sequencediagram}
+%  \newthread{mi}{:MIndex}{MIndex}
+%  \newinst{rq}{:ClusterRangeQuery}{}
+%  \newinst{ic}{:InternalCluster}{}
+%  \newinst{lc}{:LeafCluster}{}
+%
+%  \begin{call}{mi}{performQuery()}{rq}{nalezené objekty}
+%    \begin{sdblock}{Dotaz}{dokud není fronta clusterů prázdná}
+%    \end{sdblock}
+%  \end{call}
+%\end{sequencediagram}
+%
+%\caption{Sekvenční diagram volání \emph{Range Query}}\label{fig:rangequery-visitor-seq}
+%\end{figure}
+\missingfigure{Sekvenční volání RangeQuery}
+
 \section{Měření výkonu v~Java\label{sec:vykonvjava}}
 
 Abychom porozuměli úskalí měření výkonu kódu v~JVM, je nejprve nutné si přiblížit, co se děje uvnitř JVM, jak probíhá překlad a optimalizace kódu.
