@@ -1,4 +1,4 @@
-\chapter{M-Index implementace v~jazyce Java}
+\chapter{\MIndex implementace v~jazyce Java}
 
 
 \section{Jazyk Java, JVM}
@@ -83,18 +83,18 @@ V~celém návrhu jsem se snažil co nejvíce používat objektově orientovaný 
 
 Při některých výpočtech bylo možné použít \emph{rozděl a panuj}\cite{Cormen:2001:IA:580470}\footnote{V anj. \emph{Divide-and-Conquer}} s~využitím \emph{Executor Framework} z~JDK.
 
-V~popisovaných algoritmech (ať už \BPTree{} nebo M-Index) je často uváděna proměnná \type{leaf}, resp. zda je daná struktura list. Z~hlediska objektového návrhu se mění chování třídy podle její datové složky, což nesvědčí o~dobrém objektovém návrhu. K~odstranění tohoto jsem použil \emph{Replace Type Code with Subclasses}\cite{fowler1999refactoring} pro \BPTree. V~případě M-Index Range Query jsem použil \emph{Visitor pattern}\cite{gamma1995design}.
+V~popisovaných algoritmech (ať už \BPTree{} nebo \MIndex) je často uváděna proměnná \type{leaf}, resp. zda je daná struktura list. Z~hlediska objektového návrhu se mění chování třídy podle její datové složky, což nesvědčí o~dobrém objektovém návrhu. K~odstranění tohoto jsem použil \emph{Replace Type Code with Subclasses}\cite{fowler1999refactoring} pro \BPTree. V~případě \MIndex Range Query jsem použil \emph{Visitor pattern}\cite{gamma1995design}.
 
 Dalš
 \subsection{\BPTree}
 Implementace \BPTree{} se nachází v~třídě \linebreak \type{cz.rank.vsfs.btree.BPlusTreeMultiMap}. Tato mapa je typově parametrizována pro klíč a hodnotu. Protože strom musí být setříděný, musí klíč implementovat rozhraní \type{java.lang.Comparable}. Mapa umožňuje ukládat více objektů pod stejným klíčem\footnote{V C++ je obdobný kontejner \type{std::multimap}\cite{ISO:2012:CPP}. V~JDK žádná takováto kolekce není.} a umožňuje vyhledání v~intervalu.
 
-Implementace mazání objektů z~mapy není potřebná pro M-Index a není tudíž ani implementována.
+Implementace mazání objektů z~mapy není potřebná pro \MIndex a není tudíž ani implementována.
 
-Celý \BPTree je uložen v~hlavní paměti.
+Celý \BPTree{} je uložen v~hlavní paměti a není tedy implementováno načítaní a ukládání uzlů na disk.
 
-\subsection{M-Index}
-Celá implementace M-Index pracuje s~objekty, které implementují rozhraní \type{cz.rank.vsfs.mindex.Distanceable}. Tím je zajištěna případná znovupoužitelnost kódu pro jiné datové typy než je vektor.
+\subsection{\MIndex}
+Celá implementace \MIndex pracuje s~objekty, které implementují rozhraní \type{cz.rank.vsfs.mindex.Distanceable}. Tím je zajištěna případná znovupoužitelnost kódu pro jiné datové typy než je vektor.
 
 \subsubsection{Výpočet maximální vzdálenosti mezi prvky}
 Výpočet maximální vzdálenosti je NP problém, kdy se musí spočítat vzájemné vzdálenosti všech prvků v~množině a vybrat tu vzdálenost, která je největší. K~výpočtu lze použít \emph{rozděl a panuj}, takže je celý výpočet paralelní a doba výpočtu se lineárně snižuje s~počtem výpočetních vláken.
@@ -146,13 +146,12 @@ link(inheritance)(pathStepY(D.n,B.s,10));
 \end{figure}
 
 \begin{description}
-\item[ParallelPivotDistanceTable] Rozdělí úlohu na menší části podle objektů pomocí \emph{rozděl a panuj} a výpočet je paralelizován za použití všech dostupných jader systému. Tato třída je využita při konstrukci samotného M-Index.
+\item[ParallelPivotDistanceTable] Rozdělí úlohu na menší části podle objektů pomocí \emph{rozděl a panuj} a výpočet je paralelizován za použití všech dostupných jader systému. Tato třída je využita při konstrukci samotného \MIndex.
 \item[SimplePivotDistanceTable] Podobně jako \type{ParallelPivotDistanceTable} vypočte vzdálenosti objektu od pivotů, ale pouze pro jeden objekt a výpočet není paralelní. Tato třída se používá v~samotném \emph{Range Query} dotazu. Pokud by se použil \type{ParallelPivotDistanceTable}, tak režije spojená s~vytvářením úloh pro exekutory, vytvořením vláken, by byla výrazně vyšší než samotný výpočet vzdáleností jednoho objektu.
 \item[AbstractPivotDistanceTable] Je společným předkem obou výše uvedených tříd a obsahuje společný kód, který potomci využívají.
 \end{description}
 
 \subsubsection{Cluster tree}
-
 \begin{figure}
 \centering
 \begin{mpost}[use,mpsettings={input metauml;}]
@@ -161,36 +160,48 @@ Interface.Cluster("Cluster")
 	("+getIndex():Index",
 	 "+accept(visitor:ClusterVisitor<D>)",
 	 "+getLevel():int",
-,
+	 "+getSubCluster(pivot:Pivot<D>):Cluster<D>",
 );
 
-ClassTemplate.TA("Distanceable<D>")(Cluster);
+ClassTemplate.TCluster("Distanceable<D>")(Cluster);
 
-AbstractClass.B("AbstractPivotDistanceTable")
+Class.InternalCluster("InternalCluster")
 	()();
-ClassTemplate.TB("Distanceable<D>")(B);
-Class.C("ParallelPivotDistanceTable")
+ClassTemplate.TInternalCluster("Distanceable<D>")(InternalCluster);
+Class.RootCluster("RootCluster")
 	()();
-ClassTemplate.TC("Distanceable<D>")(C);
+ClassTemplate.TRootCluster("Distanceable<D>")(RootCluster);
 
-Class.D("SimplePivotDistanceTable")
+Class.LeafCluster("LeafCluster")
 	()();
-ClassTemplate.TD("Distanceable<D>")(D);
+ClassTemplate.TLeafCluster("Distanceable<D>")(LeafCluster);
 
-Group.g(C,D);
+Group.g(RootCluster,LeafCluster);
 
-topToBottom.midx(30)(A,B,g);
-leftToRight(80)(C,D);
+topToBottom.midx(30)(Cluster,InternalCluster,g);
+leftToRight(80)(RootCluster,LeafCluster);
 
-drawObjects(A, B, g, TA, TB, TC, TD);
-clink(realization)(B,A);
-link(inheritance)(pathStepY(C.n,B.s,10));
-link(inheritance)(pathStepY(D.n,B.s,10));
+drawObjects(Cluster, InternalCluster, g, TCluster, TInternalCluster, TRootCluster, TLeafCluster);
+clink(realization)(InternalCluster,Cluster);
+link(inheritance)(pathStepY(RootCluster.n,InternalCluster.s,10));
+link(inheritance)(pathStepY(LeafCluster.n,InternalCluster.s,10));
 
 \end{mpost}
 
 \caption{\type{Cluster} UML diagram}
 \end{figure}
+
+Cluster tree je tvořen třídami, které implementuji rozhraní \linebreak \type{cz.rank.vsfs.mindex.Cluster}. Jsou celkem 3 -- 
+\type{InternalCluster} a jeho potomci  \type{LeafCluster} a \type{RootCluster}.
+
+\begin{description}
+\item[InternalCluster] Je použit jako vnitřní cluster. Obsahuje všechnu funkcionalitu pro udržení informací o~podstromech, objektech, informace o~minimální a maximální vzdálenosti uložené v~clusteru.
+\item[LeafCluster] Reprezentuje koncový cluster. Jeho metoda \linebreak \method{LeafCluster.getSubCluster} vrací vždy konstantu \type{NO\_SUBCLUSTERS}. Toto slouží k~identifikaci koncového clusteru při utváření dynamického \MIndex u.
+\item[RootCluster] Je použit pro kořen celého clusteru, protože vyžaduje speciální zacházení s~indexem a také při akceptování \type{ClusterVisitor}.
+\end{description}
+
+Pro změření rozdílu použití více-stupňového \MIndex u~a \MIndex u~s~dynamickými stupni jsou implementovány dvě třídy -- \linebreak \type{cz.rank.vsfs.mindex.MultiLevelClusterTreeBuilder} a \linebreak \type{cz.rank.vsfs.mindex.DynamicClusterTreeBuilder}. Tyto třídy jsou použity v~\type{cz.rank.vsfs.mindex.MultiLevelMIndex}, \linebreak resp. \type{cz.rank.vsfs.mindex.DynamicMIndex} ke konstrukci specifického \MIndex u.
+Obě třídy mají téměř totožný konstruktor, pouze u~\type{DynamicClusterTreeBuilder} je navíc parametr pro maximální zaplnění koncového clusteru. Více viz \prettyref{sec:Dynamic-Cluster-Tree}.
 
 \subsubsection{Range Query}
 \todo{Popsat Range Query}
@@ -242,10 +253,10 @@ Zahřátí se provádí tak, že se zavolá měřený kód tolikrát, aby se sta
 \subsection{Parametry měření}
 \todo{Popsat všechny parametry}
 \subsection{Výsledky měření}
-\todo{Grafy a tabulky s výsledky}
-\missingfigure{Graf s range 0.15 a pro max level}
+\todo{Grafy a tabulky s~výsledky}
+\missingfigure{Graf s~range 0.15 a pro max level}
 \section{Srovnání výkonu implementací v~C++, C\# a Java}
 \subsection{Srovnání implementací}
-\todo{Porovnat implementaci p. Kmnuníčka s mojí}
+\todo{Porovnat implementaci p. Kmnuníčka s~mojí}
 \subsection{Srovnání výsledků měření}
 \todo{Vybrat stejné parametru měření a porovnat je navzájem}
