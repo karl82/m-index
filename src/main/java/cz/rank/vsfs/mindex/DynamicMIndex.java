@@ -52,9 +52,11 @@ public class DynamicMIndex<D extends Distanceable<D>> extends MIndex<D> {
         calculateMaximumDistance();
         calculateDistances();
 
-        final ClusterTreeBuilder<D> builder = new DynamicClusterTreeBuilder<>(leafObjectsLimit, objects, clusterRoot, pivotDistanceTable, btreemap);
+        final ClusterTreeBuilder<D> builder = new DynamicClusterTreeBuilder<>(leafObjectsLimit, objects, clusterRoot,
+                                                                              pivotDistanceTable, btreemap);
 
         builder.build();
+        clusterStats = builder.getClusterStats();
     }
 
 }

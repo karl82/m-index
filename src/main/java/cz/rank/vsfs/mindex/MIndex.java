@@ -1,3 +1,29 @@
+/*
+ * Copyright © 2012 Karel Rank All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *  Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *  Redistributions in binary form must reproduce the above copyright notice, this
+ *   list of conditions and the following disclaimer in the documentation and/or
+ *   other materials provided with the distribution.
+ *  Neither the name of Karel Rank nor the names of its contributors may be used to
+ *   endorse or promote products derived from this software without specific prior
+ *   written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package cz.rank.vsfs.mindex;
 
 import cz.rank.vsfs.btree.BPlusTreeMultiMap;
@@ -15,11 +41,6 @@ import java.util.Queue;
 import java.util.Set;
 
 /**
- * Created with IntelliJ IDEA.
- * User: karl
- * Date: 09.03.13
- * Time: 20:09
- * To change this template use File | Settings | File Templates.
  */
 public abstract class MIndex<D extends Distanceable<D>> {
     private static final Logger logger = LoggerFactory.getLogger(MIndex.class);
@@ -31,6 +52,8 @@ public abstract class MIndex<D extends Distanceable<D>> {
     protected final int pivotsSize;
     protected double maximumDistance = Double.MIN_VALUE;
     protected PivotDistanceTable<D> pivotDistanceTable = null;
+    protected ClusterStats clusterStats;
+    private QueryStats queryStats = new QueryStats();
 
     protected MIndex(int maxLevel, int btreeLevel, List<Pivot<D>> pivots) {
         super();
@@ -89,8 +112,8 @@ public abstract class MIndex<D extends Distanceable<D>> {
         }
     }
 
-    public void add(D point) {
-        objects.add(point);
+    public void add(D object) {
+        objects.add(object);
     }
 
     public abstract void build();
@@ -123,7 +146,8 @@ public abstract class MIndex<D extends Distanceable<D>> {
         Collection<D> foundObjects = clusterRangeQuery.performQuery();
         if (logger.isDebugEnabled()) {
             logger.debug(
-                    "Found objects which are in range: " + normalizedRange + " from object: " + queryObject + " objects:" + foundObjects.size());
+                    "Found objects which are in range: " + normalizedRange + " from object: " + queryObject + " objects:" + foundObjects
+                            .size());
         }
 
         return foundObjects;
@@ -141,6 +165,18 @@ public abstract class MIndex<D extends Distanceable<D>> {
         final DotClusterVisitor<D> visitor = new DotClusterVisitor<>();
         clusterRoot.accept(visitor);
         return visitor.getGraphDefinition();
+    }
+
+    public QueryStats getQueryStats() {
+        return queryStats;
+    }
+
+    public ClusterStats getClusterStats() {
+        return clusterStats;
+    }
+
+    public List<D> getObjects() {
+        return objects;
     }
 
     private class ClusterRangeQuery implements ClusterVisitor<D> {
@@ -178,14 +214,20 @@ public abstract class MIndex<D extends Distanceable<D>> {
                     logger.debug("Skipping cluster due rangePivotDistanceConstraint: {}", leafCluster);
                 }
 
+                queryStats.incrementRangePivotDistanceFilter();
                 return;
             }
 
             final List<D> objects = rangeSearchForObjects(keyMin);
             for (D object : objects) {
-                if (!pivotShouldBeFiltered(object, queryObject, queryObjectPivotDistance, normalizedRange) &&
-                        isObjectInRange(object, queryObject, range)) {
+                if (pivotShouldBeFiltered(object, queryObject, queryObjectPivotDistance, normalizedRange)) {
+                    queryStats.incrementPivotFilter();
+                }
+
+                if (isObjectInRange(object, queryObject, range)) {
                     foundObjects.add(object);
+                } else {
+                    queryStats.incrementObjectFilter();
                 }
             }
         }
@@ -194,12 +236,12 @@ public abstract class MIndex<D extends Distanceable<D>> {
             final double keyMinFloor = FastMath.floor(keyMin);
             final List<D> objects = btreemap
                     .rangeSearch(keyMinFloor + firstPivotDistance - normalizedRange,
-                            keyMinFloor + firstPivotDistance + normalizedRange);
+                                 keyMinFloor + firstPivotDistance + normalizedRange);
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Range search from {} to {} returned {} objects",
-                        keyMinFloor + firstPivotDistance - normalizedRange,
-                        keyMinFloor + firstPivotDistance + normalizedRange, objects.size());
+                             keyMinFloor + firstPivotDistance - normalizedRange,
+                             keyMinFloor + firstPivotDistance + normalizedRange, objects.size());
             }
 
             return objects;
@@ -215,6 +257,7 @@ public abstract class MIndex<D extends Distanceable<D>> {
                         logger.debug("Skipping cluster due doublePivotDistanceConstraint: {}", cluster);
                     }
 
+                    queryStats.incrementDoublePivotDistanceFilter();
                     continue;
                 }
 
@@ -225,9 +268,10 @@ public abstract class MIndex<D extends Distanceable<D>> {
         }
 
         private PivotDistanceTable<D> calculateDistanceFor(D queryObject) {
-            final PivotDistanceTable<D> queryObjectPivotDistance = new SimplePivotDistanceTable<>(maximumDistance, pivots,
-                    Arrays.asList(
-                            queryObject));
+            final PivotDistanceTable<D> queryObjectPivotDistance = new SimplePivotDistanceTable<>(maximumDistance,
+                                                                                                  pivots,
+                                                                                                  Arrays.asList(
+                                                                                                          queryObject));
             queryObjectPivotDistance.calculate();
 
             return queryObjectPivotDistance;
@@ -235,7 +279,7 @@ public abstract class MIndex<D extends Distanceable<D>> {
         }
 
         private boolean isObjectInRange(D object, D queryObject, double range) {
-            return queryObject.distance(object) / maximumDistance <= range;
+            return queryObject.distance(object) <= range;
         }
 
         private boolean pivotShouldBeFiltered(D object, D queryObject, PivotDistanceTable<D> queryObjectPivotDistance, double normalizedRange) {
@@ -258,7 +302,8 @@ public abstract class MIndex<D extends Distanceable<D>> {
         private boolean doublePivotDistanceConstraint(Cluster<D> node, PivotDistanceTable<D> queryObjectPivotDistance, D queryObject, double range) {
             final int currentLevel = node.getLevel();
 
-            return currentLevel > 0 && doDoublePivotDistanceConstraint(node, queryObjectPivotDistance, queryObject, range);
+            return currentLevel > 0 && doDoublePivotDistanceConstraint(node, queryObjectPivotDistance, queryObject,
+                                                                       range);
         }
 
         private boolean doDoublePivotDistanceConstraint(Cluster<D> node, PivotDistanceTable<D> queryObjectPivotDistance, D queryObject, double range) {

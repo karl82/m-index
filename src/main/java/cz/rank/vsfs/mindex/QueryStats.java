@@ -26,33 +26,56 @@
 
 package cz.rank.vsfs.mindex;
 
-import java.util.List;
-
 /**
- * Dynamic M-Index Cluster
- *
  * @author Karel Rank
  */
-public class MultiLevelMIndex<D extends Distanceable<D>> extends MIndex<D> {
+public class QueryStats {
+    private int rangePivotDistanceFilter = 0;
+    private int objectFilter = 0;
+    private int pivotFilter = 0;
+    private int doublePivotDistanceFilter = 0;
 
-    public MultiLevelMIndex(int maxLevel, int btreeLevel, List<Pivot<D>> pivots) {
-        super(maxLevel, btreeLevel, pivots);
+    public int getRangePivotDistanceFilter() {
+        return rangePivotDistanceFilter;
     }
 
-    public MultiLevelMIndex(int maxLevel, int btreeLevel, List<Pivot<D>> pivots, double maximumDistance) {
-        super(maxLevel, btreeLevel, pivots, maximumDistance);
+    public int getObjectFilter() {
+        return objectFilter;
+    }
+
+    public int getPivotFilter() {
+        return pivotFilter;
+    }
+
+    public int getDoublePivotDistanceFilter() {
+        return doublePivotDistanceFilter;
+    }
+
+    public void incrementRangePivotDistanceFilter() {
+        rangePivotDistanceFilter++;
+    }
+
+    public void incrementObjectFilter() {
+        objectFilter++;
+    }
+
+    public void incrementPivotFilter() {
+        pivotFilter++;
+    }
+
+    public void incrementDoublePivotDistanceFilter() {
+        doublePivotDistanceFilter++;
     }
 
     @Override
-    public void build() {
-        calculateMaximumDistance();
-        calculateDistances();
-
-        final ClusterTreeBuilder builder = new MultiLevelClusterTreeBuilder(objects, clusterRoot, pivotDistanceTable,
-                                                                            btreemap);
-
-        builder.build();
-        clusterStats = builder.getClusterStats();
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("QueryStats");
+        sb.append("{rangePivotDistanceFilter=").append(rangePivotDistanceFilter);
+        sb.append(", objectFilter=").append(objectFilter);
+        sb.append(", pivotFilter=").append(pivotFilter);
+        sb.append(", doublePivotDistanceFilter=").append(doublePivotDistanceFilter);
+        sb.append('}');
+        return sb.toString();
     }
-
 }

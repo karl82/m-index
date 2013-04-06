@@ -45,7 +45,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Karel Rank
  */
-@Test(enabled = false)
 public class MaximumDistancePerfTest {
     public static final int DEFAULT_TEST_INVOCATIONS = 20;
     private static final Integer[] DIMENSIONS = {1,
@@ -103,12 +102,12 @@ public class MaximumDistancePerfTest {
         return params.toArray(new Object[params.size()][1]);
     }
 
-    @Test(groups = "perf", dataProvider = "maximumDistancePerfData")
+    @Test(groups = "perf", dataProvider = "maximumDistancePerfData", enabled = false)
     public void test(TestParams params) {
         List<Vector> objects = Generators.createVectors(params.objectsCount, params.dimension, 10);
 
         for (int invocation = 1; invocation <= params.invocations; invocation++) {
-            MaximumDistance<Vector> maximumDistance = new MaximumDistance<Vector>(objects, params.threads);
+            final MaximumDistance<Vector> maximumDistance = new MaximumDistance<>(objects, params.threads);
 
             stopWatch.start(params.toString(), Integer.toString(invocation));
             maximumDistance.calculate();

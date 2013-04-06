@@ -26,6 +26,7 @@
 
 package cz.rank.vsfs.mindex;
 
+import cz.rank.vsfs.mindex.util.PerfLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeClass;
@@ -43,15 +44,15 @@ import java.util.List;
  */
 public abstract class MIndexPerfTest {
     public static final String MINDEX_REFERENCE_FILE = "mindex.reference.file";
-    public static final int DEFAULT_TEST_INVOCATIONS = 5;
+    public static final int DEFAULT_TEST_INVOCATIONS = 20;
     protected static final int[] PIVOTS_COUNT = {
             10,
             20,
-            30,
+            //         30,
             50,
             100,
             200,
-            400
+//            400
     };
     protected static final int[] CLUSTER_MAX_LEVEL = {
             2,
@@ -61,25 +62,30 @@ public abstract class MIndexPerfTest {
     };
     protected static final double[] RANGES = {
             0.01,
-            0.05,
+//            0.05,
             0.15,
-            0.3,
-            0.5,
-            1.0
+//            0.3,
+//            0.5,
+//            1.0
     };
     protected static final int[] QUERY_OBJECTS = {
-            10,
-            20,
-            50,
+            //           10,
+            //          20,
+//            50,
             100,
-            1000
+//            1000
     };
     private static final Logger logger = LoggerFactory.getLogger(MIndexPerfTest.class);
     protected final List<Vector> objects = new ArrayList<>();
     protected double maximumDistance;
 
+    public void logJvmInfo() {
+        PerfLogger.logJvmInfo();
+    }
+
     @BeforeClass
     public void loadReferenceDataAndWarmUp() throws IOException {
+        logJvmInfo();
         Path referenceDataPath = new File(System.getProperty(MINDEX_REFERENCE_FILE)).toPath();
 
         logger.info("Reading reference data from: " + referenceDataPath);

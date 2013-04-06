@@ -1,3 +1,29 @@
+/*
+ * Copyright © 2012 Karel Rank All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *  Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *  Redistributions in binary form must reproduce the above copyright notice, this
+ *   list of conditions and the following disclaimer in the documentation and/or
+ *   other materials provided with the distribution.
+ *  Neither the name of Karel Rank nor the names of its contributors may be used to
+ *   endorse or promote products derived from this software without specific prior
+ *   written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package cz.rank.vsfs.mindex;
 
 import cz.rank.vsfs.btree.BPlusTreeMultiMap;
@@ -37,13 +63,14 @@ public class DynamicClusterTreeBuilder<D extends Distanceable<D>> extends Abstra
             final D object = objectsDeque.poll();
 
             Cluster<D> currentCluster = clusterRoot;
-            for (int currentLevel = 0; currentLevel < maxLevel; ++currentLevel) {
+            for (int currentLevel = 0; currentLevel <= maxLevel; ++currentLevel) {
                 final Pivot<D> pivot = pivotDistanceTable.pivotAt(object, currentLevel);
 
                 Cluster<D> subCluster = currentCluster.getSubCluster(pivot);
                 if (subCluster == null) {
                     subCluster = createAndStoreLeafSubCluster(currentCluster, pivot);
                     storeObject(objectsMapping, object, subCluster);
+                    incrementCluster();
                     break;
                 } else {
                     // Is current cluster leaf cluster?
@@ -71,7 +98,7 @@ public class DynamicClusterTreeBuilder<D extends Distanceable<D>> extends Abstra
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Inserting into B+Tree key: {}; obj: {}; cluster: {}", objectKey, object,
-                        currentCluster.getIndex());
+                             currentCluster.getIndex());
             }
 
             btreemap.insert(objectKey, object);
@@ -110,7 +137,7 @@ public class DynamicClusterTreeBuilder<D extends Distanceable<D>> extends Abstra
         parent.storeSubCluster(currentPivot, internalCluster);
     }
 
-    private boolean notAtLeafLevel(Cluster<D> currentCluster) {
-        return !atLeafLevel(currentCluster);
+    private boolean notAtLeafLevel(Cluster<D> cluster) {
+        return cluster.getLevel() != cluster.getMaxLevel();
     }
 }

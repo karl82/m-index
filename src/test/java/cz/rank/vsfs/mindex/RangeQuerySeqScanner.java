@@ -26,33 +26,34 @@
 
 package cz.rank.vsfs.mindex;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
- * Dynamic M-Index Cluster
- *
  * @author Karel Rank
  */
-public class MultiLevelMIndex<D extends Distanceable<D>> extends MIndex<D> {
+public class RangeQuerySeqScanner<D extends Distanceable<D>> {
 
-    public MultiLevelMIndex(int maxLevel, int btreeLevel, List<Pivot<D>> pivots) {
-        super(maxLevel, btreeLevel, pivots);
+    private final D queryObject;
+    private final double range;
+    private final List<D> objects;
+
+    public RangeQuerySeqScanner(D queryObject, double range, List<D> objects) {
+        this.queryObject = queryObject;
+        this.range = range;
+        this.objects = objects;
     }
 
-    public MultiLevelMIndex(int maxLevel, int btreeLevel, List<Pivot<D>> pivots, double maximumDistance) {
-        super(maxLevel, btreeLevel, pivots, maximumDistance);
+    public Collection<D> calculate() {
+        List<D> objectsInRange = new ArrayList<>(objects.size());
+
+        for (D object : objects) {
+            if (queryObject.distance(object) <= range) {
+                objectsInRange.add(object);
+            }
+        }
+
+        return objectsInRange;
     }
-
-    @Override
-    public void build() {
-        calculateMaximumDistance();
-        calculateDistances();
-
-        final ClusterTreeBuilder builder = new MultiLevelClusterTreeBuilder(objects, clusterRoot, pivotDistanceTable,
-                                                                            btreemap);
-
-        builder.build();
-        clusterStats = builder.getClusterStats();
-    }
-
 }

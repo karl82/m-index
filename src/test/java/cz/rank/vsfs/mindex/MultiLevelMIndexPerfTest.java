@@ -97,18 +97,20 @@ public class MultiLevelMIndexPerfTest extends MIndexPerfTest {
 
         List<Pivot<Vector>> pivots = Generators.createPivots(objects.subList(0, params.pivotsCount));
 
-        final MIndex<Vector> MIndex = new MultiLevelMIndex<>(params.clusterMaxLevel, 100, pivots, maximumDistance);
-        MIndex.addAll(objects);
+        final MIndex<Vector> mindex = new MultiLevelMIndex<>(params.clusterMaxLevel, 100, pivots, maximumDistance);
+        mindex.addAll(objects);
         stopWatch.start(prefix + ".build", Integer.toString(invocation));
-        MIndex.build();
+        mindex.build();
         stopWatch.stop(prefix + ".build", Integer.toString(invocation));
 
         final List<Vector> queryObjects = objects.subList(params.pivotsCount, params.pivotsCount + params.queryObjects);
         stopWatch.start(prefix + ".rangeQuery", Integer.toString(invocation));
         for (Vector queryObject : queryObjects) {
-            final Collection<Vector> foundObjects = MIndex.rangeQuery(queryObject, params.range);
+            final Collection<Vector> foundObjects = mindex.rangeQuery(queryObject, params.range);
         }
         stopWatch.stop(prefix + ".rangeQuery", Integer.toString(invocation));
+        logger.info(mindex.getQueryStats().toString());
+        logger.info(mindex.getClusterStats().toString());
     }
 
     private static class TestParams {
