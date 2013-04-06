@@ -97,4 +97,9 @@ public class MultiLevelClusterTreeBuilder<D extends Distanceable<D>> extends Abs
         return newCluster;
     }
 
+    private boolean atLeafLevel(Cluster<D> cluster) {
+        return cluster.getLevel() + 1 == cluster.getMaxLevel();
+    }
+
+
 }

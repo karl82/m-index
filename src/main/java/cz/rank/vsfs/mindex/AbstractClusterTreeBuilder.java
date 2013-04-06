@@ -31,10 +31,6 @@ package cz.rank.vsfs.mindex;
 public abstract class AbstractClusterTreeBuilder<D extends Distanceable<D>> implements ClusterTreeBuilder<D> {
     protected ClusterStats clusterStats = new ClusterStats();
 
-    protected boolean atLeafLevel(Cluster<D> cluster) {
-        return cluster.getLevel() + 1 == cluster.getMaxLevel();
-    }
-
     protected LeafCluster<D> createLeafSubCluster(Cluster<D> cluster, Pivot<D> pivot) {
         return new LeafCluster<>(cluster, nextLevelIndex(cluster, pivot));
     }
