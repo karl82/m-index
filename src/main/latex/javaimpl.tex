@@ -1,4 +1,4 @@
-\chapter{\MIndex implementace v~jazyce Java}
+\chapter{\MIndex{} implementace v~jazyce Java}
 
 
 \section{Jazyk Java, JVM}
@@ -83,18 +83,18 @@ V~celém návrhu jsem se snažil co nejvíce používat objektově orientovaný 
 
 Při některých výpočtech bylo možné použít \emph{rozděl a panuj}\cite{Cormen:2001:IA:580470}\footnote{V anj. \emph{Divide-and-Conquer}} s~využitím \emph{Executor Framework} z~JDK.
 
-V~popisovaných algoritmech (ať už \BPTree{} nebo \MIndex) je často uváděna proměnná \type{leaf}, resp. zda je daná struktura list. Z~hlediska objektového návrhu se mění chování třídy podle její datové složky, což nesvědčí o~dobrém objektovém návrhu. K~odstranění tohoto jsem použil \emph{Replace Type Code with Subclasses}\cite{fowler1999refactoring} pro \BPTree. V~případě \MIndex Range Query jsem použil \emph{Visitor pattern}\cite{gamma1995design}.
+V~popisovaných algoritmech (ať už \BPTree{} nebo \MIndex) je často uváděna proměnná \type{leaf}, resp. zda je daná struktura list. Z~hlediska objektového návrhu se mění chování třídy podle její datové složky, což nesvědčí o~dobrém objektovém návrhu. K~odstranění tohoto jsem použil \emph{Replace Type Code with Subclasses}\cite{fowler1999refactoring} pro \BPTree. V~případě \MIndex{} \emph{Range Query} jsem použil \emph{Visitor pattern}\cite{gamma1995design}.
 
 Dalš
 \subsection{\BPTree}
 Implementace \BPTree{} se nachází v~třídě \linebreak \type{cz.rank.vsfs.btree.BPlusTreeMultiMap}. Tato mapa je typově parametrizována pro klíč a hodnotu. Protože strom musí být setříděný, musí klíč implementovat rozhraní \type{java.lang.Comparable}. Mapa umožňuje ukládat více objektů pod stejným klíčem\footnote{V \CC{} je obdobný kontejner \type{std::multimap}\cite{ISO:2012:CPP}. V~JDK žádná takováto kolekce není.} a umožňuje vyhledání v~intervalu.
 
-Implementace mazání objektů z~mapy není potřebná pro \MIndex a není tudíž ani implementována.
+Implementace mazání objektů z~mapy není potřebná pro \MIndex{} a není tudíž ani implementována.
 
 Celý \BPTree{} je uložen v~hlavní paměti a není tedy implementováno načítaní a ukládání uzlů na disk.
 
 \subsection{\MIndex}
-Celá implementace \MIndex pracuje s~objekty, které implementují rozhraní \type{cz.rank.vsfs.mindex.Distanceable}. Tím je zajištěna případná znovupoužitelnost kódu pro jiné datové typy než je vektor.
+Celá implementace \MIndex{} pracuje s~objekty, které implementují rozhraní \type{cz.rank.vsfs.mindex.Distanceable}. Tím je zajištěna případná znovupoužitelnost kódu pro jiné datové typy než je vektor.
 
 \subsubsection{Výpočet maximální vzdálenosti mezi prvky}
 Výpočet maximální vzdálenosti je NP problém, kdy se musí spočítat vzájemné vzdálenosti všech prvků v~množině a vybrat tu vzdálenost, která je největší. K~výpočtu lze použít \emph{rozděl a panuj}, takže je celý výpočet paralelní a doba výpočtu se lineárně snižuje s~počtem výpočetních vláken.
@@ -200,7 +200,7 @@ Cluster tree je tvořen třídami, které implementuji rozhraní \linebreak \typ
 \item[RootCluster] Je použit pro kořen celého clusteru, protože vyžaduje speciální zacházení s~indexem a také při akceptování \type{ClusterVisitor}.
 \end{description}
 
-Pro změření rozdílu použití více-stupňového \MIndex u~a \MIndex u~s~dynamickými stupni jsou implementovány dvě třídy -- \linebreak \type{cz.rank.vsfs.mindex.MultiLevelClusterTreeBuilder} a \linebreak \type{cz.rank.vsfs.mindex.DynamicClusterTreeBuilder}. Tyto třídy jsou použity v~\type{cz.rank.vsfs.mindex.MultiLevelMIndex}, \linebreak resp. \type{cz.rank.vsfs.mindex.DynamicMIndex} ke konstrukci specifického \MIndex u.
+Pro změření rozdílu použití více-stupňového \MIndex u a \MIndex u s~dynamickými stupni jsou implementovány dvě třídy -- \linebreak \type{cz.rank.vsfs.mindex.MultiLevelClusterTreeBuilder} a \linebreak \type{cz.rank.vsfs.mindex.DynamicClusterTreeBuilder}. Tyto třídy jsou použity v~\type{cz.rank.vsfs.mindex.MultiLevelMIndex}, \linebreak resp. \type{cz.rank.vsfs.mindex.DynamicMIndex} ke konstrukci specifického \MIndex u.
 Obě třídy mají téměř totožný konstruktor, pouze u~\type{DynamicClusterTreeBuilder} je navíc parametr pro maximální zaplnění koncového clusteru. Více viz \prettyref{sec:Dynamic-Cluster-Tree}.
 
 \subsubsection{Range Query}

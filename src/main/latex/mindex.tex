@@ -3,9 +3,9 @@
 V~této části je popsán a vybudován Metrický Index --- jeho principy,
 architektura a prohledávání.
 
-\section{\MIndex prvního stupně}
+\section{\MIndex{} prvního stupně}
 
-Jak bylo již zmíněno, koncept \MIndex u~je inspirován iDistance, která
+Jak bylo již zmíněno, koncept \MIndex u je inspirován iDistance, která
 je indexovací metoda pro podobnostní vyhledávání ve vektorovém prostoru.
 Pokud máme vzorovou množinu $S\subseteq\mathbb{\mathcal{D}}$, pak
 iDistance rozdělí $S$ na $n$~clusterů a utvoří referenční bod $p_{i}$pro
@@ -35,7 +35,7 @@ Datové objekty jsou poté uloženy do B$^{+}$-tree podle jejich \emph{iDist
 \end{figure}
 
 
-\MIndex zobecňuje iDistance tak, že může být použita na~obecné metrické
+\MIndex{} zobecňuje iDistance tak, že může být použita na~obecné metrické
 prostory -- ne jenom na vektorový prostor\@. Toho je dosaženo tím,
 že se vybere množina $n$~pivotů $p_{0},p_{1},\ldots,p_{n-1}$ a
 apriori ze vzorový množiny $S\subseteq\mathcal{D}$ a poté aplikováním
@@ -54,7 +54,7 @@ příklad takového rozdělení ve 2D pro 4 pivoty ($n=4)$.
 
 \section{Více-stupňový \MIndex}
 
-Aby byl \MIndex škálovatelný pro~rostoucí množství dat, budeme chtít
+Aby byl \MIndex{} škálovatelný pro~rostoucí množství dat, budeme chtít
 aplikovat další rozdělování clusterů. Pro~daný cluster $n$~pivotů
 $\{p_{0},p_{1},\ldots,p_{n-1}\}$ a prvek $o\in\mathcal{D}$, platí
 
@@ -69,7 +69,7 @@ d(p_{(0)_{o}},o)\leq d(p_{(1)_{o}},o)\leq\cdots\leq d(p_{(n-1)_{o}},o)
 Jinak: řada $p_{(0)_{o}},p_{(1)_{o}},\ldots,p_{(n-1)_{o}}$ je seřazena
 podle vzdáleností mezi pivoty a prvkem $o$\@.
 
-\MIndex s~$l$ stupni, kde $l$ je celé číslo $1\leq l\leq n$, rozděluje
+\MIndex{} s~$l$ stupni, kde $l$ je celé číslo $1\leq l\leq n$, rozděluje
 prostor $\mathcal{D}$ do $n\cdot(n-1)\cdot\cdots\cdot(n-l+1)$ clusterů
 za použití rekursivního Voroného dělení: Na prvním stupni, každý
 prvek $o\in\mathcal{D}$ je přiřazen k~jeho nejbližšímu pivotu $p_{(0)_{o}}$--
@@ -80,19 +80,19 @@ clusterů $C_{i,j}$\@. Jinými slovy, cluster $C_{i,j}$je tvořen
 prvky $o\in X$, pro které pivot $p_{i}$ je nejbližší a $p_{j}$
 je druhý nejbližší: $(0)_{o}=i$ a $(1)_{o}=j$\@. Tento postup je
 zopakován $l$-krát\@. \prettyref{fig:M-Index-level-two} ukazuje
-příklad \MIndex u~pro $l=2$\@.
+příklad \MIndex u pro $l=2$\@.
 
 \begin{figure}[t]
-\centering{}\includegraphics[scale=0.5]{m-index-level-two}\caption{\MIndex druhého stupně $(l=2)$\label{fig:M-Index-level-two}}
+\centering{}\includegraphics[scale=0.5]{m-index-level-two}\caption{\MIndex{} druhého stupně $(l=2)$\label{fig:M-Index-level-two}}
 \end{figure}
 
 
-Mapovací klíč \MIndex u~je definován $key_{l}\,:\,\mathcal{D\rightarrow\mathbb{R}}$\@.
+Mapovací klíč \MIndex u je definován $key_{l}\,:\,\mathcal{D\rightarrow\mathbb{R}}$\@.
 Nechť $o\in\mathcal{D}$ patří do clusteru $C_{i_{0},i_{1},\ldots,i_{l-1}}$\@.
 Celočíselná část klíče $key_{l}(o)$ identifikuje cluster: je rovna
 číslu ,,$i_{0}i_{1}\ldots i_{l-1}$''\@. Desetinná část klíče $key_{l}(o)$
 je vzdálenost mezi prvkem $o$ a jeho nejbližším pivotem $d(p_{(0)_{o}},o)$\@.
-Celé mapování \MIndex u~vyjádříme následujícím vztahem
+Celé mapování \MIndex u vyjádříme následujícím vztahem
 
 \begin{equation}
 key_{l}=d(p_{(0)_{o}},o)+\sum_{i\text{=0}}^{l-1}(i)_{o}\cdot n{}^{(l-1-i)}\label{eq:M-Index-key}
@@ -100,26 +100,26 @@ key_{l}=d(p_{(0)_{o}},o)+\sum_{i\text{=0}}^{l-1}(i)_{o}\cdot n{}^{(l-1-i)}\label
 
 
 \prettyref{fig:M-Index-level-two}zobrazuje mapování pro dvou-stupňový
-\MIndex $(l=2)$\@. Velikost domény je $4^{2}=16$ a prvky z~clusteru
+\MIndex{} $(l=2)$\@. Velikost domény je $4^{2}=16$ a prvky z~clusteru
 $C_{i,j}$ jsou mapovány do intervalu $[i\cdot n+j,i\cdot n+j+1]$\@.
 
 
-\section{\MIndex s~dynamickými stupni\label{sec:Dynamic-Cluster-Tree}}
+\section{\MIndex{} s~dynamickými stupni\label{sec:Dynamic-Cluster-Tree}}
 
-Více-stupňový \MIndex zlepšuje dělící schopnosti oproti jedno-stupňovému
-\MIndex u~seskupováním/shromažďováním blízkých prvků do menších clusterů\@.
-Teoreticky, čím více stupňů \MIndex má, tím více je vyhledávání efektivnější\@.
+Více-stupňový \MIndex{} zlepšuje dělící schopnosti oproti jedno-stupňovému
+\MIndex u seskupováním/shromažďováním blízkých prvků do menších clusterů\@.
+Teoreticky, čím více stupňů \MIndex{} má, tím více je vyhledávání efektivnější\@.
 Na druhou stranu, velké množství malých clusterů vede k~větší fragmentaci
 dat při dotazu a větší náročnosti při provádění dotazu\@. V~praxi
 to vede ke ztrátě výhody z~více-stupňovosti\@.
 
-Koncept \MIndex u~může být rozšířen o~\emph{dynamický počet stupňů},
+Koncept \MIndex u může být rozšířen o~\emph{dynamický počet stupňů},
 který umožní \prettyref{eq:M-Index-key} dynamicky zvětšovat (prohlubovat)
 pouze pro velké clustery, zatím co \prettyref{eq:M-Index-key-max-level}
 požaduje pouze lokální změny klíčů \MIndex u. Toto vylepšení vyžaduje
 následující modifikace:
 \begin{itemize}
-\item je vybrán fixní ,,maximální stupeň \MIndex u'' $1\leq l_{max}\leq n$
+\item je vybrán fixní \uv{maximální stupeň \MIndex u} $1\leq l_{max}\leq n$
 a doména pro~tento maximální stupeň $n^{l_{max}}$ je alokována
 \item rovnice \prettyref{eq:M-Index-key} pro $key_{l}$ stupně $l,\,1\leq l\leq l_{max}$
 je změněna na:
@@ -128,7 +128,7 @@ key_{l}=d(p_{(0)_{o}},o)+\sum_{i\text{=0}}^{l-1}(i)_{o}\cdot n{}^{(l_{max}-1-i)}
 \end{equation}
 
 \item je vytvořen dynamický \emph{cluster tree}, který určuje aktuální hloubku
-pro dané \MIndex clustery
+pro dané \MIndex{} clustery
 \end{itemize}
 Jak vypadá taková stromová struktura pro $l_{max}=3$ je zobrazeno
 v~\prettyref{fig:Dynamic-Cluster-Tree}\@. Prvky mají přiřazeny
@@ -202,7 +202,7 @@ Tento mechanismus je \uv{vypůjčen} \linebreak z~iDistance a je přímou aplika
 V~předchozích sekcích byly uvedeny algoritmy a mechanismy, které
 nutí k~použití různých specifických datových struktur\@. Obecně,
 datové prvky mohou být uloženy v~jakékoliv struktuře, která je indexuje
-podle jejich \MIndex klíčů. Ideální je efektivní vyhodnocování přes
+podle jejich \MIndex{} klíčů. Ideální je efektivní vyhodnocování přes
 intervalové dotazy -- \BPTree{}\cite{Cormen:2001:IA:580470}%
 \footnote{detailní popis \BPTree{} viz \prettyref{sub:B-plus-tree}%
 } je typickým představitelem takovéto struktury\@.

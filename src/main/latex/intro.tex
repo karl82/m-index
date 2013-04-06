@@ -20,15 +20,15 @@ Metrický index definuje \emph{univerzální mapovací schéma} z~obecného
 metrického prostoru do reálných čísel\@. Co je nejdůležitější, toto
 schéma zachovává blízkost dat, tedy mapuje podobné metrické prvky
 do~blízkých čísel\@. Indexovací a vyhledávací mechanismus \MIndex
-u~používá množinu referenčních prvků (pivotů) a optimálně využívá všechny
+u používá množinu referenčních prvků (pivotů) a optimálně využívá všechny
 známé principy pro dělení, větvení a filtrování v~metrickém prostoru\@.
 
-Charakter mapy \MIndex u~umožňuje použít dobře známé techniky jako
+Charakter mapy \MIndex u umožňuje použít dobře známé techniky jako
 je \BPTree\cite{Cormen:2001:IA:580470} nebo distribuované
 hašovací tabulky\@.
 
 V~této práci detailně vysvětluji principy \MIndex u, jeho implementaci
-v~jazyce Java a porovnávám výkonnost implementací \MIndex v~jazycích
+v~jazyce Java a porovnávám výkonnost implementací \MIndex{} v~jazycích
 Java, \CC{} a C\#. Předpokladem je, že na stejném stroji a na stejné
 množině dat, implementace v~\CC{} zpracuje požadavky v~nejkratším
 čase. Následována implementací v~C\# nebo v~Java. Podle mého názoru,
@@ -101,6 +101,6 @@ jsou dva typy dotazů: \emph{range~query}~$R(q,r)$\footnote{Range Query je podro
 neighbors query} $kNN(q,k)$, který vrátí $k$~nejbližších prvků
 od $q$~z~$X$\@.
 
-\MIndex využívá několika struktur\@. V~následujících částí se budeme
+\MIndex{} využívá několika struktur\@. V~následujících částí se budeme
 zabývat popisem pravidel (algoritmů), které jsou zapotřebí k~utvoření
 a správného používání \MIndex u.
