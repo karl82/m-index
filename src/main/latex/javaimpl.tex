@@ -16,14 +16,14 @@ knihovna tříd v~základním JDK\ldots{}
 
 \subsection{Automatická správa paměti -- garbage collection}
 
-V~jazyce Java neexistují ukazatele, pouze reference. V~jazycích C/C++
+V~jazyce Java neexistují ukazatele, pouze reference. V~jazycích C/\CC{}
 se musí vývojář starat o~správu paměti pomocí funkcí \method{malloc},
-\method{free} (jazyk C a C++), resp. operátorů \method{new} a \method{delete}
-(jazyk C++). V~jazyce Java, resp. v~JVM \cite{lindholm2013java} tuto starost přebírá tzv. \emph{garbage
+\method{free} (jazyk C a \CC), resp. operátorů \method{new} a \method{delete}
+(jazyk \CC). V~jazyce Java, resp. v~JVM \cite{lindholm2013java} tuto starost přebírá tzv. \emph{garbage
 collector} (GC\nomenclature{GC}{garbage collector}), který sleduje
 dosažitelnost alokovaných objektů v~paměti JVM. Pokud GC
 zjistí, že objekt není dosažitelný z~jiných objektů, uvolní pamět daného objektu.
-\footnote{Podobná technika/pattern je součástí C++11 pomocí \type{std::shared\_ptr},
+\footnote{Podobná technika/pattern je součástí \CC 11 pomocí \type{std::shared\_ptr},
 kde se používá \emph{reference counting} \cite{ISO:2012:CPP}. Tato technika není použitelná v~případě cyklických referencí. Při výskytu cyklických referencí by se měl použít i \type{std::weak\_ptr}.
 }
 
@@ -47,7 +47,7 @@ GC se spouští v~okamžiku, kdy není dostatek paměti pro nové objekty nebo j
 
 \subsection{Generika\label{sub:generika}}
 
-Obdobně jako v~C++ jsou \emph{templates}\cite{ISO:2012:CPP}, jazyk Java má \emph{generics}.\footnote{Uvedeny ve verzi 1.5 \cite{gosling2013java}.}
+Obdobně jako v~\CC{} jsou \emph{templates}\cite{ISO:2012:CPP}, jazyk Java má \emph{generics}.\footnote{Uvedeny ve verzi 1.5 \cite{gosling2013java}.}
 Jsou zde rozdíly:
 \begin{itemize}
   \item v~Java se informace o~typu ztrácí během překladu. Překladač nahrazuje výskyt generika za konkrétní typ (třída, rozhraní)
@@ -75,7 +75,7 @@ pro síťovou komunikaci (RPC\nomenclature{RPC}{Remote Procedure Call}), práci 
 XML, soubory a souborový
 systém a také velmi propracovanou knihovnou kontejnerů -- \emph{Java
 Collections Framework }(JFC\nomenclature{JFC}{Java Collections Framework})
-\footnote{V~jazyce Java se používá pro termín \emph{container} (C++) termín
+\footnote{V~jazyce Java se používá pro termín \emph{container} (\CC) termín
 \emph{collection}}.
 
 \section{Návrh a implementace}
@@ -87,7 +87,7 @@ V~popisovaných algoritmech (ať už \BPTree{} nebo \MIndex) je často uváděna
 
 Dalš
 \subsection{\BPTree}
-Implementace \BPTree{} se nachází v~třídě \linebreak \type{cz.rank.vsfs.btree.BPlusTreeMultiMap}. Tato mapa je typově parametrizována pro klíč a hodnotu. Protože strom musí být setříděný, musí klíč implementovat rozhraní \type{java.lang.Comparable}. Mapa umožňuje ukládat více objektů pod stejným klíčem\footnote{V C++ je obdobný kontejner \type{std::multimap}\cite{ISO:2012:CPP}. V~JDK žádná takováto kolekce není.} a umožňuje vyhledání v~intervalu.
+Implementace \BPTree{} se nachází v~třídě \linebreak \type{cz.rank.vsfs.btree.BPlusTreeMultiMap}. Tato mapa je typově parametrizována pro klíč a hodnotu. Protože strom musí být setříděný, musí klíč implementovat rozhraní \type{java.lang.Comparable}. Mapa umožňuje ukládat více objektů pod stejným klíčem\footnote{V \CC{} je obdobný kontejner \type{std::multimap}\cite{ISO:2012:CPP}. V~JDK žádná takováto kolekce není.} a umožňuje vyhledání v~intervalu.
 
 Implementace mazání objektů z~mapy není potřebná pro \MIndex a není tudíž ani implementována.
 
@@ -218,7 +218,7 @@ Další fází při \emph{zavádění tříd} je i verifikace \bytecode{}. Všec
 Výše popsaný proces \emph{zavádění tříd} je velmi náročný na I/O operace a zásadním způsobem ovlivní výsledek měření, pokud se nepředejde tomuto zavádění během měření.
 
 \subsection{JIT\label{sub:JIT}}
-Tradiční překladače (např. C/C++) generují z~vyššího programovacího jazyka strojově závislý kód. Tento kód má finální podobu a všechny možné optimalizace je zapotřebí udělat během překladu. Případně použít profilování výsledné binárky a znovu nechat překladač znovu přeložit kód s~využitím profilovacích dat. Těmto překladačům se říká také statické. Výsledný kód je optimalizován pro danou platformu.
+Tradiční překladače (např. C/\CC) generují z~vyššího programovacího jazyka strojově závislý kód. Tento kód má finální podobu a všechny možné optimalizace je zapotřebí udělat během překladu. Případně použít profilování výsledné binárky a znovu nechat překladač znovu přeložit kód s~využitím profilovacích dat. Těmto překladačům se říká také statické. Výsledný kód je optimalizován pro danou platformu.
 
 Java používá překladač \javac{}, který z~vysoko úrovňového jazyka vytvoří \classfile{}, který obsahuje \bytecode{}. JVM tento \bytecode{} následně dynamicky za běhu překládá do strojově závislého kódu pomocí JIT.
 
@@ -255,7 +255,7 @@ Zahřátí se provádí tak, že se zavolá měřený kód tolikrát, aby se sta
 \subsection{Výsledky měření}
 \todo{Grafy a tabulky s~výsledky}
 \missingfigure{Graf s~range 0.15 a pro max level}
-\section{Srovnání výkonu implementací v~C++, C\# a Java}
+\section{Srovnání výkonu implementací v~{\protect \CC}, C\# a Java}
 \subsection{Srovnání implementací}
 \todo{Porovnat implementaci p. Kmnuníčka s~mojí}
 \subsection{Srovnání výsledků měření}
