@@ -4,15 +4,13 @@
 \section{Jazyk Java, JVM}
 
 Jazyk Java je silně typovaný jazyk. Tento jazyk není interpretovaný,
-výsledkem překladu je \bytecode{}.\footnote{\bytecode{} jsou instrukce pro JVM. Více viz. \prettyref{sub:JIT}} Až tento \bytecode{} je interpretován
-v~tzv. Java Virtual Machine (JVM\nomenclature{JVM}{Java Virtual Machine}).
+výsledkem překladu je \bytecode{}.\footnote{\bytecode{} jsou instrukce pro JVM. Více viz. \prettyref{sub:JIT}} Až tento \bytecode{} je interpretován v~tzv. Java Virtual Machine (JVM\nomenclature{JVM}{Java Virtual Machine}).
 Díky JVM může kód přeložený na jedné platformě (ať už Windows nebo Unix a 32bit nebo 64bit) běžet na jiné. \footnote{\emph{\uv{Write once, run anywhere}}\cite{lindholm2013java}}
 
 Hlavní klíčové vlastnosti, jak jazyka Java, JVM a JDK\nomenclature{JDK}{Java Development Kit}
 jsou tyto: automatická alokace a dealokace paměti, objektovost, generika,
 překlad \bytecode{} do nativních instrukcí procesoru, bohatá
 knihovna tříd v~základním JDK\ldots{}
-
 
 \subsection{Automatická správa paměti -- garbage collection}
 
@@ -27,23 +25,55 @@ zjistí, že objekt není dosažitelný z~jiných objektů, uvolní pamět dané
 kde se používá \emph{reference counting} \cite{ISO:2012:CPP}. Tato technika není použitelná v~případě cyklických referencí. Při výskytu cyklických referencí by se měl použít i \type{std::weak\_ptr}.
 }
 
-Díky automatické správě paměti je vývoj výrazně rychlejší a výsledný
-kód bezpečnější (nehrozí \emph{buffer overflow} nebo \emph{buffer underflow}). Není ovšem ochráněný proti
-memory leaks.
+Díky automatické správě paměti je vývoj výrazně rychlejší.
+Automatická správa paměti ovšem neznamená, že program je chráněn proti všem únikům paměti.\footnote{V anj. \emph{memory leaks}.}
+Pokud se např. \uv{opomene} odstranit záznam z mapy, odkazovaná instance nikdy nebude uvažována pro GC a vznikne únik paměti.
 
 \subsubsection{Jak funguje GC}
-GC se spouští v~okamžiku, kdy není dostatek paměti pro nové objekty nebo již alokované objekty dosáhnout určité hranice. Obecně GC probíhá ve 3. fázích:
+Ve většině JVM se používá generační GC, který vychází ze dvou vypozorovaných chování:
 \begin{itemize}
-  \item Mark
-  \item Sweep
-  \item Compaction (nepovinná)
+  \item Většina alokovaných objektů je velmi brzy nepotřebná, tzn. nejsou na ně žádná reference
+  \item Jen několik starších objektů odkazuje na mladší objekty
 \end{itemize}
+Tyto dvě pozorování jsou známy jako \emph{slabá generační hypotéza}\cite{hunt2011java},\footnote{V anj. \emph{weak generational hypothesis}.} která platí pro většinu programů v Java.
+K využití této hypotézy je v JVM rozdělena \emph{halda}\footnote{V anj. \emph{heap}} na dvě fyzické části, které jsou odkazované jako generace:
 
+\missingfigure{Jak vypada alokace a promovani}
 \begin{description}
-  \item[Mark] \todo{Popsat co je Mark}
-  \item[Sweep] \todo{Popsat co je Sweep}
-  \item[Compaction] \todo{Popsat co je Compaction}
+  \item[Mladá generace] Většina objektů je alokována do této oblasti, která je relativně malá a je často \uv{uklízena}.
+Jelikož je předpoklad, že objekty jsou velmi rychle nepotřebné, jen velmi málo objektů \uv{přežije} úklid v této oblasti.
+Obecně je úklid v této oblasti velmi efektivní, protože je prováděn v malé oblasti paměti, která obsahuje hodně odpadních objektů.
+
+  \item[Stará generace] Objekty, které \uv{žijí} déle, jsou promovány do této oblasti.
+Tato oblast je výrazně větší než \emph{mladá generace} a její obsazování probíhá pomalu.
+Úklid v této oblasti (nazývaný \emph{full GC}) není častý, ale pokud už k němu dojde, může být velmi dlouhý.
+
+  \item[Permanentní generace] Toto je třetí oblastí generací, ale není použita v generační hierarchii.
+JVM ji používá pro ukládání metadat jako jsou informace o třídách, internovaných řetězců atd\ldots
 \end{description}
+
+\subsubsection{Typy GC\label{subsub:gctypes}}
+
+V Oracle JVM je k dispozici několik GC. Liší se způsobem provádění úklidu a kdy dochází k tzv. \emph{zastavení světa}.\footnote{V anj. \emph{stop the world}}
+\emph{Zastavení světa} znamená, že všechna vlákna programu jsou pozastavena a pouze vlákna pro úklid jsou v činnosti.
+Je to z důvodu toho, aby nedocházelo k novým alokacím objektů.
+Samozřejmě, že toto má negativní dopad na aplikaci, pokud k zastavení dochází často.
+
+\prettyref{tab:gcs} obsahuje porovnání GC. Tabulka vyjadřuje, jakým způsobem probíhá úklid paměti jednotlivých generací.
+
+\begin{table}
+\center
+\begin{tabular}{|l || l | l | p{2cm} | p{2cm} |}
+\hline
+& Serial GC & Parallel GC & CMS GC & G1 GC \\ \hline \hline
+Paralelismus & Ne & Ano & Ano & Ano \\ \hline
+Souběžnost & Ne & Ne & Ano & Ano \\ \hline
+Úklid mladé gen. & Sériově & Paralelně & Paralelně & Paralelně \\ \hline
+Úklid staré gen. & Sériově & Paralelně & Paralelně \& \mbox{Souběžně} & Paralelně \& \mbox{Souběžně} \\
+ \hline
+\end{tabular}
+\caption{Porovnání GC\label{tab:gcs}}
+\end{table}
 
 \subsection{Generika\label{sub:generika}}
 
@@ -67,7 +97,6 @@ aktuálně JVM běží. V~JVM od Oracle
 kódem -- např. \emph{function inlining}, \emph{loop unrolling} nebo \emph{dead code elimination}\cite{hunt2011java}. Toto jsou velmi důležité vlastnosti, které mohou zásadním způsobem
 ovlivnit měření výkonnosti programu. Více viz.~\prettyref{sec:vykonvjava}.
 
-
 \subsection{Bohatá knihovna tříd v~základním JDK}
 
 Java je dodávána s~rozsáhlou knihovnou JDK. Obsahuje vše nutné
@@ -79,13 +108,18 @@ Collections Framework }(JFC\nomenclature{JFC}{Java Collections Framework})
 \emph{collection}}.
 
 \section{Návrh a implementace}
-V~celém návrhu jsem se snažil co nejvíce používat objektově orientovaný princip. Tzn. že jsem se maximálně snažil omezit používaní nižších konstrukcí jazyka Java jako jsou pole a spíše využívat knihovny JDK a vyšších konstrukcí jako jsou seznamy, fronty. Všechny implementované třídy a rozhraní jsou typově parametrizované viz. \prettyref{sub:generika}.
+Implementace \MIndex u je napsána pro verzi Java 7.
+V~celém návrhu jsem se snažil co nejvíce používat objektově orientovaný princip.
+Tzn. že jsem se maximálně snažil omezit používaní nižších konstrukcí jazyka Java jako jsou pole a spíše využívat knihovny JDK a vyšších konstrukcí jako jsou seznamy, fronty.
+Všechny implementované třídy a rozhraní jsou typově parametrizované viz. \prettyref{sub:generika}.
 
 Při některých výpočtech bylo možné použít \emph{rozděl a panuj}\cite{Cormen:2001:IA:580470}\footnote{V anj. \emph{Divide-and-Conquer}} s~využitím \emph{Executor Framework} z~JDK.
 
-V~popisovaných algoritmech (ať už \BPTree{} nebo \MIndex) je často uváděna proměnná \type{leaf}, resp. zda je daná struktura list. Z~hlediska objektového návrhu se mění chování třídy podle její datové složky, což nesvědčí o~dobrém objektovém návrhu. K~odstranění tohoto jsem použil \emph{Replace Type Code with Subclasses}\cite{fowler1999refactoring} pro \BPTree. V~případě \MIndex{} \emph{Range Query} jsem použil \emph{Visitor pattern}\cite{gamma1995design}.
+V~popisovaných algoritmech (ať už \BPTree{} nebo \MIndex) je často uváděna proměnná \type{leaf}, resp. zda je daná struktura list -- koncový uzel.
+Z~hlediska objektového návrhu se mění chování třídy podle její datové složky, což nesvědčí o~dobrém objektovém návrhu.
+K~odstranění tohoto jsem použil \emph{Replace Type Code with Subclasses}\cite{fowler1999refactoring} pro \BPTree.
+V~případě \MIndex{} \emph{Range Query} jsem použil \emph{Visitor pattern}\cite{gamma1995design}.
 
-Dalš
 \subsection{\BPTree}
 Implementace \BPTree{} se nachází v~třídě \linebreak \type{cz.rank.vsfs.btree.BPlusTreeMultiMap}. Tato mapa je typově parametrizována pro klíč a hodnotu. Protože strom musí být setříděný, musí klíč implementovat rozhraní \type{java.lang.Comparable}. Mapa umožňuje ukládat více objektů pod stejným klíčem\footnote{V \CC{} je obdobný kontejner \type{std::multimap}\cite{ISO:2012:CPP}. V~JDK žádná takováto kolekce není.} a umožňuje vyhledání v~intervalu.
 
@@ -281,19 +315,60 @@ for (int x = 0; x < 50; x+=5) {
 \end{figure}
 \end{description}
 
-\subsection{GC během měření}
-\todo{Popsat zda je GC ok během měření nebo ne}
 \subsection{Zahřátí JVM}
 
 Pokud bychom začali měřit jednotlivé části kódu ihned po startu JVM, neměřili bychom výkonnost samotného kódu, ale i čas za jak dlouho JVM zavede jednotlivé \classfile soubory, za jak dlouho JIT přeloží a optimalizuje instrukce \bytecode{} do strojového kódu. Pravděpodobně by se i naměřené hodnoty pro stejné testované parametry lišily, protože by k~překladu docházelo v~průběhu nebo mezi jednotlivými měřeními. Proto je nutné udělat i tzv. \emph{zahřátí JVM}.\footnote{V anj. \emph{JVM warm-up}}
 
 Zahřátí se provádí tak, že se zavolá měřený kód tolikrát, aby se stal \emph{hot}.\footnote{Viz \prettyref{subsub:whenJIT}} Po tomto zahřátí, by již měl být měřený kód optimalizován a převeden do strojového kódu a měření by nemělo být ovlivněno.
 
+\subsection{GC během měření}
+Jak bylo uvedeno v \prettyref{subsub:gctypes}, během úklidu paměti může dojít k zastavení aplikace.
+Je otázka, jak tomuto zastavení přistupovat při měření.
+V reálné aplikaci je toto běžné a záleží na typu aplikace, zda je zastavení celé aplikace na určitý časový okamžik problém nebo ho lze tolerovat.
+Podle typu aplikace je tedy vhodné vybrat i správný \emph{garbage collector}.
+
+V případě testování výkonnosti určitého algoritmu je zřejmě vhodné zabránit úklidu během měření, protože ve výsledném měření bude i započítán čas nutný pro úklid paměti.
+Z aplikace je možné vynutit úklid pomocí voláni \method{System.gc()} a \uv{počkat}, dokud neproběhne úklid paměti.
+V měřeních jsem tohoto volání využil, aby se opravdu měřil čas nutný k vykonání \emph{Range Query}.
+
 \section{Metoda a výsledky měření}
 \subsection{Jak se měřilo}
 \todo{Popsat co se měřilo}
+\subsection{Prostředí}
+Měření probíhalo v tomto prostředí:
+
+\begin{table}[h]
+\catcode`\-=12
+\center
+\begin{tabular}{|l  | l | c |}
+\hline
+\multirow{9}{*}{CPU} & \multicolumn{2}{|c|}{AMD Phenom\texttrademark II X4 905e Processor} \\ \cline{2-3}
+& Architektura & 64bit \\ \cline{2-3}
+& Počet jader & 4 \\ \cline{2-3}
+& Počet vláken & 4 \\ \cline{2-3}
+& Frekvence & 2.5Ghz \\ \cline{2-3}
+&  \multirow{2}{*}{L1 cache} & 4 x 64 KB pro instrukce \\
+& & 4 x 64 KB pro data \\ \cline{2-3}
+& L2 cache & 4 x 512KB \\ \cline{2-3}
+& L3 cache & 6MB \\ \cline{2-3}
+\hline
+\multirow{3}{*}{RAM} & Velikost & 12GB \\ \cline{2-3}
+& Typ & DDR3 \\ \cline{2-3}
+& Frekvence & 1333MHz \\ \cline{2-3}
+\hline
+\multirow{2}{*}{Operační systém} &  \multicolumn{2}{|c|}{Debian/GNU Linux 7.0}  \\
+&  \multicolumn{2}{|c|}{\tiny 3.8-trunk-amd64 \#1 SMP Debian 3.8.3-1~experimental.1 x86\_64 GNU/Linux} \\ \cline{2-3}
+\hline
+\multirow{2}{*}{Java} & JDK & {\tiny Java(TM) SE Runtime Environment (build 1.7.0\_13-b20)} \\ \cline{2-3}
+& JVM & {\tiny Java HotSpot(TM) 64-Bit Server VM (build 23.7-b01, mixed mode)} \\ \cline{2-3}
+ \hline
+\end{tabular}
+\caption{Informace o stroji}
+\end{table}
+
 \subsection{Parametry měření}
 \todo{Popsat všechny parametry}
+\todo{Zminit se o limitu Integer.MAX\_VALUE pro pivotsCount=100 a leafObjects=10}
 \subsection{Výsledky měření}
 \todo{Grafy a tabulky s~výsledky}
 \missingfigure{Graf s~range 0.15 a pro max level}
