@@ -332,8 +332,29 @@ Z aplikace je možné vynutit úklid pomocí voláni \method{System.gc()} a \uv{
 V měřeních jsem tohoto volání využil, aby se opravdu měřil čas nutný k vykonání \emph{Range Query}.
 
 \section{Metoda a výsledky měření}
-\subsection{Jak se měřilo}
-\todo{Popsat co se měřilo}
+\subsection{Metoda měření}
+\MIndex má několik parametrů, které ovlivňují jeho chování, resp. výkonnost, v závislosti na velikosti a typu indexovaných dat. Parametry pro měření jsou následující:
+
+Průběh testu je popsán níže.
+
+\begin{enumerate}
+\item Vygenerování parametrů pro testy
+\item Načtení vstupních dat ze souboru a vytvoření vektorů
+\item Výpočet maximální vzdálenosti mezi objekty mimo třídy \type{*MIndex}, aby se pro každé nové měření nemusela znovu počítat vzdálenost.
+Každá třída \type{cz.rank.vsfs.mindex.MultiLevelMIndex} a \type{cz.rank.vsfs.mindex.DynamiclMIndex} má konstruktor, který má parametr pro překalkulovanou maximální vzdálenost.
+\item Zahřátí JVM
+\item Série opakujících se dotazů \emph{Range Query}.
+\begin{enumerate}
+\item Vytvoření pivotů
+\item Vytvoření instance \type{\MIndex}
+\item Přiřazení vektorů do instance \type{\MIndex}
+\item Vytvoření \MIndex u voláním metody \method{MIndex.build()}
+\item Spuštění časovače
+\item Jednotlivé dotazy \emph{Range Query} voláním \method{MIndex.rangeQuery()}
+\item Vypnutí časovače
+\end{enumerate}
+
+\end{enumerate}
 \subsection{Prostředí}
 Měření probíhalo v tomto prostředí:
 
