@@ -245,29 +245,49 @@ Tradiční překladače (např. C/\CC) generují z~vyššího programovacího ja
 Java používá překladač \javac{}, který z~vysoko úrovňového jazyka vytvoří \classfile{}, který obsahuje \bytecode{}. JVM tento \bytecode{} následně dynamicky za běhu překládá do strojově závislého kódu pomocí JIT.
 
 \subsubsection{Jak funguje překladač}
-Každý překladač má podobnou strukturu. Musí mít na vstupu modul pro převod zdrojového kódu do tzv. \emph{intermediate representation (IR)}\nomenclature{IR}{Intermediate Representation}.\footnote{Existují různé typy IR. Pro každou fázi překladu se dokonce může použít jiný IR.} IR je mezistupeň před \todo{Popsat co je IR} Všechny překladače dělají největší optimalizace právě na IR. Množina možných optimalizací může být velmi široká a je často omezena množstvím času nutném k~provedení dané optimalizace. Mezi jednoduché optimalizace patří zjednodušování logických výrazů, nahrazování proměnných konstantami a function inlining. Složitější optimalizace jsou většinou spojeny se smyčkami -- loop unrolling, odstraňování kontroly rozsahu smyčky atd\ldots{}
+Každý překladač má podobnou strukturu. Musí mít na vstupu modul pro převod zdrojového kódu do tzv. \emph{intermediate representation (IR)}\nomenclature{IR}{Intermediate Representation}.\footnote{Existují různé typy IR. Pro každou fázi překladu se dokonce může použít jiný IR.} IR je mezistupeň před \todo{Popsat co je IR} Všechny překladače dělají největší optimalizace právě na IR. Množina možných optimalizací může být velmi široká a je často omezena množstvím času nutném k~provedení dané optimalizace. Mezi jednoduché optimalizace patří zjednodušování logických výrazů, nahrazování proměnných konstantami a \emph{function inlining}. Složitější optimalizace jsou většinou spojeny se smyčkami -- loop unrolling, odstraňování kontroly rozsahu smyčky atd\ldots{}
 
 Když jsou tyto optimalizace hotovy, další modul vezme danou IR a převede ji do strojové podoby. Zde nastávají další optimalizace v~podobě přiřazování hodnot do registrů procesoru, výběr vhodných instrukcí atd\ldots{}
 
 \subsubsection{Kdy JIT překládá do strojového kódu\label{subsub:whenJIT}}
 JIT nepřekládá každou instrukci v~\bytecode{} ihned do strojového kódu. Většina instrukcí je na začátku interpretována. Až v~okamžiku, kdy daná instrukce se stane \emph{hot}, JIT ji zařadí pro překlad. JVM totiž udržuje u~každé metody čítač volání. Pokud daná metoda je volána více krát, stane se \emph{hot} a tím se vyvolá i její překlad. Hranice překladu je ve výchozím nastavení 10000.\footnote{Parametr pro Oracle JVM, který ovlivňuje toto nastavení je \cmd{-XX:CompileThreshold=}} Zjednodušeně řečeno: aby došlo k~překladu libovolné metody do strojového kódu, musí být daná metoda volána aspoň 10000.
 
-JIT během překladu dělá samozřejmě optimalizace popsané výše.
+Níže jsou uvedeny optimalizace, které ovlivňují výkonnost kódu.
 
 \begin{description}
-\item[function inlining] 
-\item[dead code elimination]
-\item[loop unrolling]
-\item[záměna volání rozhraní konkrétní implementací]
+\item[function inlining] Je technika vnořování těla kódu funkcí/metod do těla volané metody. Protože každá metoda třídy je v jazyce Java virtuální, tato optimalizace odstraňuje penalizaci za jejich volání. Ve výsledku vytváří velké bloky kódu, nad kterými se uplatňují další optimalizace. Vnořování nedochází u všech metod. Podmínkou je, aby metoda byla krátká, což znamená, aby měla velikost do 35 \bytecode s.\footnote{V Oracle JVM lze toto omezení upravit pomocí parametru \cmd{-XX:FreqInlineSize=}} Vnořování nemůže být vynuceno. Záleží na JIT. Není ani žádné doporučení pro kompilátor jako je tomu u \CC{} pomocí vyhrazeného slova \method{inline} u metody.\footnote{\method{inline} říká kompilátoru, že by mohl metodu vnořit, ale záleží na chytrosti kompilátoru, zda vnoření provede\cite{Stroustrup:1997:CPL:523265}.}
+
+Tato technika má zásadní dopad na běh programu. Ve výsledku nutí programátora navrhnout třídy tak, aby byly tvořeny malými metodami, což má za následek i dobrou čitelnost kódu.
+
+\item[dead code elimination] JIT je schopen při analýze běhu programu identifikovat části kódu, které nemají žádný vedlejší efekt, např. pokud se výsledek volání metody nepoužije v dalších krocích nebo. Pokud je měřící kód nesprávně navrhnut, může dojít k tomu, že díky této optimalizaci se některé části nevykonají a výsledky měření jsou nepoužitelné.
+
+\item[loop unrolling] Slouží k rozbalení smyček jako je \method{for (...) ...}. Klasická optimalizace, která tělo smyčky \uv{zkopíruje} několikrát za sebou. Každá smyčka má inkrementální část a podmínku pro ukončení smyčky. Podmínka pro ukončení má vliv na \emph{branch prediction} v CPU.\footnote{Moderní CPU mají velmi sofistikované algoritmy na předpovídání větvení programu s předčítáním instrukcí do \emph{pipeline}. Pokud CPU špatně odhadne následující větev kódu, v drtivé většině případů musí \uv{zahodit} a znovu načíst instrukce do \emph{pipeline}. Tato operace je velmi drahá a zastaví na několik cyklů vykonávání instrukcí CPU.} Ve výsledku se daná podmínka nevyhodnocuje tak často.
+
+\begin{figure}
+\begin{lstlisting}[frame=single,language=Java,caption=Před loop unrolling]
+for (int x = 0; x < 50; x++) {
+  doSomethingWith(x);
+}
+\end{lstlisting}
+\begin{lstlisting}[frame=single,language=Java,caption=Po loop unrolling]
+for (int x = 0; x < 50; x+=5) {
+  doSomethingWith(x);
+  doSomethingWith(x+1);
+  doSomethingWith(x+2);
+  doSomethingWith(x+3);
+  doSomethingWith(x+4);
+}
+\end{lstlisting}
+\end{figure}
 \end{description}
 
 \subsection{GC během měření}
 \todo{Popsat zda je GC ok během měření nebo ne}
 \subsection{Zahřátí JVM}
 
-Pokud bychom začali měřit jednotlivé části kódu ihned po startu JVM, neměřili bychom výkonnost samotného kódu, ale i čas za jak dlouho JVM zavede jednotlivé \classfile soubory, za jak dlouho JIT přeloží a optimalizuje instrukce \bytecode{} do strojového kódu. Pravděpodobně by se i naměřené hodnoty pro stejné testované parametry lišily, protože by k~překladu docházelo v~průběhu nebo mezi jednotlivými měřeními. Proto je nutné udělat i tzv. \emph{zahřáti JVM}.\footnote{v anj. \emph{JVM warm-up}}
+Pokud bychom začali měřit jednotlivé části kódu ihned po startu JVM, neměřili bychom výkonnost samotného kódu, ale i čas za jak dlouho JVM zavede jednotlivé \classfile soubory, za jak dlouho JIT přeloží a optimalizuje instrukce \bytecode{} do strojového kódu. Pravděpodobně by se i naměřené hodnoty pro stejné testované parametry lišily, protože by k~překladu docházelo v~průběhu nebo mezi jednotlivými měřeními. Proto je nutné udělat i tzv. \emph{zahřátí JVM}.\footnote{V anj. \emph{JVM warm-up}}
 
-Zahřátí se provádí tak, že se zavolá měřený kód tolikrát, aby se stal \emph{hot}.\footnote{viz. \prettyref{subsub:whenJIT}} Po tomto zahřátí, by již měl být měřený kód optimalizován a převeden do strojového kódu a měření by nemělo být ovlivněno.
+Zahřátí se provádí tak, že se zavolá měřený kód tolikrát, aby se stal \emph{hot}.\footnote{Viz \prettyref{subsub:whenJIT}} Po tomto zahřátí, by již měl být měřený kód optimalizován a převeden do strojového kódu a měření by nemělo být ovlivněno.
 
 \section{Metoda a výsledky měření}
 \subsection{Jak se měřilo}
