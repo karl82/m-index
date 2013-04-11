@@ -38,6 +38,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Karel Rank
@@ -48,20 +49,20 @@ public abstract class MIndexPerfTest {
     protected static final int[] PIVOTS_COUNT = {
             10,
             20,
-            //         30,
+            30,
             50,
-            100,
-            200,
+//            100,
+//            200,
 //            400
     };
     protected static final int[] CLUSTER_MAX_LEVEL = {
             2,
             3,
             4,
-            5,
+//            5,
     };
     protected static final double[] RANGES = {
-            0.01,
+//            0.01,
 //            0.05,
             0.15,
 //            0.3,
@@ -75,12 +76,28 @@ public abstract class MIndexPerfTest {
             100,
 //            1000
     };
+
+    protected static final int[] BTREE_LEVEL = {
+//            5,
+//            10,
+            50,
+            100,
+            500
+    };
+
     private static final Logger logger = LoggerFactory.getLogger(MIndexPerfTest.class);
     protected final List<Vector> objects = new ArrayList<>();
     protected double maximumDistance;
 
     public void logJvmInfo() {
         PerfLogger.logJvmInfo();
+    }
+
+    protected void performGc() throws InterruptedException {
+        logger.info("Performing GC...");
+        System.gc();
+        TimeUnit.SECONDS.sleep(2);
+        logger.info("GC done...");
     }
 
     @BeforeClass

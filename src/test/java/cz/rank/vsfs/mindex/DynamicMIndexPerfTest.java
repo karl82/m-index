@@ -59,9 +59,9 @@ public class DynamicMIndexPerfTest extends MIndexPerfTest {
     protected void warmUp() {
         logger.info("Performing JVM warm up...");
         final Slf4JStopWatch stopWatch = new Slf4JStopWatch(PerfLogger.LOGGER);
-        performTest(new TestParams(10, 5000, 3, 1, 500, 0.15d), 1, stopWatch, "WARMUP");
-        performTest(new TestParams(10, 5000, 3, 1, 250, 0.1d), 1, stopWatch, "WARMUP");
-        performTest(new TestParams(20, 5000, 3, 1, 1000, 0.1d), 1, stopWatch, "WARMUP");
+        performTest(new TestParams(10, 5000, 3, 1, 500, 0.15d, 50), 1, stopWatch, "WARMUP");
+        performTest(new TestParams(10, 5000, 3, 1, 250, 0.1d, 50), 1, stopWatch, "WARMUP");
+        performTest(new TestParams(20, 5000, 3, 1, 1000, 0.1d, 50), 1, stopWatch, "WARMUP");
         logger.info("JVM warm up done...");
     }
 
@@ -85,10 +85,12 @@ public class DynamicMIndexPerfTest extends MIndexPerfTest {
                 for (Double range : RANGES) {
                     for (Integer queryObjects : QUERY_OBJECTS) {
                         for (Integer leafObjectsCount : LEAF_OBJECTS_COUNT) {
-                            params.add(
-                                    new TestParams[]{new TestParams(dimension, queryObjects, objectsCount,
-                                                                    DEFAULT_TEST_INVOCATIONS, leafObjectsCount,
-                                                                    range)});
+                            for (Integer btreeLevel : BTREE_LEVEL) {
+                                params.add(
+                                        new TestParams[]{new TestParams(dimension, queryObjects, objectsCount,
+                                                                        DEFAULT_TEST_INVOCATIONS, leafObjectsCount,
+                                                                        range, btreeLevel)});
+                            }
                         }
                     }
                 }
@@ -98,10 +100,11 @@ public class DynamicMIndexPerfTest extends MIndexPerfTest {
     }
 
     @Test(groups = "perf", dataProvider = "clusterTreeParams")
-    public void testClusterTree(TestParams params) {
+    public void testClusterTree(TestParams params) throws InterruptedException {
         final Slf4JStopWatch stopWatch = new Slf4JStopWatch(PerfLogger.LOGGER);
         for (int i = 1; i < params.invocations + 1; i++) {
             performTest(params, i, stopWatch, params.toString());
+            performGc();
         }
     }
 
@@ -109,7 +112,8 @@ public class DynamicMIndexPerfTest extends MIndexPerfTest {
 
         List<Pivot<Vector>> pivots = Generators.createPivots(objects.subList(0, params.pivotsCount));
 
-        final MIndex<Vector> mindex = new DynamicMIndex<>(params.clusterMaxLevel, 100, pivots, maximumDistance,
+        final MIndex<Vector> mindex = new DynamicMIndex<>(params.clusterMaxLevel, params.btreeLevel, pivots,
+                                                          maximumDistance,
                                                           params.leafObjectsCount);
         mindex.addAll(objects);
         stopWatch.start(prefix + ".build", Integer.toString(invocation));
@@ -133,14 +137,16 @@ public class DynamicMIndexPerfTest extends MIndexPerfTest {
         private final int invocations;
         private final int leafObjectsCount;
         private final double range;
+        private final int btreeLevel;
 
-        public TestParams(int pivotsCount, int queryObjects, int clusterMaxLevel, int invocations, int leafObjectsCount, double range) {
+        public TestParams(int pivotsCount, int queryObjects, int clusterMaxLevel, int invocations, int leafObjectsCount, double range, int btreeLevel) {
             this.pivotsCount = pivotsCount;
             this.queryObjects = queryObjects;
             this.clusterMaxLevel = clusterMaxLevel;
             this.invocations = invocations;
             this.leafObjectsCount = leafObjectsCount;
             this.range = range;
+            this.btreeLevel = btreeLevel;
         }
 
         @Override
@@ -151,6 +157,7 @@ public class DynamicMIndexPerfTest extends MIndexPerfTest {
             sb.append(", clusterMaxLevel=").append(clusterMaxLevel);
             sb.append(", leafObjectsCount=").append(leafObjectsCount);
             sb.append(", range=").append(range);
+            sb.append(", btreeLevel=").append(btreeLevel);
             sb.append('}');
             return sb.toString();
         }

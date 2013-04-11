@@ -251,7 +251,14 @@ public class MIndexTest {
                  1000,
                  32,
                  3,
+                 5},
+                {50,
+                 10000,
+                 32,
+                 5,
                  5}
+
+
         };
     }
 
@@ -281,7 +288,7 @@ public class MIndexTest {
     public void testRangeQueryDynamicIndex(int pivotsCount, int objectsCount, int vectorDimension, int maxClusterLevel, int btreeDegree) {
         final int limit = 1;
         final List<Vector> pivotVectors = createVectors(pivotsCount, vectorDimension, limit);
-        final MIndex<Vector> tree = new DynamicMIndex<>(maxClusterLevel, btreeDegree, createPivots(pivotVectors), 100);
+        final MIndex<Vector> tree = new DynamicMIndex<>(maxClusterLevel, btreeDegree, createPivots(pivotVectors), 10);
         final List<Vector> searchVectors = createVectors(100, vectorDimension, limit);
         tree.addAll(searchVectors);
         tree.addAll(pivotVectors);

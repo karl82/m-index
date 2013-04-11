@@ -50,9 +50,9 @@ public class MultiLevelMIndexPerfTest extends MIndexPerfTest {
     protected void warmUp() {
         logger.info("Performing JVM warm up...");
         final Slf4JStopWatch stopWatch = new Slf4JStopWatch(PerfLogger.LOGGER);
-        performTest(new TestParams(10, 5000, 3, 1, 0.15d), 1, stopWatch, "WARMUP");
-        performTest(new TestParams(10, 5000, 3, 1, 0.1d), 1, stopWatch, "WARMUP");
-        performTest(new TestParams(20, 5000, 3, 1, 0.1d), 1, stopWatch, "WARMUP");
+        performTest(new TestParams(10, 5000, 3, 1, 0.15d, 5), 1, stopWatch, "WARMUP");
+        performTest(new TestParams(10, 5000, 3, 1, 0.1d, 5), 1, stopWatch, "WARMUP");
+        performTest(new TestParams(20, 5000, 3, 1, 0.1d, 5), 1, stopWatch, "WARMUP");
         logger.info("JVM warm up done...");
     }
 
@@ -75,9 +75,11 @@ public class MultiLevelMIndexPerfTest extends MIndexPerfTest {
             for (Integer objectsCount : CLUSTER_MAX_LEVEL) {
                 for (Double range : RANGES) {
                     for (Integer queryObjects : QUERY_OBJECTS) {
-                        params.add(
-                                new TestParams[]{new TestParams(dimension, queryObjects, objectsCount,
-                                                                DEFAULT_TEST_INVOCATIONS, range)});
+                        for (Integer btreeLevel : BTREE_LEVEL) {
+                            params.add(
+                                    new TestParams[]{new TestParams(dimension, queryObjects, objectsCount,
+                                                                    DEFAULT_TEST_INVOCATIONS, range, btreeLevel)});
+                        }
                     }
                 }
             }
@@ -86,10 +88,11 @@ public class MultiLevelMIndexPerfTest extends MIndexPerfTest {
     }
 
     @Test(groups = "perf", dataProvider = "clusterTreeParams")
-    public void testClusterTree(TestParams params) {
+    public void testClusterTree(TestParams params) throws InterruptedException {
         final Slf4JStopWatch stopWatch = new Slf4JStopWatch(PerfLogger.LOGGER);
         for (int i = 1; i < params.invocations + 1; i++) {
             performTest(params, i, stopWatch, params.toString());
+            performGc();
         }
     }
 
@@ -97,7 +100,8 @@ public class MultiLevelMIndexPerfTest extends MIndexPerfTest {
 
         List<Pivot<Vector>> pivots = Generators.createPivots(objects.subList(0, params.pivotsCount));
 
-        final MIndex<Vector> mindex = new MultiLevelMIndex<>(params.clusterMaxLevel, 100, pivots, maximumDistance);
+        final MIndex<Vector> mindex = new MultiLevelMIndex<>(params.clusterMaxLevel, params.btreeLevel, pivots,
+                                                             maximumDistance);
         mindex.addAll(objects);
         stopWatch.start(prefix + ".build", Integer.toString(invocation));
         mindex.build();
@@ -119,13 +123,15 @@ public class MultiLevelMIndexPerfTest extends MIndexPerfTest {
         private final int clusterMaxLevel;
         private final int invocations;
         private final double range;
+        private final int btreeLevel;
 
-        public TestParams(int pivotsCount, int queryObjects, int clusterMaxLevel, int invocations, double range) {
+        public TestParams(int pivotsCount, int queryObjects, int clusterMaxLevel, int invocations, double range, int btreeLevel) {
             this.pivotsCount = pivotsCount;
             this.queryObjects = queryObjects;
             this.clusterMaxLevel = clusterMaxLevel;
             this.invocations = invocations;
             this.range = range;
+            this.btreeLevel = btreeLevel;
         }
 
         @Override
@@ -135,6 +141,7 @@ public class MultiLevelMIndexPerfTest extends MIndexPerfTest {
             sb.append(", queryObjects=").append(queryObjects);
             sb.append(", clusterMaxLevel=").append(clusterMaxLevel);
             sb.append(", range=").append(range);
+            sb.append(", btreeLevel=").append(btreeLevel);
             sb.append('}');
             return sb.toString();
         }
