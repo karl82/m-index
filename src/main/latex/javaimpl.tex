@@ -133,7 +133,8 @@ Celá implementace \MIndex{} pracuje s~objekty, které implementují rozhraní \
 \subsubsection{Výpočet maximální vzdálenosti mezi prvky}
 Výpočet maximální vzdálenosti je NP problém, kdy se musí spočítat vzájemné vzdálenosti všech prvků v~množině a vybrat tu vzdálenost, která je největší. K~výpočtu lze použít \emph{rozděl a panuj}, takže je celý výpočet paralelní a doba výpočtu se lineárně snižuje s~počtem výpočetních vláken.
 
-Funkcionalita je implementována ve třídě \type{cz.rank.vsfs.mindex.MaximumDistance}. Vzdálenost může být spočítána pouze nad objekty, které implementují rozhraní \type{Distanceable}.
+Funkcionalita je implementována ve třídě \linebreak \type{cz.rank.vsfs.mindex.MaximumDistance}.
+Vzdálenost může být spočítána pouze nad objekty, které implementují rozhraní \type{Distanceable}.
 
 
 \subsubsection{Výpočet vzdáleností mezi pivoty a prvky}
@@ -279,7 +280,14 @@ Tradiční překladače (např. C/\CC) generují z~vyššího programovacího ja
 Java používá překladač \javac{}, který z~vysoko úrovňového jazyka vytvoří \classfile{}, který obsahuje \bytecode{}. JVM tento \bytecode{} následně dynamicky za běhu překládá do strojově závislého kódu pomocí JIT.
 
 \subsubsection{Jak funguje překladač}
-Každý překladač má podobnou strukturu. Musí mít na vstupu modul pro převod zdrojového kódu do tzv. \emph{intermediate representation (IR)}\nomenclature{IR}{Intermediate Representation}.\footnote{Existují různé typy IR. Pro každou fázi překladu se dokonce může použít jiný IR.} IR je mezistupeň před \todo{Popsat co je IR} Všechny překladače dělají největší optimalizace právě na IR. Množina možných optimalizací může být velmi široká a je často omezena množstvím času nutném k~provedení dané optimalizace. Mezi jednoduché optimalizace patří zjednodušování logických výrazů, nahrazování proměnných konstantami a \emph{function inlining}. Složitější optimalizace jsou většinou spojeny se smyčkami -- loop unrolling, odstraňování kontroly rozsahu smyčky atd\ldots{}
+Každý překladač má podobnou strukturu.
+Musí mít na vstupu modul pro převod zdrojového kódu do tzv. \emph{intermediate representation (IR)}\nomenclature{IR}{Intermediate Representation}.
+IR je reprezentace programovacího jazyka do vnitřní formy překladače.
+Existují různé typy IR. Pro každou fázi překladu se dokonce může použít jiný IR.
+Všechny překladače dělají největší optimalizace právě na IR.
+Množina možných optimalizací může být velmi široká a je často omezena množstvím času nutném k~provedení dané optimalizace.
+Mezi jednoduché optimalizace patří zjednodušování logických výrazů, nahrazování proměnných konstantami a \emph{function inlining}.
+Složitější optimalizace jsou většinou spojeny se smyčkami -- loop unrolling, odstraňování kontroly rozsahu smyčky atd\ldots{}
 
 Když jsou tyto optimalizace hotovy, další modul vezme danou IR a převede ji do strojové podoby. Zde nastávají další optimalizace v~podobě přiřazování hodnot do registrů procesoru, výběr vhodných instrukcí atd\ldots{}
 
@@ -333,26 +341,52 @@ V měřeních jsem tohoto volání využil, aby se opravdu měřil čas nutný k
 
 \section{Metoda a výsledky měření}
 \subsection{Metoda měření}
-\MIndex má několik parametrů, které ovlivňují jeho chování, resp. výkonnost, v závislosti na velikosti a typu indexovaných dat. Parametry pro měření jsou následující:
+
+\MIndex{} má několik parametrů, které ovlivňují jeho chování, resp. výkonnost, v závislosti na velikosti a typu indexovaných dat. Parametry pro měření jsou následující:
+\begin{description}
+\item[počet pivotů] z kolika pivotů má být vytvořen \MIndex{}
+\item[počet vyhl. objektů] kolik se má vyhledat objektů v rámci jednoho měření
+\item[max. úroveň clusteru] platí pro oba dva typy clusterů
+\item[počet měření] kolik měření se má provést s danými parametry
+\item[max. počet objektů v listech] tento parametr je pouze při měřeních dynamického clusteru a určuje maximum objektů v listu clusteru
+\item[vzdálenost] maximální vzdálenost hledaných objektů od vzorového
+\item[řád \BPTree{}]
+\end{description}
+
+Výkonnost \MIndex u ovlivňuje i nastavení parametrů JVM.
+Zde jsem se rozhodl prozkoumat 2 parametry -- \cmd{-XX:+AggressiveOpts} a \cmd{-XX:+UseCompressedOops}, tzn. jejich vliv na výsledné měření a na jejich kombinace.
+
+\begin{description}
+\item[AggressiveOpts] 
+\item[UseCompressedOops]
+\end{description}
+
 
 Průběh testu je popsán níže.
 
 \begin{enumerate}
-\item Vygenerování parametrů pro testy
-\item Načtení vstupních dat ze souboru a vytvoření vektorů
+\item Vygenerování parametrů pro měření.
+\item Načtení vstupních dat ze souboru a vytvoření vektorů.
 \item Výpočet maximální vzdálenosti mezi objekty mimo třídy \type{*MIndex}, aby se pro každé nové měření nemusela znovu počítat vzdálenost.
-Každá třída \type{cz.rank.vsfs.mindex.MultiLevelMIndex} a \type{cz.rank.vsfs.mindex.DynamiclMIndex} má konstruktor, který má parametr pro překalkulovanou maximální vzdálenost.
-\item Zahřátí JVM
-\item Série opakujících se dotazů \emph{Range Query}.
+Každá třída \type{cz.rank.vsfs.mindex.MultiLevelMIndex} a \type{cz.rank.vsfs.mindex.DynamiclMIndex} má konstruktor, který má parametr pro předpočítanou maximální vzdálenost.
+\item Zahřátí JVM.
+\item Opakující se test:
 \begin{enumerate}
-\item Vytvoření pivotů
-\item Vytvoření instance \type{\MIndex}
-\item Přiřazení vektorů do instance \type{\MIndex}
-\item Vytvoření \MIndex u voláním metody \method{MIndex.build()}
-\item Spuštění časovače
-\item Jednotlivé dotazy \emph{Range Query} voláním \method{MIndex.rangeQuery()}
-\item Vypnutí časovače
+\item Vytvoření pivotů.
+\item Vytvoření instance \type{\MIndex}.
+\item Přiřazení vektorů do instance \type{\MIndex}.
+\item Vytvoření vnitřní struktury \MIndex u voláním metody \method{MIndex.build()}.
+\item Spuštění časovače.
+\item Jednotlivé dotazy na podobnost voláním \method{MIndex.rangeQuery()}
+\item Vypnutí časovače.
+\item Vypsání informací o měření -- parametry a čas strávený hledáním.
+\item Spuštění úklidu paměti.
 \end{enumerate}
+
+Výsledné časy byly zprůměrovány.
+Časovač zaznamená čas zapnutí a čas vypnutí pomocí \method{System.currentTimeInMillis()} a rozdíl je čas měření v milisekundách.
+Při tomto způsobu se nezaznamenává pouze čas vlákna, kolik taktů bylo aktivní, ale celková doba, tzn. pokud je systém vytížen a měřené aplikaci se nedostává času procesoru, je měření tímto postiženo.
+Během měření žádné další uživatelské procesy neběželi, aby nedošlo k ovlivnění měření.
 
 \end{enumerate}
 \subsection{Prostředí}
@@ -388,11 +422,88 @@ Měření probíhalo v tomto prostředí:
 \end{table}
 
 \subsection{Parametry měření}
+\begin{table}[h]
+\center
+\begin{tabular}{|l|c|}
+\hline
+Parametr & Hodnot(a/y) \\ \hline
+\hline
+počet pivotů & 10, 20, 30, 50 \\ \hline
+počet vyhl. objektů & 100 \\ \hline
+max. úroveň clusteru & 2, 3, 4 \\ \hline
+počet měření & 20 \\ \hline
+max. počet objektů v listech & 10, 20, 50, 100, 200, 300, 500 \\ \hline
+vzdálenost & 0.15 \\ \hline
+řád \BPTree{} & 50, 100, 500 \\ \hline
+\end{tabular}
+\end{table}
+
+Původně jsem chtěl změřit více hodnot, např. počet pivotů 100 s max. počtem objektů v listech 10 a úrovní clusteru 5.
+Při těchto parametrech ovšem velikost clusterů byla extrémně velká -- $100 \times 99 \times 98 \times 97 \times 96 = 9034502400$.
+Při práci s tímto množstvím docházelo k přetečení typu \type{Integer} v kolekcích a nesmyslným výsledkům.\footnote{V Java může typ \type{Integer} pojmout maximálně $2^{31}-1$ hodnot}
+
+Při tomto množství je celkový počet kombinací parametrů 252 pro dynamický cluster a 36 pro více-stupňový cluster. Jelikož počet měření je 20 pro každý parametr, bylo celkově vykonáno 5760 měření.
+
+
 \todo{Popsat všechny parametry}
-\todo{Zminit se o limitu Integer.MAX\_VALUE pro pivotsCount=100 a leafObjects=10}
+
 \subsection{Výsledky měření}
-\todo{Grafy a tabulky s~výsledky}
-\missingfigure{Graf s~range 0.15 a pro max level}
+\subsubsection{JVM1}
+\begin{figure}[h]
+\centering
+\includegraphics{jvm1_p10}
+\includegraphics{jvm1_p20}
+\caption{JVM1 počet pivotů 10 a 20\label{fig:jvm1p1020}}
+\end{figure}
+\begin{figure}[h]
+\centering
+\includegraphics{jvm1_p30}
+\includegraphics{jvm1_p50}
+\caption{JVM1 počet pivotů 30 a 50\label{fig:jvm1p3050}}
+\end{figure}
+
+\subsubsection{JVM2}
+\begin{figure}[h]
+\centering
+\includegraphics{jvm2_p10}
+\includegraphics{jvm2_p20}
+\caption{JVM2 počet pivotů 10 a 20\label{fig:jvm2p1020}}
+\end{figure}
+\begin{figure}[h]
+\centering
+\includegraphics{jvm2_p30}
+\includegraphics{jvm2_p50}
+\caption{JVM2 počet pivotů 30 a 50\label{fig:jvm2p3050}}
+\end{figure}
+
+\subsubsection{JVM3}
+\begin{figure}[h]
+\centering
+\includegraphics{jvm3_p10}
+\includegraphics{jvm3_p20}
+\caption{JVM3 počet pivotů 10 a 20\label{fig:jvm3p1020}}
+\end{figure}
+\begin{figure}[h]
+\centering
+\includegraphics{jvm3_p30}
+\includegraphics{jvm3_p50}
+\caption{JVM3 počet pivotů 30 a 50\label{fig:jvm3p3050}}
+\end{figure}
+
+\subsubsection{JVM4}
+\begin{figure}[h]
+\centering
+\includegraphics{jvm4_p10}
+\includegraphics{jvm4_p20}
+\caption{JVM4 počet pivotů 10 a 20\label{fig:jvm4p1020}}
+\end{figure}
+\begin{figure}[h]
+\centering
+\includegraphics{jvm4_p30}
+\includegraphics{jvm4_p50}
+\caption{JVM4 počet pivotů 30 a 50\label{fig:jvm4p3050}}
+\end{figure}
+
 \section{Srovnání výkonu implementací v~{\protect \CC}, C\# a Java}
 \subsection{Srovnání implementací}
 \todo{Porovnat implementaci p. Kmnuníčka s~mojí}

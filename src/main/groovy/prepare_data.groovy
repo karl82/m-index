@@ -25,6 +25,9 @@
  */
 
 
+tagPostFix = args[0]
+logFileName = args[1]
+filesPrefix = args.length > 2 ? args[2] : ""
 
 // pivotsCount=10, queryObjects=100, clusterMaxLevel=2, leafObjectsCount=10, range=0.15, btreeLevel=50
 import cz.rank.vsfs.mindex.QueryStats
@@ -43,7 +46,6 @@ class Tag {
         "${pivotsCount},${queryObjects},${clusterLevel},${btreeLevel},${range},${leafObjectsCount ?: leafObjectsCount}"
     }
 }
-
 timeStats = [:]
 def clusterStats = [:]
 def filterStats = [:]
@@ -51,8 +53,8 @@ def filterStats = [:]
 lineRegexp = /time.(\d+)..*tag.(.*). message/
 clusterStatRegexp = /ClusterStats\{clusters=(\d+)}/
 filterStatRegexp = /rangePivotDistanceFilter=(\d+), objectFilter=(\d+), pivotFilter=(\d+), doublePivotDistanceFilter=(\d+)}/
-def multiLevelTagRegexp = /pivotsCount=(\d+), queryObjects=(\d+), clusterMaxLevel=(\d+), range=(\d+.\d+), btreeLevel=(\d+)}\.${args[0]}/
-def dynamicTagRegexp = /pivotsCount=(\d+), queryObjects=(\d+), clusterMaxLevel=(\d+), leafObjectsCount=(\d+), range=(\d+.\d+), btreeLevel=(\d+)}\.${args[0]}/
+def multiLevelTagRegexp = /pivotsCount=(\d+), queryObjects=(\d+), clusterMaxLevel=(\d+), range=(\d+.\d+), btreeLevel=(\d+)}\.${tagPostFix}/
+def dynamicTagRegexp = /pivotsCount=(\d+), queryObjects=(\d+), clusterMaxLevel=(\d+), leafObjectsCount=(\d+), range=(\d+.\d+), btreeLevel=(\d+)}\.${tagPostFix}/
 
 def lastTag
 
@@ -109,24 +111,94 @@ filterLine = { line ->
     }
 }
 
-new File(args[1]).readLines().each { filterLine(it) }
+new File(logFileName).readLines().each { filterLine(it) }
 
-println "Pivots,Query Objects, Cluster Level, BTree degree, Range, Max Leaf Objects, Average, Standard Deviation"
+// Print measured times in csv format
+new File("${filesPrefix}.csv").withWriter { out ->
+    out.writeLine "Pivots,Query Objects, Cluster Level, BTree degree, Range, Max Leaf Objects, Average, Standard Deviation"
 
-timeStats.each { k, v ->
-    avg = v.sum() / v.size()
+    timeStats.each { k, v ->
+        avg = v.sum() / v.size()
 
-    def sumQuadr = 0
-    v.each { val ->
-        sumQuadr += (val - avg) * (val - avg)
+        def sumQuadr = 0
+        v.each { val ->
+            sumQuadr += (val - avg) * (val - avg)
+        }
+        stdDev = Math.sqrt(sumQuadr / (v.size()))
+        out.writeLine "${k.toCsv()},${avg},${stdDev}"
     }
-    stdDev = Math.sqrt(sumQuadr / (v.size()))
-    println "${k.toCsv()},${avg},${stdDev}"
+}
+
+// Print statistics about queries and clusters
+new File("${filesPrefix}_stats.csv").withWriter { out ->
+    out.writeLine "Pivots,Query Objects, Cluster Level, BTree degree, Range, Max Leaf Objects, Created Clusters, Range Pivot Distance Filter, Object Filter, Pivot Filter, Double-Pivot Distance Filter"
+
+    filterStats.each { k, v ->
+        out.writeLine "${k.toCsv()},${clusterStats[k]},${v.rangePivotDistanceFilter},${v.objectFilter},${v.pivotFilter},${v.doublePivotDistanceFilter}"
+    }
+}
+
+def seriesNameByBtree(def tag) {
+    "p${tag.pivotsCount}cl${tag.clusterLevel}bt${tag.btreeLevel}"
+}
+
+def seriesNameByLeafObjectsCount(def tag) {
+    "p${tag.pivotsCount}cl${tag.clusterLevel}${tag.leafObjectsCount ? 'l' + tag.leafObjectsCount : ''}"
 }
 
 println()
-println "Pivots,Query Objects, Cluster Level, BTree degree, Range, Max Leaf Objects, Created Clusters, Range Pivot Distance Filter, Object Filter, Pivot Filter, Double-Pivot Distance Filter"
 
-filterStats.each { k, v ->
-    println "${k.toCsv()},${clusterStats[k]},${v.rangePivotDistanceFilter},${v.objectFilter},${v.pivotFilter},${v.doublePivotDistanceFilter}"
+allPivotCounts = [] as Set
+
+timeStats.each { k, v -> allPivotCounts.add(k.pivotsCount) }
+
+allPivotCounts.each { p ->
+    def btreeDataHeader = ["#BTree Level"]
+    def btreeValues = [:]
+    def fileName = "${filesPrefix}_p${p}"
+    def datFileName = "${fileName}.dat"
+    new File(datFileName).withWriter { out ->
+        timeStats.each { k, v ->
+            if (k.pivotsCount != p) {
+                return
+            }
+
+            seriesName = seriesNameByLeafObjectsCount(k)
+            if (!btreeDataHeader.contains(seriesName)) {
+                btreeDataHeader << seriesName
+            }
+
+            btreeLevel = k.btreeLevel
+            btreeTimes = btreeValues[btreeLevel]
+            if (!btreeTimes) {
+                btreeTimes = []
+                btreeValues[btreeLevel] = btreeTimes
+            }
+
+            btreeTimes << (v.sum() / v.size())
+        }
+
+        btreeValues.sort()*.key
+
+        out.writeLine btreeDataHeader.join(" ")
+        btreeValues.each { k, v ->
+            out.writeLine "${k} ${v.join(' ')}"
+        }
+    }
+    new File("${fileName}.p").withWriter { out ->
+        out.writeLine "set title \"Range Query pro p = ${p}\""
+        out.writeLine 'set term postscript'
+        out.writeLine "set output '${fileName}.ps'"
+        out.writeLine 'set pointsize 1.5'
+        out.writeLine "set xlabel 'stupen B-Tree'"
+        out.writeLine "set ylabel 'Cas(ms)'"
+        out.writeLine 'set logscale x'
+        out.writeLine 'set key below'
+        out.writeLine 'plot \\'
+
+// Prepare data for GNU plot
+        for (int i = 1; i < btreeDataHeader.size(); i++) {
+            out.writeLine "\"${datFileName}\" using 1:${i + 1} title '${btreeDataHeader[i]}'with linespoints${i + 1 == btreeDataHeader.size() ? '' : ', \\'}"
+        }
+    }
 }
