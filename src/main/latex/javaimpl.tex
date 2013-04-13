@@ -359,7 +359,7 @@ Zde jsem se rozhodl prozkoumat 2 parametry -- \cmd{-XX:+AggressiveOpts} a \cmd{-
 \begin{description}
 \item[AggressiveOpts] Tato volba povoluje agresivní optimalizace.
 Je označena jako experimentální a rozsah optimalizací se může být jiná v každé verzi JVM.
-\item[UseCompressedOops] Tato volba je dostupná pouze pro 64 bitovou verzi JVM.
+\item[UseCompressedOops] Tato volba je dostupná pouze pro 64 bitovou verzi JVM a je vždy zapnuta, pokud není vynuceno její vypnutí při startu JVM.
 V JVM jsou všechny ukazatele na objekty schodné se strojovými ukazateli, tzn. na 64 bitové architektuře jsou 64 bitové, na 32 bitové architektuře jsou 32 bitové.
 Obecně je používání 64 bitových instrukcí pomalejší oproti ekvivalentním 32 bitovým instrukcím -- vyžadují i odpovídající registry atd\ldots{}
 Při zapnuté volbě \emph{UseCompressedOops} JVM komprimuje ukazatele na 32 bitů a umožňuje používat 64 bitové registry pro jiné operace, čímž snižuje penalizaci za 64 bitové instrukce.\footnote{Toto je velmi jednoduché přiblížení. Více viz \cite{hunt2011java}}
@@ -439,6 +439,7 @@ počet měření & 20 \\ \hline
 max. počet objektů v listech & 10, 20, 50, 100, 200, 300, 500 \\ \hline
 vzdálenost & 0.15 \\ \hline
 řád \BPTree{} & 50, 100, 500 \\ \hline
+počet objektů pro porovnání & 68040 \\ \hline
 \end{tabular}
 \end{table}
 
@@ -468,9 +469,64 @@ JVM4 & Vypnuto & Vypnuto \\ \hline
 \end{table}
 
 \subsection{Výsledky měření}
-Grafy z měření se nacházejí jako \prettyref{ape:graphs}. Tabulkový přehled výsledků měření jsou viz \prettyref{ape:tables}.
+Grafy z~měření se nacházejí jako \prettyref{ape:graphs}. Tabulkový přehled výsledků měření jsou viz \prettyref{ape:tables}.
+
+Nejlepšího výsledku, tzn.~v~nejkratším čase, bylo dosaženo s~dynamickým \MIndex em s parametry: počet pivotů 10, maximální úrovní clusteru 4, maximálním počtem objektů v~listech 10 a stupněm \BPTree{} 500.
+Výsledný čas byl \SI{3485}{\ms} pro parametry JVM1.
+Tato konfigurace dosáhla nejkratšího času i s ostatními parametry JVM, pouze pro JVM2 byla až \uv{druhá}.
+Rozdíl časů mezi maximálně optimalizovaným JVM a nejméně (JVM1 vs JVM4) s~těmito parametry byl více jak \SI{200}{\ms}.
+
+Nejdelší zpracování dotazů bylo u více-stupňového \MIndex u pro JVM4 s parametry: počet pivotů 50, maximální úrovní clusteru 4 a stupněm \BPTree{} 10.
+Výsledný čas \SI{5201}{\ms} a rozdíl oproti nejkratší konfiguraci je o více jak \SI{1700}{\ms}.
+
+\begin{figure}[h]
+\centering
+\includegraphics{best_compare}
+\caption{Porovnání nejlepších a nejhorších výsledků Range Query\label{fig:jvm1p50}}
+\end{figure}
+
+Z výsledků měření vyplývá, že parametry JVM zásadním způsobem ovlivňují výslednou efektivitu kódu.
+\prettyref{tab:jvmavgtime} zobrazuje průměrnou dobu jednoho měření.
+\footnote{Hodnoty jsou spíše orientační pro posouzení vlivu parametrů JVM.}
+Volba \cmd{-XX:+UseCompressedOops} je zásadní pro běh JVM v 64 bitovém prostředí.
+Rozhodně není doporučeno tuto volbu vypínat.
+Jak bylo uvedeno v \prettyref{sec:measurementmethod}, volba \cmd{-XX:+AggressiveOpts} je experimentální a její efekt na výkon se může měnit mezi verzemi JVM, ale lze ji doporučit jako možný způsob zrychlení běhu programu.
+
+\begin{table}[h]
+\center
+\begin{tabular}{| l  | r |}
+\hline
+Konfigurace JVM & Průměrný čas měření \\ \hline
+\hline
+JVM1 & \SI{3961}{\ms} \\ \hline
+JVM2 & \SI{4205}{\ms} \\ \hline
+JVM3 & \SI{4206}{\ms} \\ \hline
+JVM4 & \SI{4524}{\ms} \\ \hline
+\end{tabular}
+\caption{Průměrný čas měření\label{tab:jvmavgtime}}
+\end{table}
+
+Obecně konfigurace s menším počtem pivotů (10), s větší úrovní clusteru (4) a s větším stupněm \BPTree{} (500) dosahovaly kratších časů.
+Domnívám se, že největší vliv na výsledný čas má velikost stupně \BPTree.
+Důvodem je pravděpodobně uložení klíčů v rámci listu v paměti, resp. CPU cache.
+Vyhledání rozsahu probíhá tak, že se nalezne list stromu, který obsahuje menší klíč z hledaného rozsahu.
+V tomto listu pak začne porovnávání klíčů, zda jsou v požadovaném rozsahu.
+Toto procházení je lineární, klíč po klíči.
+Pokud se dojde na poslední uložený klíč v listu a ten je menší než větší klíč z hledaného rozsahu, přejde vyhledávání do sousedního listu.
+Vzhledem k tomu, že jsou klíče v rámci listu uloženy v paměti ve stejném paměťovém segmentu, nedochází k častým výpadkům cache CPU.
+V případě, že je stupeň \BPTree{} menší, jsou segmenty s klíči v paměti více fragmentovány a dochází k častějším výpadkům cache.
+Neznamená to ovšem, že čím větší stupeň \BPTree{}, tím lépe. 
+Pokud by byly uzly stromu ukládány na disk, zřejmě by byla omezena velikost stupně stromu velikostí bloku souborového systému, aby nebyl uzel stromu rozdělen do několika bloků.
+Jak jsem uvedl výše, toto je má domněnka, která musí být potvrzena odpovídajícím měřením.
+Jsem ale toho názoru, že toto měření je již mimo rozsah této práce.
+
+Důvod, proč konfigurace s nízkým počet pivotů jsou dominantní, je v tom, že v této množině objektů pro vyhledání, jsou objekty shlukovány kolem konkrétních pivotů.
+Při filtrování v \emph{Range Query}
+\todo{Proc tomu tak je}
+
 
 \section{Srovnání výkonu implementací v~{\protect \CC}, C\# a Java}
+
 \subsection{Srovnání implementací}
 \todo{Porovnat implementaci p. Kmnuníčka s~mojí}
 \subsection{Srovnání výsledků měření}
