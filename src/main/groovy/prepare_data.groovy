@@ -187,8 +187,8 @@ allPivotCounts.each { p ->
     }
     new File("${fileName}.p").withWriter { out ->
         out.writeLine "set title \"Range Query pro p = ${p}\""
-        out.writeLine 'set term postscript'
-        out.writeLine "set output '${fileName}.ps'"
+        out.writeLine 'set term postscript eps'
+        out.writeLine "set output '${fileName}.eps'"
         out.writeLine 'set pointsize 1.5'
         out.writeLine "set xlabel 'stupen B-Tree'"
         out.writeLine "set ylabel 'Cas(ms)'"

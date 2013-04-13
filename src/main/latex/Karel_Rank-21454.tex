@@ -12,9 +12,12 @@
 \usepackage[czech,lined,boxed]{algorithm2e}
 \usepackage[]{nomencl}
 \usepackage{todonotes}
+\usepackage[toc,page]{appendix}
 
 \usepackage{listings,multicol}
 \usepackage{multirow}
+\usepackage{longtable,tabu,booktabs}
+\usepackage[detect-all]{siunitx}
 
 \renewcommand*{\lstlistlistingname}{Seznam příkladů kódu}%
 \renewcommand*{\lstlistingname}{Příklad kódu}%
@@ -34,9 +37,11 @@
 \newrefformat{lem}{Lemma \ref{#1}}
 \newrefformat{thm}{Teorém \ref{#1}}
 \newrefformat{cha}{Kapitola \ref{#1}}
-\newrefformat{sec}{Sekce \ref{#1} na straně \pageref{#1}}
+\newrefformat{sec}{\ref{#1} na straně \pageref{#1}}
+\newrefformat{secsec}{\ref{#1} na straně \pageref{#1}}
 \newrefformat{tab}{Tabulka \ref{#1} na straně \pageref{#1}}
 \newrefformat{fig}{Obrázek \ref{#1} na straně \pageref{#1}}
+\newrefformat{ape}{Příloha \ref{#1} na straně \pageref{#1}}
 
 % B+Tree
 \newcommand{\BPTree}{B$^{\text{+}}$tree}
@@ -78,7 +83,12 @@
 \include{mindex}
 \include{datastructures}
 \include{javaimpl}
-\include{proofs}
+\include{conclusion}
+
+\appendix
+
+\include{appendixA}
+\include{appendixB}
 \backmatter
 \nocite{*}
 \begingroup
