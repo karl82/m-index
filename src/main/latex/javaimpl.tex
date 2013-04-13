@@ -350,15 +350,19 @@ V měřeních jsem tohoto volání využil, aby se opravdu měřil čas nutný k
 \item[počet měření] kolik měření se má provést s danými parametry
 \item[max. počet objektů v listech] tento parametr je pouze při měřeních dynamického clusteru a určuje maximum objektů v listu clusteru
 \item[vzdálenost] maximální vzdálenost hledaných objektů od vzorového
-\item[řád \BPTree{}]
+\item[stupeň \BPTree{}] určuje počet klíčů v uzlech \BPTree{}. Jelikož není implementováno načítání a ukládání uzlů na disk, tento parametr ovlivňuje samotné vyhledávání ve stromu
 \end{description}
 
 Výkonnost \MIndex u ovlivňuje i nastavení parametrů JVM.
 Zde jsem se rozhodl prozkoumat 2 parametry -- \cmd{-XX:+AggressiveOpts} a \cmd{-XX:+UseCompressedOops}, tzn. jejich vliv na výsledné měření a na jejich kombinace.
 
 \begin{description}
-\item[AggressiveOpts] 
-\item[UseCompressedOops]
+\item[AggressiveOpts] Tato volba povoluje agresivní optimalizace.
+Je označena jako experimentální a rozsah optimalizací se může být jiná v každé verzi JVM.
+\item[UseCompressedOops] Tato volba je dostupná pouze pro 64 bitovou verzi JVM.
+V JVM jsou všechny ukazatele na objekty schodné se strojovými ukazateli, tzn. na 64 bitové architektuře jsou 64 bitové, na 32 bitové architektuře jsou 32 bitové.
+Obecně je používání 64 bitových instrukcí pomalejší oproti ekvivalentním 32 bitovým instrukcím -- vyžadují i odpovídající registry atd\ldots{}
+Při zapnuté volbě \emph{UseCompressedOops} JVM komprimuje ukazatele na 32 bitů a umožňuje používat 64 bitové registry pro jiné operace, čímž snižuje penalizaci za 64 bitové instrukce.\footnote{Toto je velmi jednoduché přiblížení. Více viz \cite{hunt2011java}}
 \end{description}
 
 
@@ -379,14 +383,14 @@ Každá třída \type{cz.rank.vsfs.mindex.MultiLevelMIndex} a \type{cz.rank.vsfs
 \item Spuštění časovače.
 \item Jednotlivé dotazy na podobnost voláním \method{MIndex.rangeQuery()}
 \item Vypnutí časovače.
-\item Vypsání informací o měření -- parametry a čas strávený hledáním.
+\item Vypsání informací o měření -- parametry a čas vyhledávání
 \item Spuštění úklidu paměti.
 \end{enumerate}
 
 Výsledné časy byly zprůměrovány.
 Časovač zaznamená čas zapnutí a čas vypnutí pomocí \method{System.currentTimeInMillis()} a rozdíl je čas měření v milisekundách.
 Při tomto způsobu se nezaznamenává pouze čas vlákna, kolik taktů bylo aktivní, ale celková doba, tzn. pokud je systém vytížen a měřené aplikaci se nedostává času procesoru, je měření tímto postiženo.
-Během měření žádné další uživatelské procesy neběželi, aby nedošlo k ovlivnění měření.
+Během měření žádné další uživatelské procesy neběžely, aby nedošlo k ovlivnění měření.
 
 \end{enumerate}
 \subsection{Prostředí}
@@ -440,12 +444,28 @@ vzdálenost & 0.15 \\ \hline
 
 Původně jsem chtěl změřit více hodnot, např. počet pivotů 100 s max. počtem objektů v listech 10 a úrovní clusteru 5.
 Při těchto parametrech ovšem velikost clusterů byla extrémně velká -- $100 \times 99 \times 98 \times 97 \times 96 = 9034502400$.
-Při práci s tímto množstvím docházelo k přetečení typu \type{Integer} v kolekcích a nesmyslným výsledkům.\footnote{V Java může typ \type{Integer} pojmout maximálně $2^{31}-1$ hodnot}
+Při práci s tímto množstvím docházelo k přetečení typu \type{Integer} v kolekcích a nesmyslným výsledkům.
+\footnote{V Java je typ \type{Integer} 4 bajtový celočíselný typ se znaménkem a může mít maximálně hodnotu $2^{31}-1$}
 
-Při tomto množství je celkový počet kombinací parametrů 252 pro dynamický cluster a 36 pro více-stupňový cluster. Jelikož počet měření je 20 pro každý parametr, bylo celkově vykonáno 5760 měření.
+Při tomto množství je celkový počet kombinací parametrů 252 pro dynamický cluster a 36 pro více-stupňový cluster.
+Jelikož počet měření je 20 pro každý parametr, bylo celkově vykonáno 5760 měření.
 
+Každá série měření byla spouštěna s JVM s různými kombinacemi parametrů, které byly uvedeny v \prettyref{sec:measurementmethod}.
+Pro další výklad jsem se rozhodl použít následující označení:
 
-\todo{Popsat všechny parametry}
+\begin{table}[h]
+\center
+\begin{tabular}{|l  || c | c |}
+\hline
+& AggresiveOpts & CompressedOops \\ \hline
+\hline
+JVM1 & Zapnuto & Zapnuto \\ \hline
+JVM2 & Vypnuto & Zapnuto \\ \hline
+JVM3 & Zapnuto & Vypnuto \\ \hline
+JVM4 & Vypnuto & Vypnuto \\ \hline
+\end{tabular}
+\caption{Označení kombinací parametrů JVM}
+\end{table}
 
 \subsection{Výsledky měření}
 Grafy z měření se nacházejí jako \prettyref{ape:graphs}. Tabulkový přehled výsledků měření jsou viz \prettyref{ape:tables}.
