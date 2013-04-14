@@ -340,6 +340,9 @@ Z aplikace je možné vynutit úklid pomocí voláni \method{System.gc()} a \uv{
 V měřeních jsem tohoto volání využil, aby se opravdu měřil čas nutný k vykonání \emph{Range Query}.
 
 \section{Metoda a výsledky měření}
+V měření implementace \MIndex u jsem se více zaměřil na praktičnost a detaily ohledně jazyka Java než na zkoumání ořezávání clusterů samotnám \MIndex em.
+Je to z toho důvodu, že dle mého názoru původní autoři již popsali a prozkoumali principy ořezávání a jiné techniky v rámci \MIndex.
+ 
 \subsection{Metoda měření\label{sec:measurementmethod}}
 
 \MIndex{} má několik parametrů, které ovlivňují jeho chování, resp. výkonnost, v závislosti na velikosti a typu indexovaných dat. Parametry pro měření jsou následující:
@@ -389,8 +392,9 @@ Každá třída \type{cz.rank.vsfs.mindex.MultiLevelMIndex} a \type{cz.rank.vsfs
 
 Výsledné časy byly zprůměrovány.
 Časovač zaznamená čas zapnutí a čas vypnutí pomocí \method{System.currentTimeInMillis()} a rozdíl je čas měření v milisekundách.
-Při tomto způsobu se nezaznamenává pouze čas vlákna, kolik taktů bylo aktivní, ale celková doba, tzn. pokud je systém vytížen a měřené aplikaci se nedostává času procesoru, je měření tímto postiženo.
-Během měření žádné další uživatelské procesy neběžely, aby nedošlo k ovlivnění měření.
+Při tomto způsobu se nezaznamenává pouze čas vlákna, kolik taktů bylo aktivní, ale celková doba mezi zapnutím a vypnutím stopek.
+Pokud je systém vytížen a měřené aplikaci se nedostává času procesoru, je měření tímto postiženo.
+Měření probíhalo v textovém režimu bez grafického prostředí, aby žádné další uživatelské procesy neovlivňovaly měření.
 
 \end{enumerate}
 \subsection{Prostředí}
@@ -405,15 +409,15 @@ Měření probíhalo v tomto prostředí:
 & Architektura & 64bit \\ \cline{2-3}
 & Počet jader & 4 \\ \cline{2-3}
 & Počet vláken & 4 \\ \cline{2-3}
-& Frekvence & 2.5Ghz \\ \cline{2-3}
-&  \multirow{2}{*}{L1 cache} & 4 x 64 KB pro instrukce \\
-& & 4 x 64 KB pro data \\ \cline{2-3}
-& L2 cache & 4 x 512KB \\ \cline{2-3}
+& Frekvence & \SI{2,5}{\GHz} \\ \cline{2-3}
+&  \multirow{2}{*}{L1 cache} & 4 x 64KB pro instrukce \\
+& & 4 x 64KB pro data \\ \cline{2-3}
+& L2 cache & 4 x 512 \\ \cline{2-3}
 & L3 cache & 6MB \\ \cline{2-3}
 \hline
 \multirow{3}{*}{RAM} & Velikost & 12GB \\ \cline{2-3}
 & Typ & DDR3 \\ \cline{2-3}
-& Frekvence & 1333MHz \\ \cline{2-3}
+& Frekvence & \SI{1333}{\MHz} \\ \cline{2-3}
 \hline
 \multirow{2}{*}{Operační systém} &  \multicolumn{2}{|c|}{Debian/GNU Linux 7.0}  \\
 &  \multicolumn{2}{|c|}{\tiny 3.8-trunk-amd64 \#1 SMP Debian 3.8.3-1~experimental.1 x86\_64 GNU/Linux} \\ \cline{2-3}
@@ -437,9 +441,10 @@ počet vyhl. objektů & 100 \\ \hline
 max. úroveň clusteru & 2, 3, 4 \\ \hline
 počet měření & 20 \\ \hline
 max. počet objektů v listech & 10, 20, 50, 100, 200, 300, 500 \\ \hline
-vzdálenost & 0.15 \\ \hline
+vzdálenost & 0,15 \\ \hline
 řád \BPTree{} & 50, 100, 500 \\ \hline
 počet objektů pro porovnání & 68040 \\ \hline
+dimenze objektů & 32 \\ \hline
 \end{tabular}
 \end{table}
 
@@ -452,6 +457,7 @@ Při tomto množství je celkový počet kombinací parametrů 252 pro dynamick�
 Jelikož počet měření je 20 pro každý parametr, bylo celkově vykonáno 5760 měření.
 
 Každá série měření byla spouštěna s JVM s různými kombinacemi parametrů, které byly uvedeny v \prettyref{sec:measurementmethod}.
+Implementace GC byla použita G1.
 Pro další výklad jsem se rozhodl použít následující označení:
 
 \begin{table}[h]
@@ -520,14 +526,50 @@ Pokud by byly uzly stromu ukládány na disk, zřejmě by byla omezena velikost 
 Jak jsem uvedl výše, toto je má domněnka, která musí být potvrzena odpovídajícím měřením.
 Jsem ale toho názoru, že toto měření je již mimo rozsah této práce.
 
-Důvod, proč konfigurace s nízkým počet pivotů jsou dominantní, je v tom, že v této množině objektů pro vyhledání, jsou objekty shlukovány kolem konkrétních pivotů.
-Při filtrování v \emph{Range Query}
-\todo{Proc tomu tak je}
+Důvod, proč konfigurace s nízkým počet pivotů jsou dominantní, je v tom, že v této množině objektů pro vyhledávání, jsou objekty shlukovány kolem konkrétních pivotů.
+Režie při filtrování filtrování většího množství pivotů v \emph{Range Query} je zřejmě signifikantní.
 
+Je nutno podotknout, že při větší množině porovnávaných objektů (v řádu stovek tisíců), by zřejmě \MIndex{} s počtem pivotů 10 byl již nedostačující a neefektivně by rozděloval prostor.
+Z čehož vyplývá, že je nutné pro každou množinu objektů odladit parametry \MIndex u a nelze doporučit jednu konkretní konfiguraci.
 
 \section{Srovnání výkonu implementací v~{\protect \CC}, C\# a Java}
+V této části se nachází stěžejní část práce --samotné porovnání výkonu \MIndex{} mezi \CC, Java a C\#.
 
-\subsection{Srovnání implementací}
-\todo{Porovnat implementaci p. Kmnuníčka s~mojí}
-\subsection{Srovnání výsledků měření}
-\todo{Vybrat stejné parametru měření a porovnat je navzájem}
+Použil jsem data, které páni Kmuníček a Koman naměřili ve svých pracích\cite{Kmunicek2011thesis}\cite{Koman2012thesis}.
+Srovnání výsledných časů je nepřesné, protože jsem neměl k dispozici stejné prostředí pro měření, v kterém byly měřeny implementace v \CC a C\#.
+Rozdíl je především v CPU a jeho frekvenci.
+\CC a C\# byly měřeny na CPU Intel i5--430M s frekvencí \SI{2,26}{\GHz}, Java na CPU AMD Phenom\texttrademark II X4 905e s frekvencí \SI{2,5}{\GHz}.
+Další rozdíl může být v operačním systému a architektuře CPU (32 bit vs 64 bit).
+
+Kolegové měřili dva dotazy o poloměrech 0,15 a 0,25.
+Vzhledem k tomu, že jsem pro své měření používal poloměr 0,15, zvolil jsem pouze toto porovnání.
+Parametry \MIndex u byly: maximální úroveň clusteru 3, počet pivotů 10.
+Ohledně dalších parametrů měření, jsou zde určité nejasnosti:
+\begin{itemize}
+\item Není uvedeno, jaký stupeň byl použit pro \BPTree{}
+\item Zda byl použit dynamický nebo více-úrovňový \MIndex.
+\item Časy uváděné v obou pracích nejsou stejné. Liší se v řádu stovek. Použil jsem časy z \cite{Kmunicek2011thesis}.
+\item Parametry kompilátoru pro kompilaci měřených programů.
+\end{itemize}
+
+Rozhodl jsem se pro porovnání použít konfiguraci s nejlepším časem dosaženým v Java -- dynamický \MIndex{} s maximálním počtem 20 objektů v listu a se stupněm \BPTree{} 500 a JVM1, a také nejhorším časem -- více-úrovňový \MIndex{} se stupněm \BPTree{} 50 a JVM4.
+
+\begin{table}[h]
+\center
+\begin{tabular}{| l  | r |}
+\hline
+Implementace & Čas (\si{\ms}) \\ \hline
+\hline
+\CC & \SI{1200}{\ms} \\ \hline
+C\# & \SI{6500}{\ms} \\ \hline
+Java JVM1 & \SI{3500}{\ms} \\ \hline
+Java JVM4 & \SI{4044}{\ms} \\ \hline
+\end{tabular}
+\caption{Srovnání {\protect\CC}, C\# a Java}
+\end{table}
+
+V tomto porovnání je implementace v Java 3-krát pomalejší s parametry JVM1 oproti \CC.
+Toto je také očekávaný výsledek.
+Důvodem je zřejmě \uv{masivní používání}\cite{Kmunicek2011thesis} polí a použití pointerové aritmetiky v implementaci \MIndex u v \CC.
+Implementace v Java a C\# využívají možnosti knihoven pro daný jazyk, např. kolekcí a zaměřili se na objektově orientovaný návrh.
+Používání kolekcí umožňuje rychlejší vývoj, ale v některých případech je toto penalizováno menší výkonností výsledného kódu.

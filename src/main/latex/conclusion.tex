@@ -1,0 +1,29 @@
+\chapter{Závěr}
+
+Cílem této práce bylo ověřit předpoklad, že implementace \MIndex u v jazyce \CC{} bude rychlejší než implementace v jazycích Java a C\#.
+Toto se potvrdilo, i když měření vyhledávání neprobíhalo ve stejných podmínkách.
+Implementace v Java je pomalejší než v \CC, ale je rychlejší než v C\#.
+
+Z uskutečněných měření vyplynulo, že \MIndex{} není závislý jen parametrech jako je počet pivotů rozdělujících množinu objektů a jeho maximální úroveň dělení, ale také na parametrech použitých pomocných struktur.
+V tomto případě na stupni \BPTree.
+Měření proběhlo více jak 5000, což je už dostatečný reprezentační vzorek pro podložení závěrů této práce.
+
+\MIndex{} nebyl zkoumán na průběh ořezávání clusterů, ale větší důraz byl kladen na praktičnost implementace a na parametry JVM, které ovlivňují výkonnost programu běžícím v JVM.
+Z těchto měření lze doporučit nevypínat volbu \cmd{-XX:+UseCompressedOops} v 64 bitové JVM neboť má zásadní význam na celkový výkon aplikace.
+Volbu \cmd{-XX:+AggressiveOpts} lze také doporučit zapínat, ovšem s tím, že její dopad na výkon se může lišit s verzemi JVM a je tedy nutné si ověřit (změřit) výkon s každou novou verzí JVM.
+V práci byly také popsány úskalí spojené se správným měřením výkonnosti v JVM -- interpretovaný kód, dynamický překlad \bytecode{} za běhu aplikace, možné optimalizace výsledného kódu kompilátorem, zavádění tříd a automatický úklid paměti v Java.
+Byl uveden i návod na minimalizování ovlivnění měření \uv{zahřátím} JVM.
+
+Další možný směr výzkumu \MIndex u lze vidět v:
+\begin{itemize}
+\item Paralelní implementaci \emph{Range Query}, která by se dala uplatnit u velmi velkých množin objektů v metrickém prostoru a využít potenciál dnešních více-jádrových a více-vláknových procesorů. V této implementaci se již paralelismus využívá při výpočtu maximální vzdálenosti v množině prvků mezi sebou a při výpočtu vzdáleností objektů k pivotům \MIndex u.
+\item Zaměření na využití vektorových instrukcí procesorů při řešení prokletí dimensionality, i když zde je zřejmě nemožné využít jazyk Java, protože nemá zabudovanou podporu vektorové instrukce.
+\item Jakým způsobem ovlivňují velikosti struktur výpadky CPU cache a popsat způsob pro určení optimálních velikostí.
+\item Implementovat distribuovanou hašovací mapu místo \BPTree{}, která by měla obdobně jako paralelní výpočty uplatnění při vyhledávání ve velmi velkých množinách objektů.
+\item Implementace vyhledání nejbližších $n$-prvků k danému bodu
+ \end{itemize}
+ 
+Při vypracovávání této práce jsem využil všech znalostí a zkušeností nabytých nejen během studia na VŠFS, ale také zkušeností z předchozího nedokončeného studia na ČVUT a praxe. Tyto znalosti a zkušenosti mi dovolují zapochybovat nad praktickým uplatněním \MIndex u.
+Důvodem je nutnost počítání maximální vzdálenosti mezi objekty pro vyhledávání, který je NP problém.
+Pro velké množiny objektů v řádu miliónů, resp. přidání/odebrání objektu z/do této množiny, je nutné znovu spočítat maximální vzdálenost a většinu času by zabral tento výpočet.
+Nejsem si jist, jakým způsobem řeší tento problém autoři \MIndex u.
