@@ -1,11 +1,11 @@
-\chapter{\MIndex}
+\chapter{\MIndex{}}
 
 V~této části je popsán a vybudován Metrický Index --- jeho principy,
 architektura a prohledávání.
 
 \section{\MIndex{} prvního stupně}
 
-Jak bylo již zmíněno, koncept \MIndex u je inspirován iDistance, která
+Jak bylo již zmíněno, koncept \MIndex{u} je inspirován iDistance, která
 je indexovací metoda pro podobnostní vyhledávání ve vektorovém prostoru.
 Pokud máme vzorovou množinu $S\subseteq\mathbb{\mathcal{D}}$, pak
 iDistance rozdělí $S$ na $n$~clusterů a utvoří referenční bod $p_{i}$pro
@@ -44,15 +44,13 @@ příklad takového rozdělení ve 2D pro 4 pivoty ($n=4)$.
 
 \begin{figure}[t]
 \begin{centering}
-\includegraphics[scale=0.5]{m-index-level-one}\caption{M-Index prvního stupně $(l=1)$\label{fig:M-Index-level-one}}
+\includegraphics[scale=0.5]{m-index-level-one}\caption{\MIndex{} prvního stupně $(l=1)$\label{fig:M-Index-level-one}}
 
 \par\end{centering}
 
 \end{figure}
 
-
-
-\section{Více-stupňový \MIndex}
+\section{Více-stupňový \MIndex{}}
 
 Aby byl \MIndex{} škálovatelný pro~rostoucí množství dat, budeme chtít
 aplikovat další rozdělování clusterů. Pro~daný cluster $n$~pivotů
@@ -80,19 +78,19 @@ clusterů $C_{i,j}$\@. Jinými slovy, cluster $C_{i,j}$je tvořen
 prvky $o\in X$, pro které pivot $p_{i}$ je nejbližší a $p_{j}$
 je druhý nejbližší: $(0)_{o}=i$ a $(1)_{o}=j$\@. Tento postup je
 zopakován $l$-krát\@. \prettyref{fig:M-Index-level-two} ukazuje
-příklad \MIndex u pro $l=2$\@.
+příklad \MIndex{u} pro $l=2$\@.
 
 \begin{figure}[t]
 \centering{}\includegraphics[scale=0.5]{m-index-level-two}\caption{\MIndex{} druhého stupně $(l=2)$\label{fig:M-Index-level-two}}
 \end{figure}
 
 
-Mapovací klíč \MIndex u je definován $key_{l}\,:\,\mathcal{D\rightarrow\mathbb{R}}$\@.
+Mapovací klíč \MIndex{u} je definován $key_{l}\,:\,\mathcal{D\rightarrow\mathbb{R}}$\@.
 Nechť $o\in\mathcal{D}$ patří do clusteru $C_{i_{0},i_{1},\ldots,i_{l-1}}$\@.
 Celočíselná část klíče $key_{l}(o)$ identifikuje cluster: je rovna
 číslu ,,$i_{0}i_{1}\ldots i_{l-1}$''\@. Desetinná část klíče $key_{l}(o)$
 je vzdálenost mezi prvkem $o$ a jeho nejbližším pivotem $d(p_{(0)_{o}},o)$\@.
-Celé mapování \MIndex u vyjádříme následujícím vztahem
+Celé mapování \MIndex{u} vyjádříme následujícím vztahem
 
 \begin{equation}
 key_{l}=d(p_{(0)_{o}},o)+\sum_{i\text{=0}}^{l-1}(i)_{o}\cdot n{}^{(l-1-i)}\label{eq:M-Index-key}
@@ -107,19 +105,19 @@ $C_{i,j}$ jsou mapovány do intervalu $[i\cdot n+j,i\cdot n+j+1]$\@.
 \section{\MIndex{} s~dynamickými stupni\label{sec:Dynamic-Cluster-Tree}}
 
 Více-stupňový \MIndex{} zlepšuje dělící schopnosti oproti jedno-stupňovému
-\MIndex u seskupováním/shromažďováním blízkých prvků do menších clusterů\@.
+\MIndex{u} seskupováním/shromažďováním blízkých prvků do menších clusterů\@.
 Teoreticky, čím více stupňů \MIndex{} má, tím více je vyhledávání efektivnější\@.
 Na druhou stranu, velké množství malých clusterů vede k~větší fragmentaci
 dat při dotazu a větší náročnosti při provádění dotazu\@. V~praxi
 to vede ke ztrátě výhody z~více-stupňovosti\@.
 
-Koncept \MIndex u může být rozšířen o~\emph{dynamický počet stupňů},
+Koncept \MIndex{u} může být rozšířen o~\emph{dynamický počet stupňů},
 který umožní \prettyref{eq:M-Index-key} dynamicky zvětšovat (prohlubovat)
 pouze pro velké clustery, zatím co \prettyref{eq:M-Index-key-max-level}
-požaduje pouze lokální změny klíčů \MIndex u. Toto vylepšení vyžaduje
+požaduje pouze lokální změny klíčů \MIndex{u}. Toto vylepšení vyžaduje
 následující modifikace:
 \begin{itemize}
-\item je vybrán fixní \uv{maximální stupeň \MIndex u} $1\leq l_{max}\leq n$
+\item je vybrán fixní \uv{maximální stupeň \MIndex{u}} $1\leq l_{max}\leq n$
 a doména pro~tento maximální stupeň $n^{l_{max}}$ je alokována
 \item rovnice \prettyref{eq:M-Index-key} pro $key_{l}$ stupně $l,\,1\leq l\leq l_{max}$
 je změněna na:
@@ -159,7 +157,7 @@ dotaz podobnosti.
 V~prvním kroku se spočítají vzdálenosti $d(p_{i},q),\, i=1,\ldots,n$,
 všech $n$~pivotů k~dotazovanému prvku (objektu)\@. Algoritmus
 bere v~potaz všechny clustery na stupních $1,\ldots,l$ (pro fixní
-\MIndex) nebo projde celý strom clusterů (\emph{cluster~tree})\@.
+\MIndex{} nebo projde celý strom clusterů (\emph{cluster~tree})\@.
 Díky opakovanému Voronoi-ovu dělení a podle \emph{Double-Pivot Distance
 Constraint}\cite{similaritysearch2006}, cluster $C_{i}$ může být
 vynechán, pokud
@@ -195,7 +193,7 @@ $key_{l}$ rovnic \prettyref{eq:M-Index-key} nebo \prettyref{eq:M-Index-key-max-l
 Tento mechanismus je \uv{vypůjčen} \linebreak z~iDistance a je přímou aplikací
 \emph{Object-Pivot Distance Constraint}\cite{similaritysearch2006}\@.
 
-\section{Architektura \MIndex u}
+\section{Architektura \MIndex{u}}
 
 V~předchozích sekcích byly uvedeny algoritmy a mechanismy, které
 nutí k~použití různých specifických datových struktur\@. Obecně,
