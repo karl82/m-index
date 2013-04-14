@@ -1,0 +1,20 @@
+digraph structs {
+splines=false;
+overlap=scalexy;
+nodesep=0.6;
+node[shape=record];
+internalNode0[label="{{<parent>1|3|}|{<ptr0>|<ptr1>|<ptr2>|}}" xlabel="root"];
+leafNode0[label="{{<parent>0|1|}|{[0]|[1]|<nextLeaf>}}"];
+leafNode1[label="{{<parent>2|3|}|{[2]|[3]|<nextLeaf>}}"];
+leafNode2[label="{{<parent>4|5|}|{[4]|[5]|<nextLeaf>}}"];
+{rank=same; leafNode0; leafNode1; leafNode2}
+
+"internalNode0":ptr0 -> "leafNode0";
+"leafNode0"-> "leafNode1";
+//"leafNode0":nextLeaf -> "leafNode1":parent:e;
+"internalNode0":ptr1 -> "leafNode1";
+"leafNode1" -> "leafNode2";
+//"leafNode1":nextLeaf -> "leafNode2":parent;
+"internalNode0":ptr2 -> "leafNode2";
+}
+

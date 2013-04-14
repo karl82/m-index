@@ -235,8 +235,6 @@ $i \longleftarrow n[x]$\\
 \caption{B-Tree-Insert-Nonfull($x,k$)}
 \end{algorithm}
 
-
-
 \subsection{Operace DELETE}
 
 Není nutná pro potřeby této práce a její popis je vynechán.
@@ -256,7 +254,9 @@ Je použit v~souborových systémech, např. NTFS \cite{Carrier:2005:FSF:1051914
 Dále v~databázích PostgreSQL \cite{Geschwinde:2001:PDH:580250}, Oracle \cite{Kyte:2003:EOD:1593880} atd\ldots{}
 
 
-\begin{figure}[t]
+\begin{figure}[ht]
+\center
+\includegraphics{bptree}
 \caption{\BPTree}
 \end{figure}
 
@@ -281,3 +281,9 @@ DELETE & $\mathcal{O}(\log_b n)$ \\
 
 \section{Voroného diagram}
 Voroného diagram je rozdělení prostoru na oblasti, které obsahují k~sobě nejbližší body\cite{dorst2010geometric}.
+
+\begin{figure}[ht]
+\center
+\includegraphics[width=0.5\textwidth]{voronoi}
+\caption{Voroného diagram\cite{wiki:voronoidiagram}}
+\end{figure}
