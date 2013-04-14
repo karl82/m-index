@@ -198,7 +198,6 @@ $r\longleftarrow root[T]$
 \caption{B-Tree-Insert($T,k$)}
 \end{algorithm}
 
-
 Procedura B-Tree-Insert-Nonfull se vnořuje podle potřeby do stromu,
 v~každém okamžiku garantující, že uzel do kterého se vnořila, není
 plný díky volání B-Tree-Split-Child\@.
@@ -256,24 +255,26 @@ Tento typ maximalizuje větvení interních uzlů.
 Je použit v~souborových systémech, např. NTFS \cite{Carrier:2005:FSF:1051914}, btrfs, ZFS \cite{Powell:2012:ZBQ:2328941.2328946} atd\ldots{}
 Dále v~databázích PostgreSQL \cite{Geschwinde:2001:PDH:580250}, Oracle \cite{Kyte:2003:EOD:1593880} atd\ldots{}
 
+
 \begin{figure}[t]
 \caption{\BPTree}
 \end{figure}
 
-
-
-\subsubsection{Asymptotická složitost}
+\subsection{Asymptotická složitost}
+Pro \BPTree{} se stupněm $t$ a počtem klíčů $n$ platí:
 \begin{center}
-\begin{tabular}{|c|c|}
+\begin{tabular}{|p{4cm}|c|}
 \hline 
-Operace & Asymptotická složitost\tabularnewline
+Operace & Asymptotická složitost \\
 \hline 
 \hline 
-SEARCH & $\mathcal{O}(\log n)$\tabularnewline
+SEARCH & $\mathcal{O}(\log_b n)$ \\
 \hline 
-INSERT & $\mathcal{O}(\log n)$\tabularnewline
+SEARCH pro rozsah ($k$ je počet prvků nacházejících se v dotazu) & $\mathcal{O}(\log_b n + k)$ \\
 \hline 
-DELETE & $\mathcal{O}(\log n)$\tabularnewline
+INSERT & $\mathcal{O}(\log_b n)$ \\
+\hline 
+DELETE & $\mathcal{O}(\log_b n)$ \\
 \hline 
 \end{tabular}
 \end{center}
