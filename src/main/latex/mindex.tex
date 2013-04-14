@@ -27,11 +27,11 @@ Datové objekty jsou poté uloženy do B$^{+}$-tree podle jejich \emph{iDist
 \emph{iDist} klíčů, které musejí být k~vyřízení dotazu\@.
 
 \begin{figure}[t]
-\begin{centering}
+\center
 \includegraphics[clip,scale=0.4]{idistance}
-\par\end{centering}
 
-\caption{iDistance\label{fig:iDistance}}
+\caption{iDistance}
+\label{fig:iDistance}
 \end{figure}
 
 
@@ -43,11 +43,10 @@ Voroného dělení a rozdělení prostoru na $n$~clusterů. \prettyref{fig:M-Ind
 příklad takového rozdělení ve 2D pro 4 pivoty ($n=4)$.
 
 \begin{figure}[t]
-\begin{centering}
-\includegraphics[scale=0.5]{m-index-level-one}\caption{\MIndex{} prvního stupně $(l=1)$\label{fig:M-Index-level-one}}
-
-\par\end{centering}
-
+\center
+\includegraphics[scale=0.5]{m-index-level-one}
+\caption{\MIndex{} prvního stupně $(l=1)$}
+\label{fig:M-Index-level-one}
 \end{figure}
 
 \section{Více-stupňový \MIndex{}}
@@ -81,7 +80,8 @@ zopakován $l$-krát\@. \prettyref{fig:M-Index-level-two} ukazuje
 příklad \MIndex{u} pro $l=2$\@.
 
 \begin{figure}[t]
-\centering{}\includegraphics[scale=0.5]{m-index-level-two}\caption{\MIndex{} druhého stupně $(l=2)$\label{fig:M-Index-level-two}}
+\centering{}\includegraphics[scale=0.5]{m-index-level-two}\caption{\MIndex{} druhého stupně $(l=2)$}
+\label{fig:M-Index-level-two}
 \end{figure}
 
 
@@ -135,8 +135,10 @@ možný počet prvků/dat uložených v~clusteru a zvýší se stupeň clustery
 při jejím zaplnění.
 
 \begin{figure}[t]
-\centering{}
-\includegraphics[scale=0.5]{m-index-dynamic-cluster}\caption{\label{fig:Dynamic-Cluster-Tree}}
+\centering
+\includegraphics[scale=0.5]{m-index-dynamic-cluster}
+\caption{Dynamický \MIndex{}}
+\label{fig:Dynamic-Cluster-Tree}
 \end{figure}
 
 Rozdělení clusteru o~jeden stupeň znamená lokální přetřídění prvků
