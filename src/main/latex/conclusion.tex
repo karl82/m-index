@@ -4,13 +4,13 @@ Cílem této práce bylo ověřit předpoklad, že implementace \MIndex{u} v~jaz
 Toto se potvrdilo, i když měření vyhledávání neprobíhalo ve stejných podmínkách.
 Implementace v~Java je pomalejší než v~\CC, ale je rychlejší než v~C\#.
 
-Z~uskutečněných měření vyplynulo, že \MIndex{} není závislý jen parametrech jako je počet pivotů rozdělujících množinu objektů a jeho maximální úroveň dělení, ale také na parametrech použitých pomocných struktur.
+Z~uskutečněných měření vyplynulo, že \MIndex{} není závislý jen parametrech, jako je počet pivotů rozdělujících množinu objektů a jeho maximální úroveň dělení, ale také na parametrech použitých pomocných struktur.
 V~tomto případě na stupni \BPTree.
 Měření proběhlo více jak 5000, což je už dostatečný reprezentační vzorek pro podložení závěrů této práce.
 
 \MIndex{} nebyl zkoumán na průběh ořezávání clusterů, ale větší důraz byl kladen na praktičnost implementace a na parametry JVM, které ovlivňují výkonnost programu běžícím v~JVM.
 Z~těchto měření lze doporučit nevypínat volbu \cmd{-XX:+UseCompressedOops} v~64 bitové JVM neboť má zásadní význam na celkový výkon aplikace.
-Volbu \cmd{-XX:+AggressiveOpts} lze také doporučit zapínat, ovšem s~tím, že její dopad na výkon se může lišit s~verzemi JVM a je tedy nutné si ověřit (změřit) výkon s~každou novou verzí JVM.
+Volbu \cmd{-XX:+AggressiveOpts} lze doporučit zapínat, ovšem s~tím, že její dopad na výkon se může lišit s~verzemi JVM a je tedy nutné si ověřit (změřit) výkon s~každou novou verzí JVM.
 V~práci byly také popsány úskalí spojené se správným měřením výkonnosti v~JVM -- interpretovaný kód, dynamický překlad \bytecode{} za běhu aplikace, možné optimalizace výsledného kódu kompilátorem, zavádění tříd a automatický úklid paměti v~Java.
 Byl uveden i návod na minimalizování ovlivnění měření \uv{zahřátím} JVM.
 
@@ -23,7 +23,13 @@ Další možný směr výzkumu \MIndex{u} lze vidět v:
 \item Implementace vyhledání nejbližších $n$-prvků k~danému bodu
  \end{itemize}
  
-Při vypracovávání této práce jsem využil všech znalostí a zkušeností nabytých nejen během studia na VŠFS, ale také zkušeností z~předchozího nedokončeného studia na ČVUT a praxe. Tyto znalosti a zkušenosti mi dovolují zapochybovat nad praktickým uplatněním \MIndex{u}.
-Důvodem je nutnost počítání maximální vzdálenosti mezi objekty pro vyhledávání, který je NP problém.
-Pro velké množiny objektů v~řádu miliónů, resp. přidání/odebrání objektu z/do této množiny, je nutné znovu spočítat maximální vzdálenost a většinu času by zabral tento výpočet.
-Nejsem si jist, jakým způsobem řeší tento problém autoři \MIndex{u}.
+Při vypracovávání této práce jsem využil všech znalostí a zkušeností nabytých nejen během studia na VŠFS, ale také zkušeností z~předchozího nedokončeného studia na ČVUT a z~praxe.
+Tyto znalosti a zkušenosti mi dovolují zapochybovat nad praktickým uplatněním mé implementace \MIndex{u}.
+Důvodem je nutnost spočítání maximální vzdálenosti mezi objekty pro vyhledávání na začátku.
+Použitý naivní způsob výpočtu maximální vzdálenosti mezi prvky v~množině má složitost \BigO{n^2}.
+Pro velké množiny objektů v~řádu miliónů, resp. při přidání objektu do této množiny, je nutné znovu spočítat maximální vzdálenost a většinu času by zabral tento výpočet i pokud by byl paralelní.
+Efektivnější způsob vyhledání maximální vzdálenosti je za použití \emph{konvexního obalu}, který je popsán v \cite{Cormen:2001:IA:580470}.
+\footnote{V anj. \emph{convex hull}.}
+Tento algoritmus má již složitost \BigO{n \log{n}}.
+Dále by bylo nutné přepočítat maximální vzdálenost při vložení nového objektu.
+Pokud by byla nalezená maximální vzdálenost větší než současná, \MIndex{} by znovu vytvořil svoji strukturu.
