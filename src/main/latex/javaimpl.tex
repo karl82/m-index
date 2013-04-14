@@ -110,7 +110,7 @@ Collections Framework }(JFC\nomenclature{JFC}{Java Collections Framework})
 
 \section{Návrh a implementace}
 Implementace \MIndex{u} je napsána pro verzi Java 7.
-V~celém návrhu jsem se snažil co nejvíce používat objektově orientovaný princip.
+V~celém návrhu jsem se snažil co nejvíce používat objektově orientovaný přístup.
 Tzn. že jsem se maximálně snažil omezit používaní nižších konstrukcí jazyka Java jako jsou pole a spíše využívat knihovny JDK a vyšších konstrukcí jako jsou seznamy, fronty.
 Všechny implementované třídy a rozhraní jsou typově parametrizované viz. \prettyref{sub:generika}.
 
@@ -120,6 +120,10 @@ V~popisovaných algoritmech (ať už \BPTree{} nebo \MIndex{} je často uváděn
 Z~hlediska objektového návrhu se mění chování třídy podle její datové složky, což nesvědčí o~dobrém objektovém návrhu.
 K~odstranění tohoto jsem použil \emph{Replace Type Code with Subclasses}\cite{fowler1999refactoring} pro \BPTree.
 V~případě \MIndex{} \emph{Range Query} jsem použil \emph{Visitor pattern}\cite{gamma1995design}.
+
+K ověření funkčnosti jednotlivých částí kódu jsou použity \emph{unit testy} s~pokrytím více jak 70$\%$.
+Nebyly pokryty jednoduché metody.
+Tyto testy zabránily při změnách v~kódu regresím.
 
 \subsection{\BPTree}
 Implementace \BPTree{} se nachází v~třídě \linebreak \type{cz.rank.vsfs.btree.BPlusTreeMultiMap}. Tato mapa je typově parametrizována pro klíč a hodnotu. Protože strom musí být setříděný, musí klíč implementovat rozhraní \type{java.lang.Comparable}. Mapa umožňuje ukládat více objektů pod stejným klíčem\footnote{V \CC{} je obdobný kontejner \type{std::multimap}\cite{ISO:2012:CPP}. V~JDK žádná takováto kolekce není.} a umožňuje vyhledání v~intervalu.
@@ -137,6 +141,7 @@ Výpočet maximální vzdálenosti je NP problém, kdy se musí spočítat vzáj
 Funkcionalita je implementována ve třídě \linebreak \type{cz.rank.vsfs.mindex.MaximumDistance}.
 Vzdálenost může být spočítána pouze nad objekty, které implementují rozhraní \type{Distanceable}.
 
+Asymptotická složitost je \BigO{n^2}.
 
 \subsubsection{Výpočet vzdáleností mezi pivoty a prvky}
 K~výpočtu a seřazení vzdáleností pivotů od objektu slouží třídy implementující rozhraní \type{cz.rank.vsfs.mindex.PivotDistanceTable}. Implementovány jsou tři třídy s~tímto rozhraním.
