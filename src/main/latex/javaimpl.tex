@@ -288,7 +288,7 @@ Existují různé typy IR. Pro každou fázi překladu se dokonce může použí
 Všechny překladače dělají největší optimalizace právě na IR.
 Množina možných optimalizací může být velmi široká a je často omezena množstvím času nutném k~provedení dané optimalizace.
 Mezi jednoduché optimalizace patří zjednodušování logických výrazů, nahrazování proměnných konstantami a \emph{function inlining}.
-Složitější optimalizace jsou většinou spojeny se smyčkami -- loop unrolling, odstraňování kontroly rozsahu smyčky atd\ldots{}
+Složitější optimalizace jsou většinou spojeny se smyčkami --\emph{loop unrolling}, odstraňování kontroly rozsahu smyčky atd\ldots{}
 
 Když jsou tyto optimalizace hotovy, další modul vezme danou IR a převede ji do strojové podoby. Zde nastávají další optimalizace v~podobě přiřazování hodnot do registrů procesoru, výběr vhodných instrukcí atd\ldots{}
 
@@ -476,7 +476,7 @@ JVM4 & Vypnuto & Vypnuto \\ \hline
 \end{table}
 
 \subsection{Výsledky měření}
-Grafy z~měření se nacházejí jako \prettyref{ape:graphs}. Tabulkový přehled výsledků měření jsou viz \prettyref{ape:tables}.
+Grafy z~měření se nacházejí jako \prettyref{ape:graphs}. Tabulkový přehled výsledků měření jsou viz \prettyref{ape:tables}.\footnote{Tabulky s~výsledky měření jsou velmi dlouhé. Nešlo jednoduchým způsobem vysázet dvě tabulky vedle sebe.}
 
 Nejlepšího výsledku, tzn.~v~nejkratším čase, bylo dosaženo s~dynamickým \MIndex{em} s~parametry: počet pivotů 10, maximální úrovní clusteru 4, maximálním počtem objektů v~listech 10 a stupněm \BPTree{} 500.
 Výsledný čas byl \SI{3485}{\ms} pro parametry JVM1.
@@ -574,5 +574,5 @@ Java JVM4 & \SI{4044}{\ms} \\ \hline
 V~tomto porovnání je implementace v~Java 3-krát pomalejší s~parametry JVM1 oproti \CC.
 Toto je také očekávaný výsledek.
 Důvodem je zřejmě \uv{masivní používání}\cite{Kmunicek2011thesis} polí a použití pointerové aritmetiky v~implementaci \MIndex{u} v~\CC.
-Implementace v~Java a C\# využívají možnosti knihoven pro daný jazyk, např. kolekcí a zaměřili se na objektově orientovaný návrh.
+Implementace v~Java a C\# využívají možnosti knihoven pro daný jazyk, např. kolekcí a zaměřily se na objektově orientovaný návrh.
 Používání kolekcí umožňuje rychlejší vývoj, ale v~některých případech je toto penalizováno menší výkonností výsledného kódu.
