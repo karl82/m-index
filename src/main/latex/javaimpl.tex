@@ -99,7 +99,7 @@ Zřejmě největším přínosem je typová bezpečnost při práci s~kolekcemi 
 JVM je heap procesor.
 Kvůli emulaci a virtualizaci procesoru je běh samotného \bytecode{} relativně pomalý.
 JVM proto překládá za běhu \bytecode{} do nativních instrukcí procesoru, nad kterým aktuálně JVM běží.
-V~JVM od Oracle se tento překladač nazývá JIT\nomenclature{JIT}{Just In Time} Compiler\cite{hunt2011java}.
+V~JVM od Oracle se tento překladač nazývá JIT\nomenclature{JIT}{Just In Time Compiler}\cite{hunt2011java}.
 Samozřejmostí je optimalizace při několika průchodech kódem -- např. \emph{function inlining}, \emph{loop unrolling} nebo \emph{dead code elimination}\cite{hunt2011java}.
 Toto jsou velmi důležité vlastnosti, které mohou zásadním způsobem ovlivnit měření výkonnosti programu. Více viz~\prettyref{sec:vykonvjava}.
 
@@ -300,7 +300,7 @@ Existují různé typy IR. Pro každou fázi překladu se dokonce může použí
 Všechny překladače dělají největší optimalizace právě na IR.
 Množina možných optimalizací může být velmi široká a je často omezena množstvím času nutném k~provedení dané optimalizace.
 Mezi jednoduché optimalizace patří zjednodušování logických výrazů, nahrazování proměnných konstantami a \emph{function inlining}.
-Složitější optimalizace jsou většinou spojeny se smyčkami --\emph{loop unrolling}, odstraňování kontroly rozsahu smyčky atd\ldots{}
+Složitější optimalizace jsou většinou spojeny se smyčkami -- \emph{loop unrolling}, odstraňování kontroly rozsahu smyčky atd\ldots{}
 
 Když jsou tyto optimalizace hotovy, další modul vezme danou IR a převede ji do strojové podoby. Zde nastávají další optimalizace v~podobě přiřazování hodnot do registrů procesoru, výběr vhodných instrukcí atd\ldots{}
 
@@ -316,7 +316,12 @@ Tato technika má zásadní dopad na běh programu. Ve výsledku nutí programá
 
 \item[dead code elimination] JIT je schopen při analýze běhu programu identifikovat části kódu, které nemají žádný vedlejší efekt, např. pokud se výsledek volání metody nepoužije v~dalších krocích nebo. Pokud je měřící kód nesprávně navrhnut, může dojít k~tomu, že díky této optimalizaci se některé části nevykonají a výsledky měření jsou nepoužitelné.
 
-\item[loop unrolling] Slouží k~rozbalení smyček jako je \method{for (...) ...}. Klasická optimalizace, která tělo smyčky \uv{zkopíruje} několikrát za sebou. Každá smyčka má inkrementální část a podmínku pro ukončení smyčky. Podmínka pro ukončení má vliv na \emph{branch prediction} v~CPU.\footnote{Moderní CPU mají velmi sofistikované algoritmy na předpovídání větvení programu s~předčítáním instrukcí do \emph{pipeline}. Pokud CPU špatně odhadne následující větev kódu, v~drtivé většině případů musí \uv{zahodit} a znovu načíst instrukce do \emph{pipeline}. Tato operace je velmi drahá a zastaví na několik cyklů vykonávání instrukcí CPU.} Ve výsledku se daná podmínka nevyhodnocuje tak často.
+\item[loop unrolling] Slouží k~rozbalení smyček jako je \method{for (...) ...}.
+Klasická optimalizace, která tělo smyčky \uv{zkopíruje} několikrát za sebou. Každá smyčka má inkrementální část a podmínku pro ukončení smyčky.
+Podmínka pro ukončení má vliv na \emph{předpovídání větvení}\footnote{V anj. \emph{branch prediction}} v~CPU.\footnote{Moderní CPU mají velmi sofistikované algoritmy na předpovídání větvení programu s~předčítáním instrukcí do \emph{pipeline}.
+Pokud CPU špatně odhadne následující větev kódu, v~drtivé většině případů musí \uv{zahodit} a znovu načíst instrukce do \emph{pipeline}.
+Tato operace je velmi drahá a zastaví na několik cyklů vykonávání instrukcí CPU.}
+Ve výsledku se daná podmínka nevyhodnocuje tak často.
 
 \begin{figure}
 \begin{lstlisting}[frame=single,language=Java,caption=Před loop unrolling]
