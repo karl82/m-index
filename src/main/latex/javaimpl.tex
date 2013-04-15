@@ -4,7 +4,7 @@
 \section{Jazyk Java, JVM}
 
 Jazyk Java je silně typovaný jazyk. Tento jazyk není interpretovaný,
-výsledkem překladu je \bytecode{}.\footnote{\bytecode{} jsou instrukce pro JVM. Více viz. \prettyref{sub:JIT}} Až tento \bytecode{} je interpretován v~tzv. Java Virtual Machine (JVM\nomenclature{JVM}{Java Virtual Machine}).
+výsledkem překladu je \bytecode{}.\footnote{\bytecode{} jsou instrukce pro JVM. Více viz~\prettyref{sub:JIT}.} Až tento \bytecode{} je interpretován v~tzv. Java Virtual Machine (JVM\nomenclature{JVM}{Java Virtual Machine}).
 Díky JVM může kód přeložený na jedné platformě (ať už Windows nebo Unix a 32bit nebo 64bit) běžet na jiné. \footnote{\emph{\uv{Write once, run anywhere}}\cite{lindholm2013java}}
 
 Hlavní klíčové vlastnosti, jak jazyka Java, JVM a JDK\nomenclature{JDK}{Java Development Kit}
@@ -102,7 +102,7 @@ za běhu \bytecode{} do nativních instrukcí procesoru, nad kterým
 aktuálně JVM běží. V~JVM od Oracle
  se nazývá JIT\nomenclature{JIT}{Just In Time} Compiler\cite{hunt2011java}. Samozřejmostí je optimalizace při několika průchodech
 kódem -- např. \emph{function inlining}, \emph{loop unrolling} nebo \emph{dead code elimination}\cite{hunt2011java}. Toto jsou velmi důležité vlastnosti, které mohou zásadním způsobem
-ovlivnit měření výkonnosti programu. Více viz.~\prettyref{sec:vykonvjava}.
+ovlivnit měření výkonnosti programu. Více viz~\prettyref{sec:vykonvjava}.
 
 \subsection{Bohatá knihovna tříd v~základním JDK}
 
@@ -118,7 +118,7 @@ Collections Framework }(JFC\nomenclature{JFC}{Java Collections Framework})
 Implementace \MIndex{u} je napsána pro verzi Java 7.
 V~celém návrhu jsem se snažil co nejvíce používat objektově orientovaný přístup.
 Tzn. že jsem se maximálně snažil omezit používaní nižších konstrukcí jazyka Java jako jsou pole a spíše využívat knihovny JDK a vyšších konstrukcí jako jsou seznamy, fronty.
-Všechny implementované třídy a rozhraní jsou typově parametrizované viz. \prettyref{sub:generika}.
+Všechny implementované třídy a rozhraní jsou typově parametrizované (viz \prettyref{sub:generika}).
 
 Při některých výpočtech bylo možné použít \emph{rozděl a panuj}\cite{Cormen:2001:IA:580470}\footnote{V anj. \emph{Divide-and-Conquer}} s~využitím \emph{Executor Framework} z~JDK.
 
