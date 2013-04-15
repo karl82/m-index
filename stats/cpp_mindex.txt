@@ -1,0 +1,53 @@
+g++ -o program -lrt -I../headers program.cpp
+9.68599 - 7.28444 = 2.40156
+-----------------------
+Cluster tree level: 3
+Pocet pivotu: 30
+Polomer dotazu: 0.15
+
+Pocet datovych objektu: 68040
+Pocet clusteru: 2320
+
+g++ -O3 -o program -lrt -I../headers program.cpp
+4.99353 - 4.30428 = 0.689248
+-----------------------
+Cluster tree level: 3
+Pocet pivotu: 30
+Polomer dotazu: 0.15
+
+Pocet datovych objektu: 68040
+Pocet clusteru: 2320
+
+g++ -O3 -o program -lrt -I../headers program.cpp
+5.48326 - 4.78586 = 0.697399
+-----------------------
+Cluster tree level: 3
+Pocet pivotu: 30
+Polomer dotazu: 0.15
+
+Pocet datovych objektu: 68040
+Pocet clusteru: 2320
+
+g++ -o program -lrt -I../headers program.cpp
+10.216 - 7.78323 = 2.43278
+-----------------------
+Cluster tree level: 3
+Pocet pivotu: 30
+Polomer dotazu: 0.15
+
+Pocet datovych objektu: 68040
+Pocet clusteru: 2320
+
+g++ -march=native -O3 -o program -lrt -I../headers program.cpp
+4.42442 - 4.01562 = 0.408796
+-----------------------
+Cluster tree level: 3
+Pocet pivotu: 30
+Polomer dotazu: 0.15
+
+Pocet datovych objektu: 68040
+Pocet clusteru: 2320
+
+g++ -march=native -O3 -o program -lrt -I../headers program.cpp
+5.28882 - 4.87877 = 0.410053
+-----------------------
