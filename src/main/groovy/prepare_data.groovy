@@ -138,10 +138,6 @@ new File("${filesPrefix}_stats.csv").withWriter { out ->
     }
 }
 
-def seriesNameByBtree(def tag) {
-    "p${tag.pivotsCount}cl${tag.clusterLevel}bt${tag.btreeLevel}"
-}
-
 def seriesNameByLeafObjectsCount(def tag) {
     "p${tag.pivotsCount}cl${tag.clusterLevel}${tag.leafObjectsCount ? 'l' + tag.leafObjectsCount : ''}"
 }
@@ -199,6 +195,64 @@ allPivotCounts.each { p ->
 // Prepare data for GNU plot
         for (int i = 1; i < btreeDataHeader.size(); i++) {
             out.writeLine "\"${datFileName}\" using 1:${i + 1} title '${btreeDataHeader[i]}'with linespoints${i + 1 == btreeDataHeader.size() ? '' : ', \\'}"
+        }
+    }
+}
+
+def seriesNameByBtree(def tag) {
+    "p${tag.pivotsCount}cl${tag.clusterLevel}bt${tag.btreeLevel}"
+}
+
+allPivotCounts.each { p ->
+    def maxLeafObjectsDataHeader = ["#Max Leaf Objects"]
+    def maxLeafObjectsValues = [:]
+    def fileName = "${filesPrefix}_p${p}_leaf"
+    def datFileName = "${fileName}.dat"
+    new File(datFileName).withWriter { out ->
+        timeStats.each { k, v ->
+            if (k.pivotsCount != p) {
+                return
+            }
+
+            seriesName = seriesNameByBtree(k)
+            if (!maxLeafObjectsDataHeader.contains(seriesName)) {
+                maxLeafObjectsDataHeader << seriesName
+            }
+
+            leafObjects = k.leafObjectsCount
+            if (!leafObjects) {
+                return
+            }
+            leafObjectsTimes = maxLeafObjectsValues[leafObjects]
+            if (!leafObjectsTimes) {
+                leafObjectsTimes = []
+                maxLeafObjectsValues[leafObjects] = leafObjectsTimes
+            }
+
+            leafObjectsTimes << (v.sum() / v.size())
+        }
+
+        maxLeafObjectsValues.sort()*.key
+
+        out.writeLine maxLeafObjectsDataHeader.join(" ")
+        maxLeafObjectsValues.each { k, v ->
+            out.writeLine "${k} ${v.join(' ')}"
+        }
+    }
+    new File("${fileName}.p").withWriter { out ->
+        out.writeLine "set title \"Range Query pro p = ${p}\""
+        out.writeLine 'set term postscript eps'
+        out.writeLine "set output '${fileName}.eps'"
+        out.writeLine 'set pointsize 1.5'
+        out.writeLine "set xlabel 'Maximalni pocet objetu v listu clusteru'"
+        out.writeLine "set ylabel 'Cas(ms)'"
+        out.writeLine 'set logscale x'
+        out.writeLine 'set key below'
+        out.writeLine 'plot \\'
+
+// Prepare data for GNU plot
+        for (int i = 1; i < maxLeafObjectsDataHeader.size(); i++) {
+            out.writeLine "\"${datFileName}\" using 1:${i + 1} title '${maxLeafObjectsDataHeader[i]}'with linespoints${i + 1 == maxLeafObjectsDataHeader.size() ? '' : ', \\'}"
         }
     }
 }
