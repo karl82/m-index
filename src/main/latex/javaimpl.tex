@@ -353,8 +353,8 @@ Z~aplikace je možné vynutit úklid pomocí voláni \method{System.gc()} a \uv{
 V~měřeních jsem tohoto volání využil, aby se opravdu měřil čas nutný k~vykonání \emph{Range Query}.
 
 \section{Metoda a výsledky měření}
-V~měření implementace \MIndex{u} jsem se více zaměřil na praktičnost a detaily ohledně jazyka Java než na zkoumání ořezávání clusterů samotným \MIndex{em}.
-Je to z~toho důvodu, že dle mého názoru původní autoři již popsali a prozkoumali principy ořezávání a jiné techniky v~rámci \MIndex{}
+V~měření implementace \MIndex{u} jsem se zaměřil více na praktičnost a detaily ohledně jazyka Java než na zkoumání ořezávání clusterů samotným \MIndex{em}.
+Je to z~toho důvodu, že dle mého názoru původní autoři již popsali a prozkoumali principy ořezávání a jiné techniky v~rámci odborného popisu \MIndex{u}.
  
 \subsection{Metoda měření\label{sec:measurementmethod}}
 
@@ -488,17 +488,18 @@ JVM4 & Vypnuto & Vypnuto \\ \hline
 \end{table}
 
 \subsection{Výsledky měření}
-Grafy z~měření se nacházejí jako \prettyref{ape:graphs}. Tabulkový přehled výsledků měření jsou viz \prettyref{ape:tables}.\footnote{Tabulky s~výsledky měření jsou velmi dlouhé. Nešlo jednoduchým způsobem vysázet dvě tabulky vedle sebe.}
-
 Nejlepšího výsledku, tzn.~v~nejkratším čase, bylo dosaženo s~dynamickým \MIndex{em} s~parametry: počet pivotů 10, maximální úrovní clusteru 4, maximálním počtem objektů v~listech 10 a stupněm \BPTree{} 500.
 Výsledný čas byl \SI{3485}{\ms} pro parametry JVM1.
 Tato konfigurace dosáhla nejkratšího času i s~ostatními parametry JVM, pouze pro JVM2 byla až \uv{druhá}.
 Rozdíl časů mezi maximálně optimalizovaným JVM a nejméně (JVM1 vs JVM4) s~těmito parametry byl více jak \SI{200}{\ms}.
 
 Nejdelší zpracování dotazů bylo u~více-stupňového \MIndex{u} pro JVM4 s~parametry: počet pivotů 50, maximální úrovní clusteru 4 a stupněm \BPTree{} 10.
-Výsledný čas \SI{5201}{\ms} a rozdíl oproti nejkratší konfiguraci je o~více jak \SI{1700}{\ms}.
+Výsledný čas je \SI{5201}{\ms} a rozdíl oproti nejkratší konfiguraci je více jak \SI{1700}{\ms}.
 
-\begin{figure}[h]
+\prettyref{fig:jvm1p50} zobrazuje nejrychlejší vyhledání v~závislosti na stupni \BPTree{}.
+Jsou zobrazeny časy pro jednotlivé nejlepší parametry \MIndex{ů} z~jednotlivých nastavení JVM.
+Pro zobrazení zásadního vlivu nastavení JVM je i zobrazen více-stupňový \MIndex{} pro 50 pivotů a ú
+\begin{figure}[t]
 \centering
 \includegraphics{best_compare}
 \caption{Porovnání nejlepších a nejhorších výsledků Range Query}
@@ -537,14 +538,28 @@ Pokud se dojde na poslední uložený klíč v~listu a ten je menší než vět�
 Vzhledem k~tomu, že jsou klíče v~rámci listu uloženy v~paměti ve stejném paměťovém segmentu, nedochází k~častým výpadkům cache CPU.
 V~případě, že je stupeň \BPTree{} menší, jsou segmenty s~klíči v~paměti více fragmentovány a dochází k~častějším výpadkům cache.
 Neznamená to ovšem, že čím větší stupeň \BPTree{}, tím lépe. 
-Pokud by byly uzly stromu ukládány na disk, zřejmě by byla omezena velikost stupně stromu velikostí bloku souborového systému, aby nebyl uzel stromu rozdělen do několika bloků.
+Pokud by byly uzly stromu ukládány na disk, zřejmě by byla omezena velikost stupně stromu velikostí bloku souborového systému, aby nebyl uzel stromu rozdělen na disku do několika bloků.
 Jak jsem uvedl výše, toto je má domněnka, která musí být potvrzena odpovídajícím měřením.
 Jsem ale toho názoru, že toto měření je již mimo rozsah této práce.
 
-Důvod, proč konfigurace s~nízkým počet pivotů jsou dominantní, je v~tom, že v~této množině objektů pro vyhledávání, jsou objekty shlukovány kolem konkrétních pivotů.
-Režie při filtrování filtrování většího množství pivotů v~\emph{Range Query} je zřejmě signifikantní.
+\begin{figure}[t]
+\centering
+\includegraphics{jvm1_cl4_bt500}
+\caption{Vliv max. počtu objektů v~listech clusteru pro JVM1}
+\label{fig:jvm1cl4_bt500}
+\end{figure}
 
-Je nutno podotknout, že při větší množině porovnávaných objektů (v~řádu stovek tisíců), by zřejmě \MIndex{} s~počtem pivotů 10 byl již nedostačující a neefektivně by rozděloval prostor.
+\prettyref{fig:jvm1cl4_bt500} zobrazuje, jakým způsobem ovlivňuje maximální počet objektů v~listech dynamického \MIndex{u}.
+Pro porovnání jsou zobrazeny i časy více-stupňového \MIndex{u}.
+Ty jsou zaneseny jako vodorovné čáry.
+Pro nižší počet pivotů (10 a 20) mají výsledné časy se zvyšujícím se počtem maximálních počtů objektů v~listech téměř lineární stoupající tendenci.
+U~vyššího počtu pivotů je průběh jiný.
+Není lineární a se snižujícím se max. počtem objektů v~listech (10) se dokonce zvyšuje.
+Důvodem, proč konfigurace s~nízkým počet pivotů jsou dominantní, je to, že v~této konkrétní množině objektů pro vyhledávání jsou objekty shlukovány kolem konkrétních pivotů.
+Utvářejí se clustery s~velkým množstvím objektů a v~jejich okolí dochází k~vyhledávání v~\BPTree{}.
+Režie při filtrování většího množství pivotů v~\emph{Range Query} je zřejmě signifikantní a neefektivní.
+
+Je nutno podotknout, že při větší množině porovnávaných objektů (v~řádu stovek tisíců), by byl zřejmě \MIndex{} s~počtem pivotů 10 již nedostačující a neefektivně by rozděloval prostor.
 Z~čehož vyplývá, že je nutné pro každou množinu objektů odladit parametry \MIndex{u} a nelze doporučit jednu konkretní konfiguraci.
 
 \section{Srovnání výkonu implementací v~{\protect \CC}, C\# a Java}
@@ -562,12 +577,12 @@ Parametry \MIndex{u} byly: maximální úroveň clusteru 3, počet pivotů 10.
 Ohledně dalších parametrů měření, jsou zde určité nejasnosti:
 \begin{itemize}
 \item Není uvedeno, jaký stupeň byl použit pro \BPTree{}
-\item Zda byl použit dynamický nebo více-úrovňový \MIndex{}
+\item Zda byl použit dynamický nebo více-stupňový \MIndex{}
 \item Časy uváděné v~obou pracích nejsou stejné. Liší se v~řádu stovek. Použil jsem časy z~\cite{Kmunicek2011thesis}.
 \item Parametry kompilátoru pro kompilaci měřených programů.
 \end{itemize}
 
-Rozhodl jsem se pro porovnání použít konfiguraci s~nejlepším časem dosaženým v~Java -- dynamický \MIndex{} s~maximálním počtem 20 objektů v~listu a se stupněm \BPTree{} 500 a JVM1, a také nejhorším časem -- více-úrovňový \MIndex{} se stupněm \BPTree{} 50 a JVM4.
+Rozhodl jsem se pro porovnání použít konfiguraci s~nejlepším časem dosaženým v~Java -- dynamický \MIndex{} s~maximálním počtem 20 objektů v~listu a se stupněm \BPTree{} 500 a JVM1, a také nejhorším časem -- více-stupňový \MIndex{} se stupněm \BPTree{} 50 a JVM4.
 
 \begin{table}[h]
 \center
