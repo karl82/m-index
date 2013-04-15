@@ -233,6 +233,17 @@ public class BPlusTreeMultiMapTest {
         assertThat(range, contains(10));
     }
 
+    @Test(groups = {"grap"})
+    public void createGraph() {
+        BPlusTreeMultiMap<Integer, Integer> tree = new BPlusTreeMultiMap<>(2);
+
+        for (int d = 0; d < 6; d++) {
+            tree.insert(d, d);
+        }
+
+        System.out.println(tree.toGraph());
+    }
+
     @Test(groups = {"unit"})
     public void testSplitFullLeafNode() {
         LeafNode<Double, Double> fullNode = new LeafNode<>(2);
