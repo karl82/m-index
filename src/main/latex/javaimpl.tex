@@ -38,7 +38,13 @@ Ve většině JVM se používá generační GC, který vychází ze dvou vypozor
 Tyto dvě pozorování jsou známy jako \emph{slabá generační hypotéza}\cite{hunt2011java},\footnote{V anj. \emph{weak generational hypothesis}.} která platí pro většinu programů v~Java.
 K~využití této hypotézy je v~JVM rozdělena \emph{halda}\footnote{V anj. \emph{heap}} na dvě fyzické části, které jsou odkazované jako generace:
 
-\missingfigure{Jak vypada alokace a promovani}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{jvm_memory}
+\caption{Rozdělení, alokování a promování paměti v~JVM}
+\label{fig:jvm_memory}
+\end{figure}
+
 \begin{description}
   \item[Mladá generace] Většina objektů je alokována do této oblasti, která je relativně malá a je často \uv{uklízena}.
 Jelikož je předpoklad, že objekty jsou velmi rychle nepotřebné, jen velmi málo objektů \uv{přežije} úklid v~této oblasti.
