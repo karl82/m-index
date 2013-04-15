@@ -373,9 +373,9 @@ Zde jsem se rozhodl prozkoumat 2 parametry -- \cmd{-XX:+AggressiveOpts} a \cmd{-
 \begin{description}
 \item[AggressiveOpts] Tato volba povoluje agresivní optimalizace.
 Je označena jako experimentální a rozsah optimalizací se může být jiná v~každé verzi JVM.
-\item[UseCompressedOops] Tato volba je dostupná pouze pro 64 bitovou verzi JVM a je vždy zapnuta, pokud není vynuceno její vypnutí při startu JVM.
+\item[UseCompressedOops] Tato volba je dostupná pouze pro 64 bitovou verzi JVM a je ve výchozím stavu zapnuta, pokud není vynuceno její vypnutí při startu JVM.
 V~JVM jsou všechny ukazatele na objekty schodné se strojovými ukazateli, tzn. na 64 bitové architektuře jsou 64 bitové, na 32 bitové architektuře jsou 32 bitové.
-Obecně je používání 64 bitových instrukcí pomalejší oproti ekvivalentním 32 bitovým instrukcím -- vyžadují i odpovídající registry atd\ldots{}
+Obecně je používání 64 bitových instrukcí pomalejší oproti ekvivalentním 32 bitovým instrukcím -- pro práci vyžadují totiž i odpovídající registry atd\ldots{}
 Při zapnuté volbě \emph{UseCompressedOops} JVM komprimuje ukazatele na 32 bitů a umožňuje používat 64 bitové registry pro jiné operace, čímž snižuje penalizaci za 64 bitové instrukce.\footnote{Toto je velmi jednoduché přiblížení. Více viz \cite{hunt2011java}}
 \end{description}
 
