@@ -128,7 +128,7 @@ V~případě \MIndex{} \emph{Range Query} jsem použil \emph{Visitor pattern}\ci
 
 K ověření funkčnosti jednotlivých částí kódu jsou použity \emph{unit testy} s~pokrytím více jak 70$\%$.
 Nebyly pokryty jednoduché metody.
-Tyto testy zabránily při změnách v~kódu regresím.
+Tyto testy zabránily regresím při změnách v~kódu.
 
 \subsection{\BPTree}
 Implementace \BPTree{} se nachází v~třídě \linebreak \type{cz.rank.vsfs.btree.BPlusTreeMultiMap}. Tato mapa je typově parametrizována pro klíč a hodnotu. Protože strom musí být setříděný, musí klíč implementovat rozhraní \type{java.lang.Comparable}. Mapa umožňuje ukládat více objektů pod stejným klíčem\footnote{V \CC{} je obdobný kontejner \type{std::multimap}\cite{ISO:2012:CPP}. V~JDK žádná takováto kolekce není.} a umožňuje vyhledání v~intervalu.
@@ -386,7 +386,7 @@ Průběh testu je popsán níže.
 \item Vygenerování parametrů pro měření.
 \item Načtení vstupních dat ze souboru a vytvoření vektorů.
 \item Výpočet maximální vzdálenosti mezi objekty mimo třídy \type{*MIndex}, aby se pro každé nové měření nemusela znovu počítat vzdálenost.
-Každá třída \type{cz.rank.vsfs.mindex.MultiLevelMIndex} a \type{cz.rank.vsfs.mindex.DynamiclMIndex} má konstruktor, který má parametr pro předpočítanou maximální vzdálenost.
+Každá třída \type{cz.rank.vsfs.mindex.MultiLevelMIndex} a \type{cz.rank.vsfs.mindex.DynamicMIndex} má konstruktor, který má parametr pro předpočítanou maximální vzdálenost.
 \item Zahřátí JVM.
 \item Opakující se test:
 \begin{enumerate}
