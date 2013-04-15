@@ -12,7 +12,7 @@ jsou tyto: automatická alokace a dealokace paměti, objektovost, generika,
 překlad \bytecode{} do nativních instrukcí procesoru, bohatá
 knihovna tříd v~základním JDK\ldots{}
 
-\subsection{Automatická správa paměti -- garbage collection}
+\subsection{Automatická správa paměti -- garbage collection\label{sec:memorymanagement}}
 
 V~jazyce Java neexistují ukazatele, pouze reference. V~jazycích C/\CC{}
 se musí vývojář starat o~správu paměti pomocí funkcí \method{malloc},
@@ -565,41 +565,69 @@ Z~čehož vyplývá, že je nutné pro každou množinu objektů odladit paramet
 \section{Srovnání výkonu implementací v~{\protect \CC}, C\# a Java}
 V~této části se nachází stěžejní část práce -- samotné porovnání výkonu \MIndex{} mezi \CC, Java a C\#.
 
-Použil jsem data, které páni Kmuníček a Koman naměřili ve svých pracích\cite{Kmunicek2011thesis}\cite{Koman2012thesis}.
-Srovnání výsledných časů je nepřesné, protože jsem neměl k~dispozici stejné prostředí pro měření, v~kterém byly měřeny implementace v~\CC a C\#.
-Rozdíl je především v~CPU a jeho frekvenci.
-\CC a C\# byly měřeny na CPU Intel i5--430M s~frekvencí \SI{2,26}{\GHz}, Java na CPU AMD Phenom\texttrademark II X4 905e s~frekvencí \SI{2,5}{\GHz}.
-Další rozdíl může být v~operačním systému a architektuře CPU (32 bit vs 64 bit).
+Nemohl jsem použít data, které páni Kmuníček a Koman naměřili ve svých pracích\cite{Kmunicek2011thesis}\cite{Koman2012thesis}.
+Srovnání výsledných časů by bylo nepřesné, protože jsem neměl k~dispozici stejné prostředí pro měření, v~kterém byly měřeny implementace v~\CC a C\#.
 
-Kolegové měřili dva dotazy o~poloměrech 0,15 a 0,25.
+Po poradě s Dr.~Lokočem jsem provedl portaci původního kódu \CC psaného pro Windows na Linux.
+Musel jsem změnit několik platformně závislých volání pro zjištění aktuálního času.
+Žádné jiné změny nebyly provedeny ohledně algoritmu.
+C\# implementace nebyla portována a nebyla tedy ani měřena.
+
+Kolegové měřili dva dotazy o~poloměrech 0,15 a 0,25 a vyhledávaly 100 objektů.
 Vzhledem k~tomu, že jsem pro své měření používal poloměr 0,15, zvolil jsem pouze toto porovnání.
-Parametry \MIndex{u} byly: maximální úroveň clusteru 3, počet pivotů 10.
-Ohledně dalších parametrů měření, jsou zde určité nejasnosti:
-\begin{itemize}
-\item Není uvedeno, jaký stupeň byl použit pro \BPTree{}
-\item Zda byl použit dynamický nebo více-stupňový \MIndex{}
-\item Časy uváděné v~obou pracích nejsou stejné. Liší se v~řádu stovek. Použil jsem časy z~\cite{Kmunicek2011thesis}.
-\item Parametry kompilátoru pro kompilaci měřených programů.
-\end{itemize}
+Parametry \MIndex{u} byly: více-stupňový cluster 3, počet pivotů 10 a stupeň \BPTree{} 50.
 
-Rozhodl jsem se pro porovnání použít konfiguraci s~nejlepším časem dosaženým v~Java -- dynamický \MIndex{} s~maximálním počtem 20 objektů v~listu a se stupněm \BPTree{} 500 a JVM1, a také nejhorším časem -- více-stupňový \MIndex{} se stupněm \BPTree{} 50 a JVM4.
+Rozhodl jsem se pro porovnání použít konfiguraci s~nejlepším časem dosaženým v~Java -- dynamický \MIndex{} s~maximálním počtem 10 objektů v~listu a JVM1, a také s~nejlepším výsledkem při použit stupně \BPTree{} 500.
+
+Měření probíhala s~různými parametry kompilátoru GNU \CC.
+Verze kompilátoru byla (Debian 4.7.2-5) 4.7.2.
 
 \begin{table}[h]
 \center
-\begin{tabular}{| l  | r |}
+\begin{tabular}{| l  | r | r |}
 \hline
-Implementace & Čas (\si{\ms}) \\ \hline
+Implementace & Stupeň \BPTree & Čas (\si{\ms}) \\ \hline
 \hline
-\CC & \SI{1200}{\ms} \\ \hline
-C\# & \SI{6500}{\ms} \\ \hline
-Java JVM1 & \SI{3500}{\ms} \\ \hline
-Java JVM4 & \SI{4044}{\ms} \\ \hline
+\CC & 50 & \SI{2432}{\ms} \\ \hline
+\CC{} (\cmd{-O3}) & 50 & \SI{697}{\ms} \\ \hline
+\CC{} (\cmd{-O3 -march=native}) & 50 & \SI{408}{\ms} \\ \hline
+Java JVM1 & 50 &  \SI{3979}{\ms} \\ \hline
+Java JVM1 & 500 &  \SI{3500}{\ms} \\ \hline
 \end{tabular}
-\caption{Srovnání {\protect\CC}, C\# a Java}
+\caption{Srovnání {\protect\CC} a Java}
 \end{table}
 
-V~tomto porovnání je implementace v~Java 3-krát pomalejší s~parametry JVM1 oproti \CC.
+V~tomto porovnání implementace v~\CC{} provedla \emph{Range Query} v~1,6-krát menším čase než Java s~parametry JVM1.
 Toto je také očekávaný výsledek.
-Důvodem je zřejmě \uv{masivní používání}\cite{Kmunicek2011thesis} polí a použití pointerové aritmetiky v~implementaci \MIndex{u} v~\CC.
+Důvodem je zřejmě \uv{masivní používání}\cite{Kmunicek2011thesis} polí a použití pointerové aritmetiky v~implementaci \MIndex{u} v~\CC{}.
 Implementace v~Java a C\# využívají možnosti knihoven pro daný jazyk, např. kolekcí a zaměřily se na objektově orientovaný návrh.
 Používání kolekcí umožňuje rychlejší vývoj, ale v~některých případech je toto penalizováno menší výkonností výsledného kódu.
+
+Zajímavý je i výsledek dosažený povolením větších optimalizací -- parametry \cmd{-O3} a \cmd{-march=native} pro kompilátor.
+Volba \cmd{-O3} povoluje např. \emph{loop unrolling}.
+Volbou \cmd{-march=native} kompilátor používá všechny dostupné instrukce na dané architektuře.
+Při kombinaci obou dvou voleb byl výsledný čas 6-krát menší než s~výchozími volbami kompilátoru (\cmd{-O2 -g}).
+Je to pravděpodobně využitím vektorových instrukcí při zpracovávání polí a v~nich uložených dat.
+Nezkoumal jsem do detailů, jakým způsobem se navzájem liší kód generovaný kompilátorem \CC.
+
+V~\prettyref{sec:memorymanagement} uvádím, že práce v~jazyce Java je bezpečnější, co se týče alokace a dealokace paměti.
+Když jsem portoval implementaci \CC{}, chtěl jsem zjistit pomocí statické analýzy kódu, zda netrpí úniky paměti.
+Použil jsem k~tomu volně dostupný program \cmd{cppcheck}\cite{cppcheck}.
+\cmd{cppcheck} nalezl celkem 8 chyb při práci s~dealokováním paměti. Zde je výstup:
+{\tiny
+\begin{verbatim}
+Checking program.cpp...
+Checking program.cpp: _WIN32...
+[../headers/tridy.h:72]: (error) Mismatching allocation and deallocation: BPTuzel::klice
+[../headers/tridy.h:66]: (error) Mismatching allocation and deallocation: BPTuzel::data
+[../headers/tridy.h:111]: (error) Mismatching allocation and deallocation: ClusterTreeNode::index
+[program.cpp:614]: (error) Mismatching allocation and deallocation: poleVzdalenosti
+[program.cpp:734]: (error) Mismatching allocation and deallocation: polePrvniVyberCisel
+[program.cpp:678]: (error) Memory leak: polePrvniVyberCisel
+[program.cpp:1464]: (error) Mismatching allocation and deallocation: polePivotu
+[program.cpp:1469]: (error) Mismatching allocation and deallocation: poleVzdalenostiHledanehoBodu
+Checking program.cpp: __unix__...
+\end{verbatim}
+}
+
+Při bližší analýze kódu, byla většina chyb způsobena tím, že se pole, alokované pomocí operátoru \method{new[]}, uvolňovaly pomocí operátoru \method{delete} místo \method{delete[]}\cite{Stroustrup:1997:CPL:523265}.

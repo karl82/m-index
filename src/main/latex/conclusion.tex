@@ -1,8 +1,12 @@
 \chapter{Závěr}
 
 Cílem této práce bylo ověřit předpoklad, že implementace \MIndex{u} v~jazyce \CC{} bude rychlejší než implementace v~jazycích Java a C\#.
-Toto se potvrdilo, i když měření vyhledávání neprobíhalo ve stejných podmínkách.
+Toto se potvrdilo, i když nebylo k~dispozici původní prostředí, v~kterém měřili kolegové Kmuníček a Koman a bylo nutné portovat původní zdrojové kódy \CC{} z~Windows na Linux.
 Implementace v~Java je pomalejší než v~\CC, ale je rychlejší než v~C\#.
+
+Jazyk \CC{} umožňuje mít správu paměť pod větší kontrolou než Java, ale vyžaduje také větší disciplínu od programátora.
+Při nedodržení všech pravidel pro práci s~uvolňováním, dochází k~únikům paměti.
+Příkladem byla statická analýza provedená na implementaci v~\CC{}.
 
 Z~uskutečněných měření vyplynulo, že \MIndex{} není závislý jen parametrech, jako je počet pivotů rozdělujících množinu objektů a jeho maximální úroveň dělení, ale také na parametrech použitých pomocných struktur.
 V~tomto případě na stupni \BPTree.
@@ -31,5 +35,5 @@ Pro velké množiny objektů v~řádu miliónů, resp. při přidání objektu d
 Efektivnější způsob vyhledání maximální vzdálenosti je za použití \emph{konvexního obalu}, který je popsán v \cite{Cormen:2001:IA:580470}.
 \footnote{V anj. \emph{convex hull}.}
 Tento algoritmus má již složitost \BigO{n \log{n}}.
-Dále by bylo nutné přepočítat maximální vzdálenost při vložení nového objektu.
+Dále by bylo nutné upravit \MIndex{} tak, aby se přepočítala maximální vzdálenost při vložení nového objektu.
 Pokud by byla nalezená maximální vzdálenost větší než současná, \MIndex{} by znovu vytvořil svoji strukturu.
