@@ -96,13 +96,12 @@ Zřejmě největším přínosem je typová bezpečnost při práci s~kolekcemi 
 
 \subsection{Překlad \bytecode{} do nativních instrukcí procesoru}
 
-JVM je heap procesor. Kvůli emulaci a virtualizaci procesoru je
-běh samotného \bytecode{} relativně pomalý. JVM proto překládá
-za běhu \bytecode{} do nativních instrukcí procesoru, nad kterým
-aktuálně JVM běží. V~JVM od Oracle
- se nazývá JIT\nomenclature{JIT}{Just In Time} Compiler\cite{hunt2011java}. Samozřejmostí je optimalizace při několika průchodech
-kódem -- např. \emph{function inlining}, \emph{loop unrolling} nebo \emph{dead code elimination}\cite{hunt2011java}. Toto jsou velmi důležité vlastnosti, které mohou zásadním způsobem
-ovlivnit měření výkonnosti programu. Více viz~\prettyref{sec:vykonvjava}.
+JVM je heap procesor.
+Kvůli emulaci a virtualizaci procesoru je běh samotného \bytecode{} relativně pomalý.
+JVM proto překládá za běhu \bytecode{} do nativních instrukcí procesoru, nad kterým aktuálně JVM běží.
+V~JVM od Oracle se tento překladač nazývá JIT\nomenclature{JIT}{Just In Time} Compiler\cite{hunt2011java}.
+Samozřejmostí je optimalizace při několika průchodech kódem -- např. \emph{function inlining}, \emph{loop unrolling} nebo \emph{dead code elimination}\cite{hunt2011java}.
+Toto jsou velmi důležité vlastnosti, které mohou zásadním způsobem ovlivnit měření výkonnosti programu. Více viz~\prettyref{sec:vykonvjava}.
 
 \subsection{Bohatá knihovna tříd v~základním JDK}
 
