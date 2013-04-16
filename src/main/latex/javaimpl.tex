@@ -126,6 +126,12 @@ Z~hlediska objektového návrhu se mění chování třídy podle její datové 
 K~odstranění tohoto jsem použil \emph{Replace Type Code with Subclasses}\cite{fowler1999refactoring} pro \BPTree.
 V~případě \MIndex{} \emph{Range Query} jsem použil \emph{Visitor pattern}\cite{gamma1995design}.
 
+\emph{Visitor pattern} slouží k~oddělení algoritmu od objektové struktury nad kterou se pracuje.
+Clustery \MIndex{u} slouží pouze k~udržení informace o~stavbě indexu.
+Pokud by se zde použila dědičnost pro odstranění identifikace typů, muselo by se předávat několik objektů do clusteru při jeho konstrukci a také přenést část kódu \emph{Range Query} do implementací \type{Cluster}.
+Ve výsledku by tento postup znepřehlednil a zvýšil složitost kódu clusterů.
+Použití \emph{Visitor pattern} je elegantní řešení s~jasně rozdělenou zodpovědností mezi třídami.
+
 K ověření funkčnosti jednotlivých částí kódu jsou použity \emph{unit testy} s~pokrytím více jak 70$\%$.
 Nebyly pokryty jednoduché metody.
 Tyto testy zabránily regresím při změnách v~kódu.
@@ -204,6 +210,11 @@ link(inheritance)(pathStepY(D.n,B.s,10));
 \centering
 \begin{mpost}[use,mpsettings={input metauml;}]
 
+Interface.ClusterVisitor("ClusterVisitor")
+	("+enterInternalCluster(internalCluster:InternalCluster<D>)",
+	 "+enterLeafCluster(leafCluste:rLeafCluster<D>)");
+ClassTemplate.TClusterVisitor("Distanceable<D>")(ClusterVisitor);
+
 Interface.Cluster("Cluster")
 	("+getIndex():Index",
 	 "+accept(visitor:ClusterVisitor<D>)",
@@ -213,30 +224,40 @@ Interface.Cluster("Cluster")
 
 ClassTemplate.TCluster("Distanceable<D>")(Cluster);
 
+Note.InternalClusterCode("visitor.enterInternalCluster(this)");
 Class.InternalCluster("InternalCluster")
-	()();
+	()("+accept(visitor:ClusterVisitor<D>)",);
+InternalClusterCode.nw = InternalCluster.se - (5, 10);
 ClassTemplate.TInternalCluster("Distanceable<D>")(InternalCluster);
+
+Note.RootClusterCode("foreach subcluster do:"," subcluster.accept(visitor)");
 Class.RootCluster("RootCluster")
-	()();
+	()("+accept(visitor:ClusterVisitor<D>)",);
+RootClusterCode.nw = RootCluster.sw - (0, 10);
 ClassTemplate.TRootCluster("Distanceable<D>")(RootCluster);
 
+Note.LeafClusterCode("visitor.enterLeafCluster(this)");
 Class.LeafCluster("LeafCluster")
-	()();
+	()("+accept(visitor:ClusterVisitor<D>)",);
+LeafClusterCode.nw = LeafCluster.sw - (0, 10);
 ClassTemplate.TLeafCluster("Distanceable<D>")(LeafCluster);
 
 Group.g(RootCluster,LeafCluster);
 
-topToBottom.midx(30)(Cluster,InternalCluster,g);
-leftToRight(80)(RootCluster,LeafCluster);
+topToBottom.midx(40)(ClusterVisitor, Cluster,InternalCluster,g);
+leftToRight(50)(RootCluster,LeafCluster);
 
-drawObjects(Cluster, InternalCluster, g, TCluster, TInternalCluster, TRootCluster, TLeafCluster);
+drawObjects(ClusterVisitor, Cluster, InternalCluster, g, TClusterVisitor, TCluster, TInternalCluster, TRootCluster, TLeafCluster, InternalClusterCode, RootClusterCode, LeafClusterCode);
 clink(realization)(InternalCluster,Cluster);
 link(inheritance)(pathStepY(RootCluster.n,InternalCluster.s,10));
 link(inheritance)(pathStepY(LeafCluster.n,InternalCluster.s,10));
 
+clink(dashedLink)(InternalCluster.methodStack.pict[0], InternalClusterCode);
+clink(dashedLink)(RootCluster.methodStack.pict[0], RootClusterCode);
+clink(dashedLink)(LeafCluster.methodStack.pict[0], LeafClusterCode);
 \end{mpost}
 
-\caption{\type{Cluster} UML diagram}
+\caption{\type{Cluster} UML diagram s \emph{Visitor pattern}}
 \end{figure}
 
 Cluster tree je tvořen třídami, které implementuji rozhraní \linebreak \type{cz.rank.vsfs.mindex.Cluster}. Jsou celkem 3 -- 
@@ -249,7 +270,7 @@ Cluster tree je tvořen třídami, které implementuji rozhraní \linebreak \typ
 \end{description}
 
 Pro změření rozdílu použití více-stupňového \MIndex{u} a \MIndex{u} s~dynamickými stupni jsou implementovány dvě třídy -- \linebreak \type{cz.rank.vsfs.mindex.MultiLevelClusterTreeBuilder} a \linebreak \type{cz.rank.vsfs.mindex.DynamicClusterTreeBuilder}. Tyto třídy jsou použity v~\type{cz.rank.vsfs.mindex.MultiLevelMIndex}, \linebreak resp. \type{cz.rank.vsfs.mindex.DynamicMIndex} ke konstrukci specifického \MIndex{u}.
-Obě třídy mají téměř totožný konstruktor, pouze u~\type{DynamicClusterTreeBuilder} je navíc parametr pro maximální zaplnění koncového clusteru. Více viz \prettyref{sec:Dynamic-Cluster-Tree}.
+Obě třídy mají téměř totožný konstruktor, pouze \linebreak u~\type{DynamicClusterTreeBuilder} je navíc parametr pro maximální zaplnění koncového clusteru. Více viz \prettyref{sec:Dynamic-Cluster-Tree}.
 
 \subsubsection{Range Query}
 Díky nezávislosti dotazu na typu clusteru (více-stupňový vs. s~dynamickými stupni) je \emph{Range Query} je implementována v~třídě \type{MIndex}, která je společný rodič pro \type{MultiLevelMIndex} a \type{DynamicMIndex}. V~metodě rangeQuery není celá logika vyhledávání. V~této metodě se inicializuje ClusterRangeQuery, která implementuje samotné vyhledávání. Toto řešení jsem zvolil kvůli oddělení zodpovědnosti vyhledávání a uchovávání informací o~\MIndex{u}.\footnote{Jedná se o~tzv. \emph{Single Responsibility Principle\nomenclature{SRO}{Single Responsibility Principle}}\cite{martin2003agile}}
