@@ -1,19 +1,14 @@
 \chapter{\MIndex{}}
 
-V~této části je popsán a vybudován Metrický Index --- jeho principy,
-architektura a prohledávání.
+V~této části je popsán a vybudován Metrický Index --- jeho principy, architektura a prohledávání.
 Text a obrázky v~této kapitole jsou více méně opisem a překladem z~původního popisu \MIndex{u}\cite{Novak:2009:MIE:1637863.1638184}.
 
 \section{\MIndex{} prvního stupně}
 
-Jak bylo již zmíněno, koncept \MIndex{u} je inspirován iDistance, která
-je indexovací metoda pro podobnostní vyhledávání ve vektorovém prostoru.
-Pokud máme vzorovou množinu $S\subseteq\mathbb{\mathcal{D}}$, pak
-iDistance rozdělí $S$ na $n$~clusterů a utvoří referenční bod $p_{i}$pro
-každý cluster $C_{i},\: i\in\left\{ 0,\ldots,n-1\right\} $. Každému
-prvku $o\in X$ je pak přiřazen číselný klíč odpovídající vzdálenosti
-od referenčního prvku clusteru. Pokud máme dostatečně velkou konstantu
-$c$ pro oddělení jednotlivých clusterů, pak iDistance klíč pro prvek
+Jak bylo již zmíněno, koncept \MIndex{u} je inspirován iDistance, která je indexovací metodou pro podobnostní vyhledávání ve vektorovém prostoru.
+Pokud máme vzorovou množinu $S\subseteq\mathbb{\mathcal{D}}$, pak iDistance rozdělí $S$ na $n$~clusterů a utvoří referenční bod $p_{i}$ pro každý cluster $C_{i},\: i\in\left\{ 0,\ldots,n-1\right\} $.
+Každému prvku $o\in X$ je pak přiřazen číselný klíč odpovídající vzdálenosti od referenčního prvku clusteru.
+Pokud máme dostatečně velkou konstantu $c$ pro oddělení jednotlivých clusterů, pak iDistance klíč pro prvek
 $o\in C_{i}$ je
 \[
 iDist(o)=d(p_{i},o)+i\cdot c
@@ -25,7 +20,7 @@ do intervalu $[i\cdot c,(i+1)\cdot c]$ --- viz \ref{fig:iDistance}\@.
 Datové objekty jsou poté uloženy do B$^{+}$-tree podle jejich \emph{iDist
 }klíčů. Při prohledávání je iDistance prostor procházen podle principu
 -- pro \emph{range query} $R(q,r)$ můžeme určit několik intervalů
-\emph{iDist} klíčů, které musejí být k~vyřízení dotazu\@.
+\emph{iDist} klíčů, které musejí být k~vyřízení dotazu. %%% co jsem chtel rict??
 
 \begin{figure}[t]
 \center
@@ -35,13 +30,8 @@ Datové objekty jsou poté uloženy do B$^{+}$-tree podle jejich \emph{iDist
 \label{fig:iDistance}
 \end{figure}
 
-
-\MIndex{} zobecňuje iDistance tak, že může být použita na~obecné metrické
-prostory -- ne jenom na vektorový prostor\@. Toho je dosaženo tím,
-že se vybere množina $n$~pivotů $p_{0},p_{1},\ldots,p_{n-1}$ a
-apriori ze vzorový množiny $S\subseteq\mathcal{D}$ a poté aplikováním
-Voroného dělení a rozdělení prostoru na $n$~clusterů. \prettyref{fig:M-Index-level-one} ukazuje
-příklad takového rozdělení ve 2D pro 4 pivoty ($n=4)$.
+\MIndex{} zobecňuje iDistance tak, že může být použit na~obecné metrické prostory -- ne jenom na vektorový prostor.
+Toho je dosaženo tím, že se vybere množina $n$~pivotů $p_{0},p_{1},\ldots,p_{n-1}$ a apriori ze vzorové množiny $S\subseteq\mathcal{D}$ a poté aplikováním Voroného dělení a rozdělení prostoru na $n$~clusterů. \prettyref{fig:M-Index-level-one} ukazuje příklad takového rozdělení ve 2D pro 4 pivoty ($n=4)$.
 
 \begin{figure}[t]
 \center
@@ -50,7 +40,7 @@ příklad takového rozdělení ve 2D pro 4 pivoty ($n=4)$.
 \label{fig:M-Index-level-one}
 \end{figure}
 
-\section{Více-stupňový \MIndex{}}
+\section{Vícestupňový \MIndex{}}
 
 Aby byl \MIndex{} škálovatelný pro~rostoucí množství dat, budeme chtít
 aplikovat další rozdělování clusterů. Pro~daný cluster $n$~pivotů
@@ -59,6 +49,7 @@ $\{p_{0},p_{1},\ldots,p_{n-1}\}$ a prvek $o\in\mathcal{D}$, platí
 \[
 (\cdot)_{o}\,:\,\{0,1,\ldots,n-1\}\rightarrow\{0,1,\ldots,n-1\}
 \]
+
 je permutace indexů tak, že
 
 \[
@@ -69,16 +60,17 @@ podle vzdáleností mezi pivoty a prvkem $o$\@.
 
 \MIndex{} s~$l$ stupni, kde $l$ je celé číslo $1\leq l\leq n$, rozděluje
 prostor $\mathcal{D}$ do $n\cdot(n-1)\cdot\cdots\cdot(n-l+1)$ clusterů
-za použití rekursivního Voroného dělení: Na prvním stupni, každý
-prvek $o\in\mathcal{D}$ je přiřazen k~jeho nejbližšímu pivotu $p_{(0)_{o}}$--
-takto se utvoří clustery $C_{i}$\@. Na druhém stupni se každý cluster
-$C_{i}$ rozdělí na $n-1$ clusterů tou samou procedurou použitím
+za použití rekursivního Voroného dělení: Na prvním stupni je každý
+prvek $o\in\mathcal{D}$ přiřazen k~jeho nejbližšímu pivotu $p_{(0)_{o}}$ --
+takto se utvoří clustery $C_{i}$\@.
+Na druhém stupni se každý cluster
+$C_{i}$ rozdělí na $n-1$ clusterů tím samým způsobem s~použitím
 $n-1$ pivotů $\{p_{1},\ldots,p_{i-1},p_{i+1},\ldots,p_{n}\}$ a vytvořením
-clusterů $C_{i,j}$\@. Jinými slovy, cluster $C_{i,j}$je tvořen
+clusterů $C_{i,j}$\@. Jinými slovy, cluster $C_{i,j}$ je tvořen
 prvky $o\in X$, pro které pivot $p_{i}$ je nejbližší a $p_{j}$
-je druhý nejbližší: $(0)_{o}=i$ a $(1)_{o}=j$\@. Tento postup je
-zopakován $l$-krát\@. \prettyref{fig:M-Index-level-two} ukazuje
-příklad \MIndex{u} pro $l=2$\@.
+je druhý nejbližší: $(0)_{o}=i$ a $(1)_{o}=j$\@.
+Tento postup je zopakován $l$-krát\@.
+%\prettyref{fig:M-Index-level-two} ukazuje příklad \MIndex{u} pro $l=2$\@.
 
 \begin{figure}[t]
 \centering{}\includegraphics[scale=0.5]{m-index-level-two}\caption{\MIndex{} druhého stupně $(l=2)$}
@@ -98,22 +90,20 @@ key_{l}=d(p_{(0)_{o}},o)+\sum_{i\text{=0}}^{l-1}(i)_{o}\cdot n{}^{(l-1-i)}\label
 \end{equation}
 
 
-\prettyref{fig:M-Index-level-two}zobrazuje mapování pro dvou-stupňový
+\prettyref{fig:M-Index-level-two} zobrazuje mapování pro dvou-stupňový
 \MIndex{} $(l=2)$\@. Velikost domény je $4^{2}=16$ a prvky z~clusteru
 $C_{i,j}$ jsou mapovány do intervalu $[i\cdot n+j,i\cdot n+j+1]$\@.
 
 
 \section{\MIndex{} s~dynamickými stupni\label{sec:Dynamic-Cluster-Tree}}
 
-Více-stupňový \MIndex{} zlepšuje dělící schopnosti oproti jedno-stupňovému
-\MIndex{u} seskupováním/shromažďováním blízkých prvků do menších clusterů\@.
-Teoreticky, čím více stupňů \MIndex{} má, tím více je vyhledávání efektivnější\@.
-Na druhou stranu, velké množství malých clusterů vede k~větší fragmentaci
-dat při dotazu a větší náročnosti při provádění dotazu\@. V~praxi
-to vede ke ztrátě výhody z~více-stupňovosti\@.
+Vícestupňový \MIndex{} zlepšuje dělící schopnosti oproti jednostupňovému \MIndex{u} seskupováním/shromažďováním blízkých prvků do menších clusterů\@.
+Teoreticky, čím více stupňů \MIndex{} má, tím je vyhledávání efektivnější.
+Na druhou stranu, velké množství malých clusterů vede k~větší fragmentaci dat při dotazu a větší náročnosti při provádění dotazu.
+V~praxi to vede ke ztrátě výhody z~vícestupňovosti.
 
-Koncept \MIndex{u} může být rozšířen o~\emph{dynamický počet stupňů},
-který umožní \prettyref{eq:M-Index-key} dynamicky zvětšovat (prohlubovat)
+Koncept \MIndex{u} může být rozšířen o~dynamický počet stupňů, který umožní \prettyref{eq:M-Index-key} dynamicky zvětšovat (prohlubovat)
+%%% co sem tim chtel rict?
 pouze pro velké clustery, zatím co \prettyref{eq:M-Index-key-max-level}
 požaduje pouze lokální změny klíčů \MIndex{u}. Toto vylepšení vyžaduje
 následující modifikace:
@@ -130,10 +120,11 @@ key_{l}=d(p_{(0)_{o}},o)+\sum_{i\text{=0}}^{l-1}(i)_{o}\cdot n{}^{(l_{max}-1-i)}
 pro dané \MIndex{} clustery
 \end{itemize}
 Jak vypadá taková stromová struktura pro $l_{max}=3$ je zobrazeno
-v~\prettyref{fig:Dynamic-Cluster-Tree}\@. Prvky mají přiřazeny
+na~\prettyref{fig:Dynamic-Cluster-Tree}. Prvky mají přiřazeny
+%%% obrazek
 klíče v~nejnižších patrech (listech). Typicky se nastaví limit na
-možný počet prvků/dat uložených v~clusteru a zvýší se stupeň clustery
-při jejím zaplnění.
+možný počet prvků/dat uložených v~clusteru a zvýší se stupeň clusteru
+při jeho zaplnění.
 
 \begin{figure}[t]
 \centering
@@ -143,7 +134,7 @@ při jejím zaplnění.
 \end{figure}
 
 Rozdělení clusteru o~jeden stupeň znamená lokální přetřídění prvků
-patřící do clusteru\@. Pokud zarovnáme počet pivotů~$n$ na násobky
+patřících do clusteru. Pokud zarovnáme počet pivotů~$n$ na násobky
 2, pak každý stupeň $key_{l},\,1\leq l\leq l_{max}$ definuje určitý
 počet bitů integrální části $key_{l_{max}}$\@. Toto přiřazení je
 velmi podobné \emph{extensible hashing}\cite{Fagin:1979:EHF:320083.320092}
@@ -154,7 +145,7 @@ reprezentace $key$ \@.
 
 \section{Range Query\label{sec:Range-Query}}
 
-Zde popíšeme algoritmus \emph{range~query~}$R(q,r)$ jako základní
+Zde popíšeme algoritmus \emph{range~query} $R(q,r)$ jako základní
 dotaz podobnosti.
 
 V~prvním kroku se spočítají vzdálenosti $d(p_{i},q),\, i=1,\ldots,n$,
@@ -175,7 +166,7 @@ ignorovány omezovacím mechanismem, protože byly vynechány Voronovým
 dělením na stupni $l$\@.
 
 Znalostí minimální a maximální vzdáleností mezi pivoty v~clusteru
-(který jsou uloženy v~listech stromu), můžeme uplatnit \emph{RangePivot
+(který jsou uloženy v~listech stromu), můžeme uplatnit \emph{Range Pivot
 Distance Constraint}\cite{similaritysearch2006} a nemusíme přistupovat
 ke clusteru $C_{p,*}$ pokud
 \[
@@ -185,16 +176,16 @@ kde $r_{min}$ a $r_{max}$ je minimální a maximální vzdálenost prvků
 v~daném clusteru\@.
 
 Pokud žádný z~výše uvedených filtrujících mechanismů neodfiltruje
-cluster $C_{i_{0},\ldots,i_{l-1}}$na úrovní listů, pak můžeme určit
-interval pro $key$ domény, která mají být prohledány v~tomto clusteru:
+cluster $C_{i_{0},\ldots,i_{l-1}}$ na úrovni listů, pak můžeme určit
+interval pro $key$ domény, které mají být prohledány v~tomto clusteru:
 \[
 [d(p_{i_{0},}q)-r,d(p_{i_{0}},q)+r]
 \]
 
-kde obě limity jsou posunuty o~celočíselnou část klíčů clusteru $C_{i_{0},\ldots,i_{l-1}}$ podle
+kde oba limity jsou posunuty o~celočíselnou část klíčů clusteru $C_{i_{0},\ldots,i_{l-1}}$ podle
 $key_{l}$ rovnic \prettyref{eq:M-Index-key} nebo \prettyref{eq:M-Index-key-max-level}.
 Tento mechanismus je \uv{vypůjčen} \linebreak z~iDistance a je přímou aplikací
-\emph{Object-Pivot Distance Constraint}\cite{similaritysearch2006}\@.
+\emph{Object-Pivot Distance Constraint}\cite{similaritysearch2006}.
 
 \section{Architektura \MIndex{u}}
 

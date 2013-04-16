@@ -5,7 +5,7 @@
 
 Jazyk Java je silně typovaný jazyk. Tento jazyk není interpretovaný,
 výsledkem překladu je \bytecode{}.\footnote{\bytecode{} jsou instrukce pro JVM. Více viz~\prettyref{sub:JIT}.} Až tento \bytecode{} je interpretován v~tzv. Java Virtual Machine (JVM\nomenclature{JVM}{Java Virtual Machine}).
-Díky JVM může kód přeložený na jedné platformě (ať už Windows nebo Unix a 32bit nebo 64bit) běžet na jiné. \footnote{\emph{\uv{Write once, run anywhere}}\cite{lindholm2013java}}
+Díky JVM může kód přeložený na jedné platformě (ať už Windows nebo Unix a 32bit nebo 64bit) běžet na jiné.\footnote{\emph{\uv{Write once, run anywhere}}\cite{lindholm2013java}}
 
 Hlavní klíčové vlastnosti, jak jazyka Java, JVM a JDK\nomenclature{JDK}{Java Development Kit}
 jsou tyto: automatická alokace a dealokace paměti, objektovost, generika,
@@ -35,7 +35,7 @@ Ve většině JVM se používá generační GC, který vychází ze dvou vypozor
   \item Většina alokovaných objektů je velmi brzy nepotřebná, tzn. nejsou na ně žádná reference
   \item Jen několik starších objektů odkazuje na mladší objekty
 \end{itemize}
-Tyto dvě pozorování jsou známy jako \emph{slabá generační hypotéza}\cite{hunt2011java},\footnote{V anj. \emph{weak generational hypothesis}.} která platí pro většinu programů v~Java.
+Tato dvě pozorování jsou známa jako \emph{slabá generační hypotéza}\cite{hunt2011java},\footnote{V anj. \emph{weak generational hypothesis}.} která platí pro většinu programů v~jazyku Java.
 K~využití této hypotézy je v~JVM rozdělena \emph{halda}\footnote{V anj. \emph{heap}} na dvě fyzické části, které jsou odkazované jako generace:
 
 \begin{figure}[h]
@@ -54,18 +54,20 @@ Obecně je úklid v~této oblasti velmi efektivní, protože je prováděn v~mal
 Tato oblast je výrazně větší než \emph{mladá generace} a její obsazování probíhá pomalu.
 Úklid v~této oblasti (nazývaný \emph{full GC}) není častý, ale pokud už k~němu dojde, může být velmi dlouhý.
 
-  \item[Permanentní generace] Toto je třetí oblastí generací, ale není použita v~generační hierarchii.
-JVM ji používá pro ukládání metadat jako jsou informace o~třídách, internovaných řetězců atd\ldots
+  \item[Permanentní generace] JVM používá tuto třetí generaci pro ukládání metadat, jako jsou informace o~třídách, internovaných řetězců a podobně.
+Tato generace není součástí generační hierarchie.
+
 \end{description}
 
 \subsubsection{Typy GC\label{subsub:gctypes}}
 
-V~Oracle JVM je k~dispozici několik GC. Liší se způsobem provádění úklidu a kdy dochází k~tzv. \emph{zastavení světa}.\footnote{V anj. \emph{stop the world}}
+V~Oracle JVM je k~dispozici několik GC, lišících se způsobem provádění úklidu a dochází-li k~tzv. \emph{zastavení světa}.\footnote{V anj. \emph{stop the world}}
+%%%% jak s tim stop world
 \emph{Zastavení světa} znamená, že všechna vlákna programu jsou pozastavena a pouze vlákna pro úklid jsou v~činnosti.
-Je to z~důvodu toho, aby nedocházelo k~novým alokacím objektů.
-Samozřejmě, že toto má negativní dopad na aplikaci, pokud k~zastavení dochází často.
+Děje se tak proto, aby nedocházelo k~novým alokacím objektů během úklidu.
+Pokud k~zastavení dochází často, má to samozřejmě negativní dopad na aplikaci.
 
-\prettyref{tab:gcs} obsahuje porovnání GC. Tabulka vyjadřuje, jakým způsobem probíhá úklid paměti jednotlivých generací.
+\prettyref{tab:gcs} obsahuje porovnání GC a vyjadřuje, jakým způsobem probíhá úklid paměti jednotlivých generací.
 
 \begin{table}
 \center
@@ -85,7 +87,7 @@ Souběžnost & Ne & Ne & Ano & Ano \\ \hline
 \subsection{Generika\label{sub:generika}}
 
 Obdobně jako v~\CC{} jsou \emph{templates}\cite{ISO:2012:CPP}, jazyk Java má \emph{generics}.\footnote{Uvedeny ve verzi 1.5 \cite{gosling2013java}.}
-Jsou zde rozdíly:
+Rozdíly jsou následující:
 \begin{itemize}
   \item v~Java se informace o~typu ztrácí během překladu. Překladač nahrazuje výskyt generika za konkrétní typ (třída, rozhraní)
   \item nelze jako typový parametr použít primitivní typ -- \type{int, char, byte, long, double, float} \ldots{}
@@ -109,9 +111,7 @@ Java je dodávána s~rozsáhlou knihovnou JDK. Obsahuje vše nutné
 pro síťovou komunikaci (RPC\nomenclature{RPC}{Remote Procedure Call}), práci s~textem -- regulární výrazy,
 XML, soubory a souborový
 systém a také velmi propracovanou knihovnou kontejnerů -- \emph{Java
-Collections Framework }(JFC\nomenclature{JFC}{Java Collections Framework})
-\footnote{V~jazyce Java se používá pro termín \emph{container} (\CC) termín
-\emph{collection}}.
+Collections Framework }(JFC\nomenclature{JFC}{Java Collections Framework}). \footnote{V~jazyce Java se používá pro termín \emph{container} (\CC) termín \emph{collection}}
 
 \section{Návrh a implementace}
 Implementace \MIndex{u} je napsána pro verzi Java 7.
@@ -123,7 +123,7 @@ Při některých výpočtech bylo možné použít \emph{rozděl a panuj}\cite{C
 
 V~popisovaných algoritmech (ať už \BPTree{} nebo \MIndex{} je často uváděna proměnná \type{leaf}, resp. zda je daná struktura list -- koncový uzel.
 Z~hlediska objektového návrhu se mění chování třídy podle její datové složky, což nesvědčí o~dobrém objektovém návrhu.
-K~odstranění tohoto jsem použil \emph{Replace Type Code with Subclasses}\cite{fowler1999refactoring} pro \BPTree.
+K~odstranění toho jsem použil \emph{Replace Type Code with Subclasses}\cite{fowler1999refactoring} pro \BPTree{}.
 V~případě \MIndex{} \emph{Range Query} jsem použil \emph{Visitor pattern}\cite{gamma1995design}.
 
 \emph{Visitor pattern} slouží k~oddělení algoritmu od objektové struktury nad kterou se pracuje.
@@ -141,7 +141,7 @@ Implementace \BPTree{} se nachází v~třídě \linebreak \type{cz.rank.vsfs.btr
 
 Implementace mazání objektů z~mapy není potřebná pro \MIndex{} a není tudíž ani implementována.
 
-Celý \BPTree{} je uložen v~hlavní paměti a není tedy implementováno načítaní a ukládání uzlů na disk.
+Celý \BPTree{} je uložen v~hlavní paměti a není tedy implementováno načítání a ukládání uzlů na disk.
 
 \subsection{\MIndex{}}
 Celá implementace \MIndex{} pracuje s~objekty, které implementují rozhraní \type{cz.rank.vsfs.mindex.Distanceable}.
@@ -157,7 +157,7 @@ Funkcionalita je implementována ve třídě \linebreak \type{cz.rank.vsfs.minde
 Vzdálenost může být spočítána pouze nad objekty, které implementují rozhraní \type{Distanceable}.
 
 \subsubsection{Výpočet vzdáleností mezi pivoty a prvky}
-K~výpočtu a seřazení vzdáleností pivotů od objektu slouží třídy implementující rozhraní \type{cz.rank.vsfs.mindex.PivotDistanceTable}. Implementovány jsou tři třídy s~tímto rozhraním.
+K~výpočtu a seřazení vzdáleností pivotů od objektu slouží třídy implementující rozhraní \type{cz.rank.vsfs.mindex.PivotDistanceTable}. Implementovány jsou tři třídy s~tímto rozhraním:
 
 \begin{figure}
 \centering
@@ -201,7 +201,7 @@ link(inheritance)(pathStepY(D.n,B.s,10));
 
 \begin{description}
 \item[ParallelPivotDistanceTable] Rozdělí úlohu na menší části podle objektů pomocí \emph{rozděl a panuj} a výpočet je paralelizován za použití všech dostupných jader systému. Tato třída je využita při konstrukci samotného \MIndex{}.
-\item[SimplePivotDistanceTable] Podobně jako \type{ParallelPivotDistanceTable} vypočte vzdálenosti objektu od pivotů, ale pouze pro jeden objekt a výpočet není paralelní. Tato třída se používá v~samotném \emph{Range Query} dotazu. Pokud by se použil \type{ParallelPivotDistanceTable}, tak režije spojená s~vytvářením úloh pro exekutory, vytvořením vláken, by byla výrazně vyšší než samotný výpočet vzdáleností jednoho objektu.
+\item[SimplePivotDistanceTable] Podobně jako \type{ParallelPivotDistanceTable} vypočte vzdálenosti objektu od pivotů, ale pouze pro jeden objekt a výpočet není paralelní. Tato třída se používá v~samotném \emph{Range Query} dotazu. Pokud by se použil \type{ParallelPivotDistanceTable}, tak čas spojený s~vytvářením úloh pro exekutory a vytvářením vláken, by byl výrazně vyšší než samotný výpočet vzdáleností jednoho objektu.
 \item[AbstractPivotDistanceTable] Je společným předkem obou výše uvedených tříd a obsahuje společný kód, který potomci využívají.
 \end{description}
 
@@ -260,7 +260,7 @@ clink(dashedLink)(LeafCluster.methodStack.pict[0], LeafClusterCode);
 \caption{\type{Cluster} UML diagram s \emph{Visitor pattern}}
 \end{figure}
 
-Cluster tree je tvořen třídami, které implementuji rozhraní \linebreak \type{cz.rank.vsfs.mindex.Cluster}. Jsou celkem 3 -- 
+Cluster tree je tvořen třídami, které implementují rozhraní \linebreak \type{cz.rank.vsfs.mindex.Cluster}. Jsou celkem 3 -- 
 \type{InternalCluster} a jeho potomci  \type{LeafCluster} a \type{RootCluster}.
 
 \begin{description}
@@ -273,28 +273,32 @@ Pro změření rozdílu použití více-stupňového \MIndex{u} a \MIndex{u} s~d
 Obě třídy mají téměř totožný konstruktor, pouze \linebreak u~\type{DynamicClusterTreeBuilder} je navíc parametr pro maximální zaplnění koncového clusteru. Více viz \prettyref{sec:Dynamic-Cluster-Tree}.
 
 \subsubsection{Range Query}
-Díky nezávislosti dotazu na typu clusteru (více-stupňový vs. s~dynamickými stupni) je \emph{Range Query} je implementována v~třídě \type{MIndex}, která je společný rodič pro \type{MultiLevelMIndex} a \type{DynamicMIndex}. V~metodě rangeQuery není celá logika vyhledávání. V~této metodě se inicializuje ClusterRangeQuery, která implementuje samotné vyhledávání. Toto řešení jsem zvolil kvůli oddělení zodpovědnosti vyhledávání a uchovávání informací o~\MIndex{u}.\footnote{Jedná se o~tzv. \emph{Single Responsibility Principle\nomenclature{SRO}{Single Responsibility Principle}}\cite{martin2003agile}}
+Díky nezávislosti dotazu na typu clusteru (vícestupňový vs. s~dynamickými stupni) je \emph{Range Query} implementován v~třídě \type{MIndex}, která je společným rodičem pro \type{MultiLevelMIndex} a \type{DynamicMIndex}.
+V~metodě \method{MIndex.rangeQuery} není celá logika vyhledávání.
+ V~této metodě se inicializuje \type{ClusterRangeQuery}, která implementuje rozhraní \type{ClusterVisitor} a také samotné vyhledávání.
+Toto řešení jsem zvolil kvůli oddělení zodpovědnosti vyhledávání a uchovávání informací o~\MIndex{u}.\footnote{Jedná se o~tzv. \emph{Single Responsibility Principle\nomenclature{SRO}{Single Responsibility Principle}}\cite{martin2003agile}}
 
-V~podstatě je téměř doslovně přepsán algoritmus popsaný v~\prettyref{sec:Range-Query}. Jak bylo již zmíněno v~začátku této sekce, k~odstranění nutnosti identifikování typu clusteru za běhu\footnote{V jazyce Java k~identifikaci typu slouží operátor \method{instanceof}\cite{gosling2013java}, obdobně jako v~\CC{} je operátor \method{typeid}\cite{ISO:2012:CPP}} je použit \emph{Visitor Pattern}. \prettyref{fig:rangequery-visitor-seq} popisuje toto volání detailně.
+V~podstatě je téměř doslovně přepsán algoritmus popsaný v~\prettyref{sec:Range-Query}.
+Jak bylo již zmíněno v~začátku této sekce, k~odstranění nutnosti identifikování typu clusteru za běhu\footnote{V jazyce Java k~identifikaci typu slouží operátor \method{instanceof}\cite{gosling2013java}, obdobně jako v~\CC{} je operátor \method{typeid}\cite{ISO:2012:CPP}} je použit \emph{Visitor Pattern}. \prettyref{fig:rangequery-visitor-seq} popisuje toto volání detailně.
 
 
-%\begin{figure}
-%\centering
-%\begin{sequencediagram}
+\begin{figure}
+\centering
+\begin{sequencediagram}
 %  \newthread{mi}{:MIndex}{MIndex}
 %  \newinst{rq}{:ClusterRangeQuery}{}
-%  \newinst{ic}{:InternalCluster}{}
-%  \newinst{lc}{:LeafCluster}{}
-%
-%  \begin{call}{mi}{performQuery()}{rq}{nalezené objekty}
-%    \begin{sdblock}{Dotaz}{dokud není fronta clusterů prázdná}
-%    \end{sdblock}
+  \newthread{crq}{:ClusterRangeQuery}{}
+  \newinst{ic}{:InternalCluster}{}
+  \newinst{lc}{:LeafCluster}{}
+
+%  \begin{call}{crq}{performQuery()}{rq}{nalezené objekty}
+    \begin{sdblock}{Dotaz}{dokud není fronta clusterů prázdná}
+    \end{sdblock}
 %  \end{call}
-%\end{sequencediagram}
-%
-%\caption{Sekvenční diagram volání \emph{Range Query}}\label{fig:rangequery-visitor-seq}
-%\end{figure}
-\missingfigure{Sekvenční volání RangeQuery}
+\end{sequencediagram}
+
+\caption{Sekvenční diagram volání \emph{Range Query}}\label{fig:rangequery-visitor-seq}
+\end{figure}
 
 \section{Měření výkonu v~Java\label{sec:vykonvjava}}
 
@@ -311,7 +315,7 @@ Výše popsaný proces \emph{zavádění tříd} je velmi náročný na I/O oper
 \subsection{JIT\label{sub:JIT}}
 Tradiční překladače (např. C/\CC) generují z~vyššího programovacího jazyka strojově závislý kód. Tento kód má finální podobu a všechny možné optimalizace je zapotřebí udělat během překladu. Případně použít profilování výsledné binárky a znovu nechat překladač znovu přeložit kód s~využitím profilovacích dat. Těmto překladačům se říká také statické. Výsledný kód je optimalizován pro danou platformu.
 
-Java používá překladač \javac{}, který z~vysoko úrovňového jazyka vytvoří \classfile{}, který obsahuje \bytecode{}. JVM tento \bytecode{} následně dynamicky za běhu překládá do strojově závislého kódu pomocí JIT.
+Java používá překladač \javac{}, který z~vysokoúrovňového jazyka vytvoří \classfile{} soubor, obsahující \bytecode{}. JVM tento \bytecode{} následně dynamicky za běhu překládá do strojově závislého kódu pomocí JIT.
 
 \subsubsection{Jak funguje překladač}
 Každý překladač má podobnou strukturu.
@@ -326,16 +330,17 @@ Složitější optimalizace jsou většinou spojeny se smyčkami -- \emph{loop u
 Když jsou tyto optimalizace hotovy, další modul vezme danou IR a převede ji do strojové podoby. Zde nastávají další optimalizace v~podobě přiřazování hodnot do registrů procesoru, výběr vhodných instrukcí atd\ldots{}
 
 \subsubsection{Kdy JIT překládá do strojového kódu\label{subsub:whenJIT}}
-JIT nepřekládá každou instrukci v~\bytecode{} ihned do strojového kódu. Většina instrukcí je na začátku interpretována. Až v~okamžiku, kdy daná instrukce se stane \emph{hot}, JIT ji zařadí pro překlad. JVM totiž udržuje u~každé metody čítač volání. Pokud daná metoda je volána více krát, stane se \emph{hot} a tím se vyvolá i její překlad. Hranice překladu je ve výchozím nastavení 10000.\footnote{Parametr pro Oracle JVM, který ovlivňuje toto nastavení je \cmd{-XX:CompileThreshold=}} Zjednodušeně řečeno: aby došlo k~překladu libovolné metody do strojového kódu, musí být daná metoda volána aspoň 10000.
+JIT nepřekládá každou instrukci v~\bytecode{} ihned do strojového kódu. Většina instrukcí je na začátku interpretována. Až v~okamžiku, kdy daná instrukce se stane \emph{hot}, JIT ji zařadí pro překlad. JVM totiž udržuje u~každé metody čítač volání. Pokud daná metoda je volána vícekrát, stane se \emph{hot} a tím se vyvolá i její překlad. Hranice překladu je ve výchozím nastavení 10.000.\footnote{Parametr pro Oracle JVM, který ovlivňuje toto nastavení je \cmd{-XX:CompileThreshold=}} Zjednodušeně řečeno: aby došlo k~překladu libovolné metody do strojového kódu, musí být daná metoda volána aspoň 10.000krát.
 
 Níže jsou uvedeny optimalizace, které ovlivňují výkonnost kódu.
 
 \begin{description}
-\item[function inlining] Je technika vnořování těla kódu funkcí/metod do těla volané metody. Protože každá metoda třídy je v~jazyce Java virtuální, tato optimalizace odstraňuje penalizaci za jejich volání. Ve výsledku vytváří velké bloky kódu, nad kterými se uplatňují další optimalizace. Vnořování nedochází u~všech metod. Podmínkou je, aby metoda byla krátká, což znamená, aby měla velikost do 35 \bytecode s.\footnote{V Oracle JVM lze toto omezení upravit pomocí parametru \cmd{-XX:FreqInlineSize=}} Vnořování nemůže být vynuceno. Záleží na JIT. Není ani žádné doporučení pro kompilátor jako je tomu u~\CC{} pomocí vyhrazeného slova \method{inline} u~metody.\footnote{\method{inline} říká kompilátoru, že by mohl metodu vnořit, ale záleží na chytrosti kompilátoru, zda vnoření provede\cite{Stroustrup:1997:CPL:523265}.}
+\item[function inlining] Je technika vnořování těla kódu funkcí/metod do těla volané metody. Protože každá metoda třídy je v~jazyce Java virtuální, tato optimalizace odstraňuje penalizaci za jejich volání. Ve výsledku vytváří velké bloky kódu, nad kterými se uplatňují další optimalizace. K~vnořování nedochází u~všech metod. Podmínkou je, aby metoda byla krátká, což znamená, aby měla velikost do 35 \bytecode s.\footnote{V Oracle JVM lze toto omezení upravit pomocí parametru \cmd{-XX:FreqInlineSize=}} Vnořování nemůže být vynuceno. Záleží na JIT. Není ani žádné doporučení pro kompilátor jako je tomu u~\CC{} pomocí vyhrazeného slova \method{inline} u~metody.\footnote{\method{inline} říká kompilátoru, že by mohl metodu vnořit, ale záleží na chytrosti kompilátoru, zda vnoření provede\cite{Stroustrup:1997:CPL:523265}.}
 
 Tato technika má zásadní dopad na běh programu. Ve výsledku nutí programátora navrhnout třídy tak, aby byly tvořeny malými metodami, což má za následek i dobrou čitelnost kódu.
 
-\item[dead code elimination] JIT je schopen při analýze běhu programu identifikovat části kódu, které nemají žádný vedlejší efekt, např. pokud se výsledek volání metody nepoužije v~dalších krocích nebo. Pokud je měřící kód nesprávně navrhnut, může dojít k~tomu, že díky této optimalizaci se některé části nevykonají a výsledky měření jsou nepoužitelné.
+\item[dead code elimination] JIT je schopen při analýze běhu programu identifikovat části kódu, které nemají žádný vedlejší efekt, např. pokud se výsledek volání metody nepoužije v~dalších krocích.
+Pokud je měřící kód nesprávně navrhnut, může dojít k~tomu, že díky této optimalizaci se některé části nevykonají a výsledky měření jsou nepoužitelné.
 
 \item[loop unrolling] Slouží k~rozbalení smyček jako je \method{for (...) ...}.
 Klasická optimalizace, která tělo smyčky \uv{zkopíruje} několikrát za sebou. Každá smyčka má inkrementální část a podmínku pro ukončení smyčky.
@@ -364,17 +369,20 @@ for (int x = 0; x < 50; x+=5) {
 
 \subsection{Zahřátí JVM}
 
-Pokud bychom začali měřit jednotlivé části kódu ihned po startu JVM, neměřili bychom výkonnost samotného kódu, ale i čas za jak dlouho JVM zavede jednotlivé \classfile soubory, za jak dlouho JIT přeloží a optimalizuje instrukce \bytecode{} do strojového kódu. Pravděpodobně by se i naměřené hodnoty pro stejné testované parametry lišily, protože by k~překladu docházelo v~průběhu nebo mezi jednotlivými měřeními. Proto je nutné udělat i tzv. \emph{zahřátí JVM}.\footnote{V anj. \emph{JVM warm-up}}
+Pokud bychom začali měřit jednotlivé části kódu ihned po startu JVM, neměřili bychom výkonnost samotného kódu, ale i čas za jak dlouho JVM zavede jednotlivé \classfile soubory, za jak dlouho JIT přeloží a optimalizuje instrukce \bytecode{} do strojového kódu.
+Pravděpodobně by se i naměřené hodnoty pro stejné testované parametry lišily, protože by k~překladu docházelo v~průběhu nebo mezi jednotlivými měřeními.
+Proto je nutno provést tzv. \emph{zahřátí JVM}.\footnote{V anj. \emph{JVM warm-up}}
 
-Zahřátí se provádí tak, že se zavolá měřený kód tolikrát, aby se stal \emph{hot}.\footnote{Viz \prettyref{subsub:whenJIT}} Po tomto zahřátí, by již měl být měřený kód optimalizován a převeden do strojového kódu a měření by nemělo být ovlivněno.
+Zahřátí se provádí tak, že se zavolá měřený kód tolikrát, aby se stal \emph{hot}.\footnote{Viz \prettyref{subsub:whenJIT}}
+Po tomto zahřátí, by již měl být měřený kód optimalizován a převeden do strojového kódu a měření by nemělo být ovlivněno.
 
 \subsection{GC během měření}
 Jak bylo uvedeno v~\prettyref{subsub:gctypes}, během úklidu paměti může dojít k~zastavení aplikace.
-Je otázka, jak tomuto zastavení přistupovat při měření.
-V~reálné aplikaci je toto běžné a záleží na typu aplikace, zda je zastavení celé aplikace na určitý časový okamžik problém nebo ho lze tolerovat.
+Je otázka, jak k~tomuto zastavení přistupovat při měření.
+V~reálné aplikaci je toto běžné a záleží na typu aplikace, zda je zastavení aplikace na určitý časový okamžik problémem nebo ho lze tolerovat.
 Podle typu aplikace je tedy vhodné vybrat i správný \emph{garbage collector}.
 
-V~případě testování výkonnosti určitého algoritmu je zřejmě vhodné zabránit úklidu během měření, protože ve výsledném měření bude i započítán čas nutný pro úklid paměti.
+V~případě testování výkonnosti určitého algoritmu je zřejmě vhodné zabránit úklidu během měření, protože ve výsledném měření bude započítán i čas nutný pro úklid paměti.
 Z~aplikace je možné vynutit úklid pomocí voláni \method{System.gc()} a \uv{počkat}, dokud neproběhne úklid paměti.
 V~měřeních jsem tohoto volání využil, aby se opravdu měřil čas nutný k~vykonání \emph{Range Query}.
 
@@ -384,37 +392,38 @@ Je to z~toho důvodu, že dle mého názoru původní autoři již popsali a pro
  
 \subsection{Metoda měření\label{sec:measurementmethod}}
 
-\MIndex{} má několik parametrů, které ovlivňují jeho chování, resp. výkonnost, v~závislosti na velikosti a typu indexovaných dat. Parametry pro měření jsou následující:
+\MIndex{} má několik parametrů, které ovlivňují jeho chování, resp. výkonnost, v~závislosti na velikosti a typu indexovaných dat.
+Parametry pro měření jsou následující:
 \begin{description}
-\item[počet pivotů] z~kolika pivotů má být vytvořen \MIndex{}
-\item[počet vyhl. objektů] kolik se má vyhledat objektů v~rámci jednoho měření
-\item[max. úroveň clusteru] platí pro oba dva typy clusterů
-\item[počet měření] kolik měření se má provést s~danými parametry
-\item[max. počet objektů v~listech] tento parametr je pouze při měřeních dynamického clusteru a určuje maximum objektů v~listu clusteru
-\item[vzdálenost] maximální vzdálenost hledaných objektů od vzorového
-\item[stupeň \BPTree{}] určuje počet klíčů v~uzlech \BPTree{}. Jelikož není implementováno načítání a ukládání uzlů na disk, tento parametr ovlivňuje samotné vyhledávání ve stromu
+\item[počet pivotů] (z~kolika pivotů má být vytvořen \MIndex{})
+\item[počet vyhl. objektů] (kolik se má vyhledat objektů v~rámci jednoho měření)
+\item[max. úroveň clusteru] (platí pro oba dva typy clusterů)
+\item[počet měření] (kolik měření se má provést s~danými parametry)
+\item[max. počet objektů v~listech] (tento parametr je pouze při měřeních dynamického clusteru a určuje maximum objektů v~listu clusteru)
+\item[vzdálenost] (maximální vzdálenost hledaných objektů od vzorového)
+\item[stupeň \BPTree{}] (určuje počet klíčů v~uzlech \BPTree{}. Jelikož není implementováno načítání a ukládání uzlů na disk, tento parametr ovlivňuje samotné vyhledávání ve stromu)
 \end{description}
 
 Výkonnost \MIndex{u} ovlivňuje i nastavení parametrů JVM.
 Zde jsem se rozhodl prozkoumat 2 parametry -- \cmd{-XX:+AggressiveOpts} a \cmd{-XX:+UseCompressedOops}, tzn. jejich vliv na výsledné měření a na jejich kombinace.
 
 \begin{description}
-\item[AggressiveOpts] Tato volba povoluje agresivní optimalizace.
-Je označena jako experimentální a rozsah optimalizací se může být jiná v~každé verzi JVM.
-\item[UseCompressedOops] Tato volba je dostupná pouze pro 64 bitovou verzi JVM a je ve výchozím stavu zapnuta, pokud není vynuceno její vypnutí při startu JVM.
-V~JVM jsou všechny ukazatele na objekty schodné se strojovými ukazateli, tzn. na 64 bitové architektuře jsou 64 bitové, na 32 bitové architektuře jsou 32 bitové.
-Obecně je používání 64 bitových instrukcí pomalejší oproti ekvivalentním 32 bitovým instrukcím -- pro práci vyžadují totiž i odpovídající registry atd\ldots{}
+\item[AggressiveOpts] Tato volba povoluje agresivní optimalizace JIT.
+Volba je označena jako experimentální a rozsah optimalizací může být jiný v~každé verzi JVM.
+\item[UseCompressedOops] Tato volba je dostupná pouze pro 64bitovou verzi JVM a je ve výchozím stavu zapnuta, pokud není vynuceno její vypnutí při startu JVM.
+V~JVM jsou všechny ukazatele na objekty shodné se strojovými ukazateli, tzn. na 64bitové architektuře jsou 64bitové, na 32bitové architektuře jsou 32bitové.
+Obecně je používání 64bitových instrukcí pomalejší oproti ekvivalentním 32bitovým instrukcím -- pro práci vyžadují totiž i odpovídající registry atd\ldots{}
 Při zapnuté volbě \emph{UseCompressedOops} JVM komprimuje ukazatele na 32 bitů a umožňuje používat 64 bitové registry pro jiné operace, čímž snižuje penalizaci za 64 bitové instrukce.\footnote{Toto je velmi jednoduché přiblížení. Více viz \cite{hunt2011java}}
 \end{description}
 
 
-Průběh testu je popsán níže.
+Průběh testu je následující:
 
 \begin{enumerate}
 \item Vygenerování parametrů pro měření.
 \item Načtení vstupních dat ze souboru a vytvoření vektorů.
 \item Výpočet maximální vzdálenosti mezi objekty mimo třídy \type{*MIndex}, aby se pro každé nové měření nemusela znovu počítat vzdálenost.
-Každá třída \type{cz.rank.vsfs.mindex.MultiLevelMIndex} a \type{cz.rank.vsfs.mindex.DynamicMIndex} má konstruktor, který má parametr pro předpočítanou maximální vzdálenost.
+Každá třída \type{cz.rank.vsfs.mindex.MultiLevelMIndex} a \linebreak \type{cz.rank.vsfs.mindex.DynamicMIndex} má konstruktor, který má parametr pro předpočítanou maximální vzdálenost.
 \item Zahřátí JVM.
 \item Opakující se test:
 \begin{enumerate}
@@ -437,7 +446,7 @@ Měření probíhalo v~textovém režimu bez grafického prostředí, aby žádn
 
 \end{enumerate}
 \subsection{Prostředí}
-Měření probíhalo v~tomto prostředí:
+Měření probíhalo v~tomto prostředí(\prettyref{tab:environment}):
 
 \begin{table}[h]
 \catcode`\-=12
@@ -456,7 +465,7 @@ Měření probíhalo v~tomto prostředí:
 \hline
 \multirow{3}{*}{RAM} & Velikost & 12GB \\ \cline{2-3}
 & Typ & DDR3 \\ \cline{2-3}
-& Frekvence & \SI{1333}{\MHz} \\ \cline{2-3}
+& Frekvence & \SI{1.333}{\MHz} \\ \cline{2-3}
 \hline
 \multirow{2}{*}{Operační systém} &  \multicolumn{2}{|c|}{Debian/GNU Linux 7.0}  \\
 &  \multicolumn{2}{|c|}{\tiny 3.8-trunk-amd64 \#1 SMP Debian 3.8.3-1~experimental.1 x86\_64 GNU/Linux} \\ \cline{2-3}
@@ -465,7 +474,7 @@ Měření probíhalo v~tomto prostředí:
 & JVM & {\tiny Java HotSpot(TM) 64-Bit Server VM (build 23.7-b01, mixed mode)} \\ \cline{2-3}
  \hline
 \end{tabular}
-\caption{Informace o~stroji}
+\caption{Informace o~prostředí\label{tab:environment}}
 \end{table}
 
 \subsection{Parametry měření}
@@ -482,18 +491,16 @@ počet měření & 20 \\ \hline
 max. počet objektů v~listech & 10, 20, 50, 100, 200, 300, 500 \\ \hline
 vzdálenost & 0,15 \\ \hline
 řád \BPTree{} & 50, 100, 500 \\ \hline
-počet objektů pro porovnání & 68040 \\ \hline
+počet objektů pro porovnání & 68.040 \\ \hline
 dimenze objektů & 32 \\ \hline
 \end{tabular}
 \end{table}
 
-Původně jsem chtěl změřit více hodnot, např. počet pivotů 100 s~max. počtem objektů v~listech 10 a úrovní clusteru 5.
-Při těchto parametrech ovšem velikost clusterů byla extrémně velká -- $100 \times 99 \times 98 \times 97 \times 96 = 9034502400$.
-Při práci s~tímto množstvím docházelo k~přetečení typu \type{Integer} v~kolekcích a nesmyslným výsledkům.
-\footnote{V~Java je typ \type{Integer} 4 bajtový celočíselný typ se znaménkem a může mít maximálně hodnotu $2^{31}-1$}
+Původním záměrem bylo změřit více hodnot, např. počet pivotů 100 s~max. počtem objektů v~listech 10 a úrovní clusteru 5.
+Při těchto parametrech byl ovšem počet clusterů extrémně velký -- $100 \times 99 \times 98 \times 97 \times 96 = 9.034.502.400$, a docházelo k~přetečení typu \type{Integer} v~kolekcích a k~nesmyslným výsledkům.\footnote{V~Java je typ \type{Integer} 4 bajtový celočíselný typ se znaménkem a může mít maximálně hodnotu $2^{31}-1$}
 
-Při tomto množství je celkový počet kombinací parametrů 252 pro dynamický cluster a 36 pro více-stupňový cluster.
-Jelikož počet měření je 20 pro každý parametr, bylo celkově vykonáno 5760 měření.
+Při tomto množství je celkový počet kombinací parametrů 252 pro dynamický cluster a 36 pro vícestupňový cluster.
+Jelikož počet měření je 20 pro každý parametr, bylo celkově vykonáno 5.760 měření.
 
 Každá série měření byla spouštěna s~JVM s~různými kombinacemi parametrů, které byly uvedeny v~\prettyref{sec:measurementmethod}.
 Implementace GC byla použita G1.
@@ -514,17 +521,17 @@ JVM4 & Vypnuto & Vypnuto \\ \hline
 \end{table}
 
 \subsection{Výsledky měření}
-Nejlepšího výsledku, tzn.~v~nejkratším čase, bylo dosaženo s~dynamickým \MIndex{em} s~parametry: počet pivotů 10, maximální úrovní clusteru 4, maximálním počtem objektů v~listech 10 a stupněm \BPTree{} 500.
-Výsledný čas byl \SI{3485}{\ms} pro parametry JVM1.
+Nejlepšího výsledku, tzn.~v~nejkratším čase, bylo dosaženo s~dynamickým \MIndex{em} s~následujícími parametry: počet pivotů 10, maximální úrovní clusteru 4, maximálním počtem objektů v~listech 10 a stupněm \BPTree{} 500.
+Výsledný čas byl \SI{3.485}{\ms} pro parametry JVM1.
 Tato konfigurace dosáhla nejkratšího času i s~ostatními parametry JVM, pouze pro JVM2 byla až \uv{druhá}.
 Rozdíl časů mezi maximálně optimalizovaným JVM a nejméně (JVM1 vs JVM4) s~těmito parametry byl více jak \SI{200}{\ms}.
 
-Nejdelší zpracování dotazů bylo u~více-stupňového \MIndex{u} pro JVM4 s~parametry: počet pivotů 50, maximální úrovní clusteru 4 a stupněm \BPTree{} 10.
-Výsledný čas je \SI{5201}{\ms} a rozdíl oproti nejkratší konfiguraci je více jak \SI{1700}{\ms}.
+Nejdelší zpracování dotazů bylo u~vícestupňového \MIndex{u} pro JVM4 s~parametry: počet pivotů 50, maximální úrovní clusteru 4 a stupněm \BPTree{} 10.
+Výsledný čas je \SI{5.201}{\ms} a rozdíl oproti nejkratší konfiguraci je více jak \SI{1.700}{\ms}.
 
 \prettyref{fig:jvm1p50} zobrazuje nejrychlejší vyhledání v~závislosti na stupni \BPTree{}.
 Jsou zobrazeny časy pro jednotlivé nejlepší parametry \MIndex{ů} z~jednotlivých nastavení JVM.
-Pro zobrazení zásadního vlivu nastavení JVM je i zobrazen více-stupňový \MIndex{} pro 50 pivotů a ú
+Pro zobrazení zásadního vlivu nastavení JVM je i zobrazen vícestupňový \MIndex{} pro 50 pivotů a ú
 \begin{figure}[t]
 \centering
 \includegraphics{best_compare}
@@ -545,17 +552,17 @@ Jak bylo uvedeno v~\prettyref{sec:measurementmethod}, volba \cmd{-XX:+Aggressive
 \hline
 Konfigurace JVM & Průměrný čas měření \\ \hline
 \hline
-JVM1 & \SI{3961}{\ms} \\ \hline
-JVM2 & \SI{4205}{\ms} \\ \hline
-JVM3 & \SI{4206}{\ms} \\ \hline
-JVM4 & \SI{4524}{\ms} \\ \hline
+JVM1 & \SI{3.961}{\ms} \\ \hline
+JVM2 & \SI{4.205}{\ms} \\ \hline
+JVM3 & \SI{4.206}{\ms} \\ \hline
+JVM4 & \SI{4.524}{\ms} \\ \hline
 \end{tabular}
 \caption{Průměrný čas měření}
 \label{tab:jvmavgtime}
 \end{table}
 
-Obecně konfigurace s~menším počtem pivotů (10), s~větší úrovní clusteru (4) a s~větším stupněm \BPTree{} (500) dosahovaly kratších časů.
-Domnívám se, že největší vliv na výsledný čas má velikost stupně \BPTree.
+Obecně lze konstatovat, že konfigurace s~menším počtem pivotů (10), s~větší úrovní clusteru (4) a s~větším stupněm \BPTree{} (500) dosahovaly kratších časů.
+Domnívám se, že největší vliv na výsledný čas má velikost stupně \BPTree{}.
 Důvodem je pravděpodobně uložení klíčů v~rámci listu v~paměti, resp. CPU cache.
 Vyhledání rozsahu probíhá tak, že se nalezne list stromu, který obsahuje menší klíč z~hledaného rozsahu.
 V~tomto listu pak začne porovnávání klíčů, zda jsou v~požadovaném rozsahu.
@@ -565,8 +572,7 @@ Vzhledem k~tomu, že jsou klíče v~rámci listu uloženy v~paměti ve stejném 
 V~případě, že je stupeň \BPTree{} menší, jsou segmenty s~klíči v~paměti více fragmentovány a dochází k~častějším výpadkům cache.
 Neznamená to ovšem, že čím větší stupeň \BPTree{}, tím lépe. 
 Pokud by byly uzly stromu ukládány na disk, zřejmě by byla omezena velikost stupně stromu velikostí bloku souborového systému, aby nebyl uzel stromu rozdělen na disku do několika bloků.
-Jak jsem uvedl výše, toto je má domněnka, která musí být potvrzena odpovídajícím měřením.
-Jsem ale toho názoru, že toto měření je již mimo rozsah této práce.
+Jak jsem uvedl výše, toto je má domněnka, která musí být potvrzena odpovídajícím měřením, které je již mimo rozsah této práce.
 
 \begin{figure}[t]
 \centering
@@ -581,17 +587,15 @@ Ty jsou zaneseny jako vodorovné čáry.
 Pro nižší počet pivotů (10 a 20) mají výsledné časy se zvyšujícím se počtem maximálních počtů objektů v~listech téměř lineární stoupající tendenci.
 U~vyššího počtu pivotů je průběh jiný.
 Není lineární a se snižujícím se max. počtem objektů v~listech (10) se dokonce zvyšuje.
-Důvodem, proč konfigurace s~nízkým počet pivotů jsou dominantní, je to, že v~této konkrétní množině objektů pro vyhledávání jsou objekty shlukovány kolem konkrétních pivotů.
+Důvod, proč konfigurace s~nízkým počtem pivotů jsou dominantní je ten, že v~této konkrétní množině objektů pro vyhledávání jsou objekty shlukovány kolem konkrétních pivotů.
 Utvářejí se clustery s~velkým množstvím objektů a v~jejich okolí dochází k~vyhledávání v~\BPTree{}.
-Režie při filtrování většího množství pivotů v~\emph{Range Query} je zřejmě signifikantní a neefektivní.
+Náklady při filtrování většího množství pivotů v~\emph{Range Query} je zřejmě signifikantní a neefektivní.
 
 Je nutno podotknout, že při větší množině porovnávaných objektů (v~řádu stovek tisíců), by byl zřejmě \MIndex{} s~počtem pivotů 10 již nedostačující a neefektivně by rozděloval prostor.
-Z~čehož vyplývá, že je nutné pro každou množinu objektů odladit parametry \MIndex{u} a nelze doporučit jednu konkretní konfiguraci.
+Z~toho vyplývá, že je nutné pro každou množinu objektů odladit parametry \MIndex{u} a nelze doporučit jednu konkretní konfiguraci.
 
 \section{Srovnání výkonu implementací v~{\protect \CC}, C\# a Java}
-V~této části se nachází stěžejní část práce -- samotné porovnání výkonu \MIndex{} mezi \CC, Java a C\#.
-
-Nemohl jsem použít data, které páni Kmuníček a Koman naměřili ve svých pracích\cite{Kmunicek2011thesis}\cite{Koman2012thesis}.
+Nemohl jsem použít data, které A.~Kmuníček a P.~Koman naměřili ve svých pracích\cite{Kmunicek2011thesis}\cite{Koman2012thesis}.
 Srovnání výsledných časů by bylo nepřesné, protože jsem neměl k~dispozici stejné prostředí pro měření, v~kterém byly měřeny implementace v~\CC a C\#.
 
 Po poradě s Dr.~Lokočem jsem provedl portaci původního kódu \CC psaného pro Windows na Linux.
@@ -601,7 +605,7 @@ C\# implementace nebyla portována a nebyla tedy ani měřena.
 
 Kolegové měřili dva dotazy o~poloměrech 0,15 a 0,25 a vyhledávaly 100 objektů.
 Vzhledem k~tomu, že jsem pro své měření používal poloměr 0,15, zvolil jsem pouze toto porovnání.
-Parametry \MIndex{u} byly: více-stupňový cluster 3, počet pivotů 10 a stupeň \BPTree{} 50.
+Parametry \MIndex{u} byly: vícestupňový cluster 3, počet pivotů 10 a stupeň \BPTree{} 50.
 
 Rozhodl jsem se pro porovnání použít konfiguraci s~nejlepším časem dosaženým v~Java -- dynamický \MIndex{} s~maximálním počtem 10 objektů v~listu a JVM1, a také s~nejlepším výsledkem při použit stupně \BPTree{} 500.
 
@@ -614,18 +618,18 @@ Verze kompilátoru byla (Debian 4.7.2-5) 4.7.2.
 \hline
 Implementace & Stupeň \BPTree & Čas (\si{\ms}) \\ \hline
 \hline
-\CC & 50 & \SI{2432}{\ms} \\ \hline
+\CC & 50 & \SI{2.432}{\ms} \\ \hline
 \CC{} (\cmd{-O3}) & 50 & \SI{697}{\ms} \\ \hline
 \CC{} (\cmd{-O3 -march=native}) & 50 & \SI{408}{\ms} \\ \hline
-Java JVM1 & 50 &  \SI{3979}{\ms} \\ \hline
-Java JVM1 & 500 &  \SI{3500}{\ms} \\ \hline
+Java JVM1 & 50 &  \SI{3.979}{\ms} \\ \hline
+Java JVM1 & 500 &  \SI{3.500}{\ms} \\ \hline
 \end{tabular}
 \caption{Srovnání {\protect\CC} a Java}
 \end{table}
 
 V~tomto porovnání implementace v~\CC{} provedla \emph{Range Query} v~1,6-krát menším čase než Java s~parametry JVM1.
 Toto je také očekávaný výsledek.
-Důvodem je zřejmě \uv{masivní používání}\cite{Kmunicek2011thesis} polí a použití pointerové aritmetiky v~implementaci \MIndex{u} v~\CC{}.
+Důvodem je zřejmě \uv{masivní používání}\cite{Kmunicek2011thesis} polí a použití ukazatelové aritmetiky v~implementaci \MIndex{u} v~\CC{}.
 Implementace v~Java a C\# využívají možnosti knihoven pro daný jazyk, např. kolekcí a zaměřily se na objektově orientovaný návrh.
 Používání kolekcí umožňuje rychlejší vývoj, ale v~některých případech je toto penalizováno menší výkonností výsledného kódu.
 
