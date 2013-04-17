@@ -148,6 +148,20 @@ Celá implementace \MIndex{} pracuje s~objekty, které implementují rozhraní \
 Rozhraní \type{Distanceable} má pouze jednu metodu \method{double distance(Distanceable d)}, která vrací vzdálenost objektu od \method{d}.
 Tím je zajištěna případná znovupoužitelnost kódu pro jiné datové typy než je vektor.
 
+\begin{figure}
+\centering
+\begin{mpost}[use,mpsettings={input metauml;}]
+
+Interface.Distanceable("Distanceable")
+	("+distance(object:D):double");
+ClassTemplate.TDistanceable("D")(Distanceable);
+
+drawObjects(Distanceable, TDistanceable);
+\end{mpost}
+
+\caption{\type{Distanceable} UML diagram}
+\end{figure}
+
 \subsubsection{Výpočet maximální vzdálenosti mezi prvky}
 Pro výpočet maximální vzdálenosti byla implementována metoda hrubou silou, kdy se počítají vzájemné vzdálenosti všech prvků v~množině a vybere se vzdálenost, která je největší pro dva objekty.
 Asymptotická složitost je \BigO{n^2}, protože se množina prochází ve dvou smyčkách.
