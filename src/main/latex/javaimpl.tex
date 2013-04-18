@@ -295,23 +295,101 @@ Toto řešení jsem zvolil kvůli oddělení zodpovědnosti vyhledávání a uch
 V~podstatě je téměř doslovně přepsán algoritmus popsaný v~\prettyref{sec:Range-Query}.
 Jak bylo již zmíněno v~začátku této sekce, k~odstranění nutnosti identifikování typu clusteru za běhu\footnote{V jazyce Java k~identifikaci typu slouží operátor \method{instanceof}\cite{gosling2013java}, obdobně jako v~\CC{} je operátor \method{typeid}\cite{ISO:2012:CPP}} je použit \emph{Visitor Pattern}. \prettyref{fig:rangequery-visitor-seq} popisuje toto volání detailně.
 
-
-\begin{figure}
-\centering
+\begin{figure}[p]
+\footnotesize
+%\begin{sideways}
 \begin{sequencediagram}
-%  \newthread{mi}{:MIndex}{MIndex}
-%  \newinst{rq}{:ClusterRangeQuery}{}
-  \newthread{crq}{:ClusterRangeQuery}{}
-  \newinst{ic}{:InternalCluster}{}
-  \newinst{lc}{:LeafCluster}{}
+  \newthread{mi}{:MIndex}{MIndex}
+  \newinst[1]{crq}{crq:ClusterRangeQuery}
+  \newinst[2]{cq}{cq:Queue<Cluster<D{>}>}
+%  \newinst{ic}{:InternalCluster}
+%  \newinst{lc}{:LeafCluster}
+%  \sidelabel{mi}{left}{rangeQuery(D, range)}
 
-%  \begin{call}{crq}{performQuery()}{rq}{nalezené objekty}
-    \begin{sdblock}{Dotaz}{dokud není fronta clusterů prázdná}
-    \end{sdblock}
-%  \end{call}
+  \begin{call}{mi}{performQuery()}{crq}{nalezené objekty}
+       \begin{call}{crq}{addAll(root.getSubclusters())}{cq}{}
+       \end{call}
+     \begin{sdblock}{loop}{cq není prázdná}
+       \begin{call}{crq}{poll()}{cq}{cluster}
+       \end{call}
+       \begin{sdblock}{opt}{[!doublePivotDistanceConstraint(...)]} 
+         \begin{sdblock}{alt}{InternalCluster}
+        \begin{sdblock}{ref}{sd InternalCluster}
+         \separateline{crq}{crq}
+        \end{sdblock}
+         \separateline{crq}{cq}
+           \begin{altblock}{crq}{LeafCluster}{cq}
+         \begin{sdblock}{ref}{sd LeafCluster}
+         \separateline{crq}{crq}
+          \end{sdblock}
+         \end{altblock}
+       \end{sdblock}	
+     \end{sdblock}	
+   \end{sdblock}
+ \end{call}
+\end{sequencediagram}
+%\end{sideways}
+
+\caption{Sekvenční diagram volání \emph{Range Query}}
+\label{fig:rangequery-visitor-seq}
+\end{figure}
+
+\begin{figure}[ht]
+\footnotesize
+\begin{sequencediagram}
+  \newthread{crq}{crq:ClusterRangeQuery}
+  \newinst[2]{cq}{cq:Queue<Cluster<D{>}>}
+  \newinst{ic}{ic:InternalCluster}
+% \sidecall{mi}{left}{rangeQuery(D, range)}
+
+\begin{sdblock}{sd}{InternalCluster}
+       \begin{call}{crq}{accept(this)}{ic}{}
+           \begin{call}{ic}{enterInternalCluster(this)}{crq}{}
+           \begin{call}{crq}{addAll(ic.getSubClusters())}{cq}{}
+           \end{call}
+           \end{call}           
+       \end{call}
+\end{sdblock}
 \end{sequencediagram}
 
-\caption{Sekvenční diagram volání \emph{Range Query}}\label{fig:rangequery-visitor-seq}
+\caption{Sekvenční diagram volání \emph{Range Query} pro \type{InternalCluster}}
+\label{fig:rangequery-visitor-seq-internal}
+\end{figure}
+
+\begin{figure}[ht]
+\footnotesize
+\begin{sequencediagram}
+  \newthread{crq}{crq:ClusterRangeQuery}
+  \newinst[2]{bt}{bt:BPusTreeMultiMap}
+  \newinst{fo}{fo:List<D>}
+%  \newinst{ic}{:InternalCluster}
+  \newinst{lc}{:LeafCluster}
+%  \sidelabel{mi}{left}{rangeQuery(D, range)}
+
+\begin{sdblock}{sd}{LeafCluster}
+       \begin{call}{crq}{accept(this)}{lc}{}           
+           \begin{call}{lc}{enterLeafCluster(this)}{crq}{}
+           \begin{sdblock}{opt}{[!rangePivotDistanceConstraint(...)]}
+              \begin{callself}{crq}{rangeSearchForObjects(keyMin)}{objects}
+                 \begin{call}{crq}{rangeSearch(r1, r2)}{bt}{objects}
+                 \end{call}
+              \end{callself}
+           \begin{sdblock}{loop}{objects}
+           \begin{sdblock}{opt}{[!pivotShouldBeFiltered(object, ...)]}
+           \begin{sdblock}{opt}{[!isObjectInRange(object, ...)]}
+                 \begin{call}{crq}{add(object)}{fo}{}
+                 \end{call}
+           \end{sdblock}
+           \end{sdblock}
+           \end{sdblock}
+           \end{sdblock}
+           \end{call}
+       \end{call}           
+\end{sdblock}
+\end{sequencediagram}
+
+\caption{Sekvenční diagram volání \emph{Range Query} pro \type{LeafCluster}}
+\label{fig:rangequery-visitor-seq-leaf}
 \end{figure}
 
 \section{Měření výkonu v~Java\label{sec:vykonvjava}}
@@ -550,7 +628,7 @@ Pro zobrazení zásadního vlivu nastavení JVM je i zobrazen vícestupňový \M
 \begin{figure}[t]
 \centering
 \includegraphics{best_compare}
-\caption{Porovnání nejlepších a nejhorších výsledků Range Query}
+\caption{Porovnání nejlepších a nejhorších výsledků \emph{Range Query}}
 \label{fig:jvm1p50}
 \end{figure}
 

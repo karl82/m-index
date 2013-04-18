@@ -1,0 +1,54 @@
+%% extension for pgf-umlsd v0.5 2009/09/30, which TeXLive comes along
+
+%% \leftsidelabel{thread}{side}{label}
+%% side: left right above below
+\newcommand{\sidelabel}[3]{
+    \stepcounter{seqlevel}
+    \path
+    (#1)+(0,-\theseqlevel*\unitfactor-0.7*\unitfactor) node (messbeg) {};
+    \draw (messbeg) node[#2] {#3};
+}
+
+%% \leftsidelabel{thread}{side}{label}
+%% side: left right above below
+\newcommand{\sidecall}[3]{
+    \stepcounter{seqlevel}
+    \path
+    (#1)+(0,-\theseqlevel*\unitfactor-0.7*\unitfactor) node (messbeg) {};
+    \draw [->,>=triangle 60] (messbeg) -- (#1)
+    node[#2] {#3};
+}
+
+%% mostly used between altblocks
+%% \separateline[line style]{from}{to}
+\newcommand{\separateline}[3][dotted, color=black, very thick]{
+    \stepcounter{seqlevel}
+    \path
+    (#2)+(.1,-\theseqlevel*\unitfactor-.8*\unitfactor) node (from) {}
+    (#3)+(-.1,-\theseqlevel*\unitfactor-.8*\unitfactor) node (to) {};
+    \draw[#1] (from) -- (to);
+}
+
+%% \begin{altblock}{from}{condition}{to}
+%% %%calls here
+%% \end{altblock}
+\newenvironment{altblock}[3]{
+    \stepcounter{seqlevel}
+    \path
+    (#1)+(.1,-\theseqlevel*\unitfactor-\unitfactor) node (from) {}
+    (#3)+(-.1,-\theseqlevel*\unitfactor-\unitfactor) node (to) {};
+    \draw (from) node[above right] {[#2]};
+}{}
+
+%%
+%\newcommand{\postlevel}{\addtocounter{seqlevel}{+1}}
+
+%% \newthread[thread distance]{color fill style}{left}{right}
+%\renewcommand{\newthread}[4][1]{
+%    \newinst[#1]{#3}{#4}
+%    \stepcounter{threadnum}
+%    \node[below of=inst\theinstnum,node distance=1em] (thread\thethreadnum) {};
+%    \tikzstyle{threadcolor\thethreadnum}=[fill=#2]
+%    \tikzstyle{instcolor#3}=[fill=#2]
+%}
+
