@@ -648,7 +648,7 @@ Implementace v~Java a C\# využívají možnosti knihoven pro daný jazyk, např
 Používání kolekcí umožňuje rychlejší vývoj, ale v~některých případech je toto penalizováno menší výkonností výsledného kódu.
 
 Zajímavý je i výsledek dosažený povolením větších optimalizací -- parametry \cmd{-O3} a \cmd{-march=native} pro kompilátor.
-Volba \cmd{-O3} povoluje např. \emph{loop unrolling}.
+Volba \cmd{-O3} povoluje všechny optimalizace obsažené v~\cmd{-O2}, navíc povoluje ještě tyto optimalizace: \cmd{-finline-functions}, \cmd{-funswitch-loops}, \cmd{-fpredictive-commoning}, \cmd{-fgcse-after-reload}, \cmd{-ftree-vectorize}, \cmd{-fvect-cost-model}, \cmd{-ftree-partial-pre} a \linebreak \cmd{-fipa-cp-clone}\cite{gccoptions}.
 Volbou \cmd{-march=native} kompilátor používá všechny dostupné instrukce na dané architektuře.
 Při kombinaci obou dvou voleb byl výsledný čas 6-krát menší než s~výchozími volbami kompilátoru (\cmd{-O2 -g}).
 Je to pravděpodobně využitím vektorových instrukcí při zpracovávání polí a v~nich uložených dat.
@@ -674,4 +674,4 @@ Checking program.cpp: __unix__...
 \end{verbatim}
 }
 
-Při bližší analýze kódu, byla většina chyb způsobena tím, že se pole, alokované pomocí operátoru \method{new[]}, uvolňovaly pomocí operátoru \method{delete} místo \method{delete[]}\cite{Stroustrup:1997:CPL:523265}.
+Analýze kódu odhalila nesprávný způsob práce s~uvolňováním pole, alokovaného pomocí operátoru \method{new[]}. Místo operátoru \method{delete[]} byly uvolňovány pomocí operátoru \method{delete}\cite{Stroustrup:1997:CPL:523265}.
