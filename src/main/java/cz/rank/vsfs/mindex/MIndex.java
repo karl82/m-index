@@ -219,9 +219,15 @@ public abstract class MIndex<D extends Distanceable<D>> {
             }
 
             final List<D> objects = rangeSearchForObjects(keyMin);
+            filterObjectsFromRangeSearch(objects);
+        }
+
+        private void filterObjectsFromRangeSearch(List<D> objects) {
             for (D object : objects) {
                 if (pivotShouldBeFiltered(object, queryObject, queryObjectPivotDistance, normalizedRange)) {
                     queryStats.incrementPivotFilter();
+
+                    continue;
                 }
 
                 if (isObjectInRange(object, queryObject, range)) {
