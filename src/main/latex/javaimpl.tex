@@ -545,7 +545,8 @@ Výsledný čas je \SI{5201}{\ms} a rozdíl oproti nejkratší konfiguraci je v�
 
 \prettyref{fig:jvm1p50} zobrazuje nejrychlejší vyhledání v~závislosti na stupni \BPTree{}.
 Jsou zobrazeny časy pro jednotlivé nejlepší parametry \MIndex{ů} z~jednotlivých nastavení JVM.
-Pro zobrazení zásadního vlivu nastavení JVM je i zobrazen vícestupňový \MIndex{} pro \num{50} pivotů a ú
+Pro zobrazení zásadního vlivu nastavení JVM je i zobrazen vícestupňový \MIndex{} pro \num{50} pivotů a stupeň clusteru \num{4}.
+
 \begin{figure}[t]
 \centering
 \includegraphics{best_compare}
@@ -554,8 +555,7 @@ Pro zobrazení zásadního vlivu nastavení JVM je i zobrazen vícestupňový \M
 \end{figure}
 
 Z~výsledků měření vyplývá, že parametry JVM zásadním způsobem ovlivňují výslednou efektivitu kódu.
-\prettyref{tab:jvmavgtime} zobrazuje průměrnou dobu jednoho měření.
-\footnote{Hodnoty jsou spíše orientační pro posouzení vlivu parametrů JVM.}
+\prettyref{tab:jvmavgtime} zobrazuje průměrnou dobu jednoho měření.\footnote{Hodnoty jsou spíše orientační pro posouzení vlivu parametrů JVM.}
 Volba \cmd{-XX:+UseCompressedOops} je zásadní pro běh JVM v~64 bitovém prostředí.
 Rozhodně není doporučeno tuto volbu vypínat.
 Jak bylo uvedeno v~\prettyref{sec:measurementmethod}, volba \cmd{-XX:+AggressiveOpts} je experimentální a její efekt na výkon se může měnit mezi verzemi JVM, ale lze ji doporučit jako možný způsob zrychlení běhu programu.
