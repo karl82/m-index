@@ -10,10 +10,10 @@ Příkladem byla statická analýza provedená na implementaci v~\CC{} od A.~Kmu
 
 Z~uskutečněných měření vyplynulo, že \MIndex{} není závislý jen parametrech, jako je počet pivotů rozdělujících množinu objektů a jeho maximální úroveň dělení, ale také na parametrech použitých pomocných struktur.
 V~tomto případě na stupni \BPTree.
-Měření proběhlo více jak 5000, což je už dostatečný reprezentační vzorek pro podložení závěrů této práce.
+Měření proběhlo více jak \num{5000}, což je už dostatečný reprezentační vzorek pro podložení závěrů této práce.
 
 \MIndex{} nebyl zkoumán na průběh ořezávání clusterů, ale větší důraz byl kladen na praktičnost implementace a na parametry JVM, které ovlivňují výkonnost programu běžícím v~JVM.
-Z~těchto měření lze doporučit nevypínat volbu \cmd{-XX:+UseCompressedOops} v~64 bitové JVM neboť má zásadní význam na celkový výkon aplikace.
+Z~těchto měření lze doporučit nevypínat volbu \cmd{-XX:+UseCompressedOops} v~64bitové JVM neboť má zásadní význam na celkový výkon aplikace.
 Volbu \cmd{-XX:+AggressiveOpts} lze doporučit zapínat, ovšem s~tím, že její dopad na výkon se může lišit s~verzemi JVM a je tedy nutné si ověřit (změřit) výkon s~každou novou verzí JVM.
 V~práci byly také popsány úskalí spojené se správným měřením výkonnosti v~JVM -- interpretovaný kód, dynamický překlad \bytecode{} za běhu aplikace, možné optimalizace výsledného kódu kompilátorem, zavádění tříd a automatický úklid paměti v~Java.
 Byl uveden i návod na minimalizování ovlivnění měření \uv{zahřátím} JVM.

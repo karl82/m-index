@@ -132,7 +132,7 @@ Pokud by se zde použila dědičnost pro odstranění identifikace typů, muselo
 Ve výsledku by tento postup znepřehlednil a zvýšil složitost kódu clusterů.
 Použití \emph{Visitor pattern} je elegantní řešení s~jasně rozdělenou zodpovědností mezi třídami.
 
-K ověření funkčnosti jednotlivých částí kódu jsou použity \emph{unit testy} s~pokrytím více jak 70$\%$.
+K ověření funkčnosti jednotlivých částí kódu jsou použity \emph{unit testy} s~pokrytím více jak \SI{70}{\percent}.
 Nebyly pokryty jednoduché metody.
 Tyto testy zabránily regresím při změnách v~kódu.
 
@@ -479,7 +479,7 @@ Měření probíhalo v~tomto prostředí(\prettyref{tab:environment}):
 \hline
 \multirow{3}{*}{RAM} & Velikost & 12GB \\ \cline{2-3}
 & Typ & DDR3 \\ \cline{2-3}
-& Frekvence & \SI{1.333}{\MHz} \\ \cline{2-3}
+& Frekvence & \SI{1333}{\MHz} \\ \cline{2-3}
 \hline
 \multirow{2}{*}{Operační systém} &  \multicolumn{2}{|c|}{Debian/GNU Linux 7.0}  \\
 &  \multicolumn{2}{|c|}{\tiny 3.8-trunk-amd64 \#1 SMP Debian 3.8.3-1~experimental.1 x86\_64 GNU/Linux} \\ \cline{2-3}
@@ -498,23 +498,23 @@ Měření probíhalo v~tomto prostředí(\prettyref{tab:environment}):
 \hline
 Parametr & Hodnot(a/y) \\ \hline
 \hline
-počet pivotů & 10, 20, 30, 50 \\ \hline
-počet vyhl. objektů & 100 \\ \hline
-max. úroveň clusteru & 2, 3, 4 \\ \hline
-počet měření & 20 \\ \hline
-max. počet objektů v~listech & 10, 20, 50, 100, 200, 300, 500 \\ \hline
-vzdálenost & 0,15 \\ \hline
-řád \BPTree{} & 50, 100, 500 \\ \hline
-počet objektů pro porovnání & 68.040 \\ \hline
-dimenze objektů & 32 \\ \hline
+počet pivotů & \numlist{10; 20; 30; 50} \\ \hline
+počet vyhl. objektů & \num{100} \\ \hline
+max. úroveň clusteru & \numlist{2; 3; 4} \\ \hline
+počet měření & \num{20} \\ \hline
+max. počet objektů v~listech & \numlist{10; 20; 50; 100; 200; 300; 500} \\ \hline
+vzdálenost & \numlist{0.15} \\ \hline
+řád \BPTree{} & \numlist{50; 100; 500} \\ \hline
+počet objektů pro porovnání & \num{68040} \\ \hline
+dimenze objektů & \num{32} \\ \hline
 \end{tabular}
 \end{table}
 
-Původním záměrem bylo změřit více hodnot, např. počet pivotů 100 s~max. počtem objektů v~listech 10 a úrovní clusteru 5.
-Při těchto parametrech byl ovšem počet clusterů extrémně velký -- $100 \times 99 \times 98 \times 97 \times 96 = 9.034.502.400$, a docházelo k~přetečení typu \type{Integer} v~kolekcích a k~nesmyslným výsledkům.\footnote{V~Java je typ \type{Integer} 4 bajtový celočíselný typ se znaménkem a může mít maximálně hodnotu $2^{31}-1$}
+Původním záměrem bylo změřit více hodnot, např. počet pivotů \num{100} s~max. počtem objektů v~listech \num{10} a úrovní clusteru \num{5}.
+Při těchto parametrech byl ovšem počet clusterů extrémně velký -- $100 \times 99 \times 98 \times 97 \times 96 = \num{9034502400}$, a docházelo k~přetečení typu \type{Integer} v~kolekcích a k~nesmyslným výsledkům.\footnote{V~Java je typ \type{Integer} 4 bajtový celočíselný typ se znaménkem a může mít maximálně hodnotu $2^{31}-1$}
 
-Při tomto množství je celkový počet kombinací parametrů 252 pro dynamický cluster a 36 pro vícestupňový cluster.
-Jelikož počet měření je 20 pro každý parametr, bylo celkově vykonáno 5.760 měření.
+Při tomto množství je celkový počet kombinací parametrů \num{252} pro dynamický cluster a \num{36} pro vícestupňový cluster.
+Jelikož počet měření je \num{20} pro každý parametr, bylo celkově vykonáno \num{5760} měření.
 
 Každá série měření byla spouštěna s~JVM s~různými kombinacemi parametrů, které byly uvedeny v~\prettyref{sec:measurementmethod}.
 Implementace GC byla použita G1.
@@ -535,17 +535,17 @@ JVM4 & Vypnuto & Vypnuto \\ \hline
 \end{table}
 
 \subsection{Výsledky měření}
-Nejlepšího výsledku, tzn.~v~nejkratším čase, bylo dosaženo s~dynamickým \MIndex{em} s~následujícími parametry: počet pivotů 10, maximální úrovní clusteru 4, maximálním počtem objektů v~listech 10 a stupněm \BPTree{} 500.
-Výsledný čas byl \SI{3.485}{\ms} pro parametry JVM1.
+Nejlepšího výsledku, tzn.~v~nejkratším čase, bylo dosaženo s~dynamickým \MIndex{em} s~následujícími parametry: počet pivotů \num{10}, maximální úrovní clusteru \num{4}, maximálním počtem objektů v~listech \num{10} a stupněm \BPTree{} \num{500}.
+Výsledný čas byl \SI{3485}{\ms} pro parametry JVM1.
 Tato konfigurace dosáhla nejkratšího času i s~ostatními parametry JVM, pouze pro JVM2 byla až \uv{druhá}.
 Rozdíl časů mezi maximálně optimalizovaným JVM a nejméně (JVM1 vs JVM4) s~těmito parametry byl více jak \SI{200}{\ms}.
 
-Nejdelší zpracování dotazů bylo u~vícestupňového \MIndex{u} pro JVM4 s~parametry: počet pivotů 50, maximální úrovní clusteru 4 a stupněm \BPTree{} 10.
-Výsledný čas je \SI{5.201}{\ms} a rozdíl oproti nejkratší konfiguraci je více jak \SI{1.700}{\ms}.
+Nejdelší zpracování dotazů bylo u~vícestupňového \MIndex{u} pro JVM4 s~parametry: počet pivotů \num{50}, maximální úrovní clusteru \num{4} a stupněm \BPTree{} \num{10}.
+Výsledný čas je \SI{5201}{\ms} a rozdíl oproti nejkratší konfiguraci je více jak \SI{1700}{\ms}.
 
 \prettyref{fig:jvm1p50} zobrazuje nejrychlejší vyhledání v~závislosti na stupni \BPTree{}.
 Jsou zobrazeny časy pro jednotlivé nejlepší parametry \MIndex{ů} z~jednotlivých nastavení JVM.
-Pro zobrazení zásadního vlivu nastavení JVM je i zobrazen vícestupňový \MIndex{} pro 50 pivotů a ú
+Pro zobrazení zásadního vlivu nastavení JVM je i zobrazen vícestupňový \MIndex{} pro \num{50} pivotů a ú
 \begin{figure}[t]
 \centering
 \includegraphics{best_compare}
@@ -566,16 +566,16 @@ Jak bylo uvedeno v~\prettyref{sec:measurementmethod}, volba \cmd{-XX:+Aggressive
 \hline
 Konfigurace JVM & Průměrný čas měření \\ \hline
 \hline
-JVM1 & \SI{3.961}{\ms} \\ \hline
-JVM2 & \SI{4.205}{\ms} \\ \hline
-JVM3 & \SI{4.206}{\ms} \\ \hline
-JVM4 & \SI{4.524}{\ms} \\ \hline
+JVM1 & \SI{3961}{\ms} \\ \hline
+JVM2 & \SI{4205}{\ms} \\ \hline
+JVM3 & \SI{4206}{\ms} \\ \hline
+JVM4 & \SI{4524}{\ms} \\ \hline
 \end{tabular}
 \caption{Průměrný čas měření}
 \label{tab:jvmavgtime}
 \end{table}
 
-Obecně lze konstatovat, že konfigurace s~menším počtem pivotů (10), s~větší úrovní clusteru (4) a s~větším stupněm \BPTree{} (500) dosahovaly kratších časů.
+Obecně lze konstatovat, že konfigurace s~menším počtem pivotů (\num{10}), s~větší úrovní clusteru (\num{4}) a s~větším stupněm \BPTree{} (\num{500}) dosahovaly kratších časů.
 Domnívám se, že největší vliv na výsledný čas má velikost stupně \BPTree{}.
 Důvodem je pravděpodobně uložení klíčů v~rámci listu v~paměti, resp. CPU cache.
 Vyhledání rozsahu probíhá tak, že se nalezne list stromu, který obsahuje menší klíč z~hledaného rozsahu.
@@ -598,30 +598,30 @@ Jak jsem uvedl výše, toto je má domněnka, která musí být potvrzena odpov�
 \prettyref{fig:jvm1cl4_bt500} zobrazuje, jakým způsobem ovlivňuje maximální počet objektů v~listech dynamického \MIndex{u}.
 Pro porovnání jsou zobrazeny i časy více-stupňového \MIndex{u}.
 Ty jsou zaneseny jako vodorovné čáry.
-Pro nižší počet pivotů (10 a 20) mají výsledné časy se zvyšujícím se počtem maximálních počtů objektů v~listech téměř lineární stoupající tendenci.
+Pro nižší počet pivotů (\num{10} a \num{20}) mají výsledné časy se zvyšujícím se počtem maximálních počtů objektů v~listech téměř lineární stoupající tendenci.
 U~vyššího počtu pivotů je průběh jiný.
-Není lineární a se snižujícím se max. počtem objektů v~listech (10) se dokonce zvyšuje.
+Není lineární a se snižujícím se max. počtem objektů v~listech (\num{10}) se dokonce zvyšuje.
 Důvod, proč konfigurace s~nízkým počtem pivotů jsou dominantní je ten, že v~této konkrétní množině objektů pro vyhledávání jsou objekty shlukovány kolem konkrétních pivotů.
 Utvářejí se clustery s~velkým množstvím objektů a v~jejich okolí dochází k~vyhledávání v~\BPTree{}.
-Náklady při filtrování většího množství pivotů v~\emph{Range Query} je zřejmě signifikantní a neefektivní.
+Náklady při filtrování většího množství pivotů v~\emph{Range Query} jsou zřejmě signifikantní a filtrování neefektivní.
 
 Je nutno podotknout, že při větší množině porovnávaných objektů (v~řádu stovek tisíců), by byl zřejmě \MIndex{} s~počtem pivotů 10 již nedostačující a neefektivně by rozděloval prostor.
 Z~toho vyplývá, že je nutné pro každou množinu objektů odladit parametry \MIndex{u} a nelze doporučit jednu konkretní konfiguraci.
 
 \section{Srovnání výkonu implementací v~{\protect \CC}, C\# a Java}
 Nemohl jsem použít data, které A.~Kmuníček a P.~Koman naměřili ve svých pracích\cite{Kmunicek2011thesis}\cite{Koman2012thesis}.
-Srovnání výsledných časů by bylo nepřesné, protože jsem neměl k~dispozici stejné prostředí pro měření, v~kterém byly měřeny implementace v~\CC a C\#.
+Srovnání výsledných časů by bylo nepřesné, protože jsem neměl k~dispozici stejné prostředí pro měření, v~kterém byly měřeny implementace v~\CC{} a C\#.
 
-Po poradě s Dr.~Lokočem jsem provedl portaci původního kódu \CC psaného pro Windows na Linux.
+Po poradě s Dr.~Lokočem jsem provedl portaci původního kódu \CC{} psaného pro Windows na Linux.
 Musel jsem změnit několik platformně závislých volání pro zjištění aktuálního času.
 Žádné jiné změny nebyly provedeny ohledně algoritmu.
 C\# implementace nebyla portována a nebyla tedy ani měřena.
 
-Kolegové měřili dva dotazy o~poloměrech 0,15 a 0,25 a vyhledávaly 100 objektů.
-Vzhledem k~tomu, že jsem pro své měření používal poloměr 0,15, zvolil jsem pouze toto porovnání.
-Parametry \MIndex{u} byly: vícestupňový cluster 3, počet pivotů 10 a stupeň \BPTree{} 50.
+Kolegové měřili dva dotazy o~poloměrech \num{0.15} a \num{0.25} a vyhledávaly \num{100} objektů.
+Vzhledem k~tomu, že jsem pro své měření používal poloměr \num{0.15}, zvolil jsem pouze toto porovnání.
+Parametry \MIndex{u} byly: vícestupňový cluster \num{3}, počet pivotů \num{10} a stupeň \BPTree{} \num{50}.
 
-Rozhodl jsem se pro porovnání použít konfiguraci s~nejlepším časem dosaženým v~Java -- dynamický \MIndex{} s~maximálním počtem 10 objektů v~listu a JVM1, a také s~nejlepším výsledkem při použit stupně \BPTree{} 500.
+Rozhodl jsem se pro porovnání použít konfiguraci s~nejlepším časem dosaženým v~Java -- dynamický \MIndex{} s~maximálním počtem \num{10} objektů v~listu a JVM1, a také s~nejlepším výsledkem při použit stupně \BPTree{} \num{500}.
 
 Měření probíhala s~různými parametry kompilátoru GNU \CC.
 Verze kompilátoru byla (Debian 4.7.2-5) 4.7.2.
@@ -632,16 +632,16 @@ Verze kompilátoru byla (Debian 4.7.2-5) 4.7.2.
 \hline
 Implementace & Stupeň \BPTree & Čas (\si{\ms}) \\ \hline
 \hline
-\CC & 50 & \SI{2.432}{\ms} \\ \hline
-\CC{} (\cmd{-O3}) & 50 & \SI{697}{\ms} \\ \hline
-\CC{} (\cmd{-O3 -march=native}) & 50 & \SI{408}{\ms} \\ \hline
-Java JVM1 & 50 &  \SI{3.979}{\ms} \\ \hline
-Java JVM1 & 500 &  \SI{3.500}{\ms} \\ \hline
+\CC{} & \num{50} & \SI{2432}{\ms} \\ \hline
+\CC{} (\cmd{-O3}) & \num{50} & \SI{697}{\ms} \\ \hline
+\CC{} (\cmd{-O3 -march=native}) & \num{50} & \SI{408}{\ms} \\ \hline
+Java JVM1 & \num{50} &  \SI{3979}{\ms} \\ \hline
+Java JVM1 & \num{500} &  \SI{3500}{\ms} \\ \hline
 \end{tabular}
 \caption{Srovnání {\protect\CC} a Java}
 \end{table}
 
-V~tomto porovnání implementace v~\CC{} provedla \emph{Range Query} v~1,6-krát menším čase než Java s~parametry JVM1.
+V~tomto porovnání implementace v~\CC{} provedla \emph{Range Query} v~\SI{1.6}{$\times$} menším čase než Java s~parametry JVM1.
 Toto je také očekávaný výsledek.
 Důvodem je zřejmě \uv{masivní používání}\cite{Kmunicek2011thesis} polí a použití ukazatelové aritmetiky v~implementaci \MIndex{u} v~\CC{}.
 Implementace v~Java a C\# využívají možnosti knihoven pro daný jazyk, např. kolekcí a zaměřily se na objektově orientovaný návrh.
@@ -650,14 +650,14 @@ Používání kolekcí umožňuje rychlejší vývoj, ale v~některých případ
 Zajímavý je i výsledek dosažený povolením větších optimalizací -- parametry \cmd{-O3} a \cmd{-march=native} pro kompilátor.
 Volba \cmd{-O3} povoluje všechny optimalizace obsažené v~\cmd{-O2}, navíc povoluje ještě tyto optimalizace: \cmd{-finline-functions}, \cmd{-funswitch-loops}, \cmd{-fpredictive-commoning}, \cmd{-fgcse-after-reload}, \cmd{-ftree-vectorize}, \cmd{-fvect-cost-model}, \cmd{-ftree-partial-pre} a \linebreak \cmd{-fipa-cp-clone}\cite{gccoptions}.
 Volbou \cmd{-march=native} kompilátor používá všechny dostupné instrukce na dané architektuře.
-Při kombinaci obou dvou voleb byl výsledný čas 6-krát menší než s~výchozími volbami kompilátoru (\cmd{-O2 -g}).
+Při kombinaci obou dvou voleb byl výsledný čas 6krát menší než s~výchozími volbami kompilátoru (\cmd{-O2 -g}).
 Je to pravděpodobně využitím vektorových instrukcí při zpracovávání polí a v~nich uložených dat.
 Nezkoumal jsem do detailů, jakým způsobem se navzájem liší kód generovaný kompilátorem \CC.
 
 V~\prettyref{sec:memorymanagement} uvádím, že práce v~jazyce Java je bezpečnější, co se týče alokace a dealokace paměti.
 Když jsem portoval implementaci \CC{}, chtěl jsem zjistit pomocí statické analýzy kódu, zda netrpí úniky paměti.
 Použil jsem k~tomu volně dostupný program \cmd{cppcheck}\cite{cppcheck}.
-\cmd{cppcheck} nalezl celkem 8 chyb při práci s~dealokováním paměti. Zde je výstup:
+\cmd{cppcheck} nalezl celkem \num{8} chyb při práci s~dealokováním paměti. Zde je výstup:
 {\tiny
 \begin{verbatim}
 Checking program.cpp...
