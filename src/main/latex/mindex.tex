@@ -1,7 +1,7 @@
 \chapter{\MIndex{}}
 
 V~této části je popsán a vybudován Metrický Index --- jeho principy, architektura a prohledávání.
-Text a obrázky v~této kapitole jsou více méně opisem a překladem z~původního popisu \MIndex{u}\cite{Novak:2009:MIE:1637863.1638184}.
+Text a obrázky v~této kapitole jsou vlastním volným překladem nebo převzaty s~odpovídajícím označením z~původního popisu \MIndex{u}\cite{Novak:2009:MIE:1637863.1638184}.
 
 \section{\MIndex{} prvního stupně}
 
@@ -15,12 +15,10 @@ iDist(o)=d(p_{i},o)+i\cdot c
 \]
 
 
-Tento vzorec mapuje všechny prvky z~jakéhokoliv clusteru $C_{i}$
-do intervalu $[i\cdot c,(i+1)\cdot c]$ --- viz \ref{fig:iDistance}\@.
-Datové objekty jsou poté uloženy do B$^{+}$-tree podle jejich \emph{iDist
-}klíčů. Při prohledávání je iDistance prostor procházen podle principu
--- pro \emph{range query} $R(q,r)$ můžeme určit několik intervalů
-\emph{iDist} klíčů, které musejí být k~vyřízení dotazu. %%% co jsem chtel rict??
+Tento vzorec mapuje všechny prvky z~jakéhokoliv clusteru $C_{i}$ do intervalu $[i\cdot c,(i+1)\cdot c]$ --- viz \ref{fig:iDistance}.
+Datové objekty jsou poté uloženy do \BPTree{} podle jejich \emph{iDist} klíčů.
+Při prohledávání je iDistance prostor procházen podle principu -- pro \emph{range query} $R(q,r)$ můžeme určit několik intervalů
+\emph{iDist} klíčů, které musejí být vyhodnoceny v~rámci dotazu.
 
 \begin{figure}[t]
 \center
@@ -70,7 +68,6 @@ clusterů $C_{i,j}$\@. Jinými slovy, cluster $C_{i,j}$ je tvořen
 prvky $o\in X$, pro které pivot $p_{i}$ je nejbližší a $p_{j}$
 je druhý nejbližší: $(0)_{o}=i$ a $(1)_{o}=j$\@.
 Tento postup je zopakován $l$-krát\@.
-%\prettyref{fig:M-Index-level-two} ukazuje příklad \MIndex{u} pro $l=2$\@.
 
 \begin{figure}[t]
 \centering{}\includegraphics[scale=0.5]{m-index-level-two}\caption{\MIndex{} druhého stupně $(l=2)$}
@@ -81,16 +78,16 @@ Tento postup je zopakován $l$-krát\@.
 Mapovací klíč \MIndex{u} je definován $key_{l}\,:\,\mathcal{D\rightarrow\mathbb{R}}$\@.
 Nechť $o\in\mathcal{D}$ patří do clusteru $C_{i_{0},i_{1},\ldots,i_{l-1}}$\@.
 Celočíselná část klíče $key_{l}(o)$ identifikuje cluster: je rovna
-číslu ,,$i_{0}i_{1}\ldots i_{l-1}$''\@. Desetinná část klíče $key_{l}(o)$
+číslu \uv{$i_{0}i_{1}\ldots i_{l-1}$'}. Desetinná část klíče $key_{l}(o)$
 je vzdálenost mezi prvkem $o$ a jeho nejbližším pivotem $d(p_{(0)_{o}},o)$\@.
-Celé mapování \MIndex{u} vyjádříme následujícím vztahem
+Celé mapování \MIndex{u} vyjádříme následujícím vztahem\cite{Novak:2009:MIE:1637863.1638184}
 
 \begin{equation}
 key_{l}=d(p_{(0)_{o}},o)+\sum_{i\text{=0}}^{l-1}(i)_{o}\cdot n{}^{(l-1-i)}\label{eq:M-Index-key}
 \end{equation}
 
 
-\prettyref{fig:M-Index-level-two} zobrazuje mapování pro dvou-stupňový
+\prettyref{fig:M-Index-level-two}\cite{Novak:2009:MIE:1637863.1638184} zobrazuje mapování pro dvoustupňový
 \MIndex{} $(l=2)$\@. Velikost domény je $4^{2}=16$ a prvky z~clusteru
 $C_{i,j}$ jsou mapovány do intervalu $[i\cdot n+j,i\cdot n+j+1]$\@.
 
@@ -102,16 +99,13 @@ Teoreticky, čím více stupňů \MIndex{} má, tím je vyhledávání efektivn�
 Na druhou stranu, velké množství malých clusterů vede k~větší fragmentaci dat při dotazu a větší náročnosti při provádění dotazu.
 V~praxi to vede ke ztrátě výhody z~vícestupňovosti.
 
-Koncept \MIndex{u} může být rozšířen o~dynamický počet stupňů, který umožní \prettyref{eq:M-Index-key} dynamicky zvětšovat (prohlubovat)
-%%% co sem tim chtel rict?
-pouze pro velké clustery, zatím co \prettyref{eq:M-Index-key-max-level}
-požaduje pouze lokální změny klíčů \MIndex{u}. Toto vylepšení vyžaduje
-následující modifikace:
+Koncept \MIndex{u} může být rozšířen o~dynamický počet stupňů, který umožní \prettyref{eq:M-Index-key} dynamicky zvětšovat (prohlubovat) pro velké clustery, protože \prettyref{eq:M-Index-key-max-level} požaduje pouze lokální změny klíčů \MIndex{u}
+Toto vylepšení vyžaduje následující modifikace:
 \begin{itemize}
 \item je vybrán fixní \uv{maximální stupeň \MIndex{u}} $1\leq l_{max}\leq n$
 a doména pro~tento maximální stupeň $n^{l_{max}}$ je alokována
 \item rovnice \prettyref{eq:M-Index-key} pro $key_{l}$ stupně $l,\,1\leq l\leq l_{max}$
-je změněna na:
+je změněna na\cite{Novak:2009:MIE:1637863.1638184}:
 \begin{equation}
 key_{l}=d(p_{(0)_{o}},o)+\sum_{i\text{=0}}^{l-1}(i)_{o}\cdot n{}^{(l_{max}-1-i)}\label{eq:M-Index-key-max-level}
 \end{equation}
@@ -120,8 +114,7 @@ key_{l}=d(p_{(0)_{o}},o)+\sum_{i\text{=0}}^{l-1}(i)_{o}\cdot n{}^{(l_{max}-1-i)}
 pro dané \MIndex{} clustery
 \end{itemize}
 Jak vypadá taková stromová struktura pro $l_{max}=3$ je zobrazeno
-na~\prettyref{fig:Dynamic-Cluster-Tree}. Prvky mají přiřazeny
-%%% obrazek
+na~\prettyref{fig:Dynamic-Cluster-Tree}\cite{Novak:2009:MIE:1637863.1638184}. Prvky mají přiřazeny
 klíče v~nejnižších patrech (listech). Typicky se nastaví limit na
 možný počet prvků/dat uložených v~clusteru a zvýší se stupeň clusteru
 při jeho zaplnění.
