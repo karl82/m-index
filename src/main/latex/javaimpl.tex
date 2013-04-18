@@ -608,14 +608,14 @@ Náklady při filtrování většího množství pivotů v~\emph{Range Query} js
 Je nutno podotknout, že při větší množině porovnávaných objektů (v~řádu stovek tisíců), by byl zřejmě \MIndex{} s~počtem pivotů 10 již nedostačující a neefektivně by rozděloval prostor.
 Z~toho vyplývá, že je nutné pro každou množinu objektů odladit parametry \MIndex{u} a nelze doporučit jednu konkretní konfiguraci.
 
-\section{Srovnání výkonu implementací v~{\protect \CC}, C\# a Java}
+\section{Srovnání výkonu implementací v~{\protect \CC}, {\protect \CS} a Java}
 Nemohl jsem použít data, které A.~Kmuníček a P.~Koman naměřili ve svých pracích\cite{Kmunicek2011thesis}\cite{Koman2012thesis}.
-Srovnání výsledných časů by bylo nepřesné, protože jsem neměl k~dispozici stejné prostředí pro měření, v~kterém byly měřeny implementace v~\CC{} a C\#.
+Srovnání výsledných časů by bylo nepřesné, protože jsem neměl k~dispozici stejné prostředí pro měření, v~kterém byly měřeny implementace v~\CC{} a \CS{}.
 
 Po poradě s Dr.~Lokočem jsem provedl portaci původního kódu \CC{} psaného pro Windows na Linux.
 Musel jsem změnit několik platformně závislých volání pro zjištění aktuálního času.
 Žádné jiné změny nebyly provedeny ohledně algoritmu.
-C\# implementace nebyla portována a nebyla tedy ani měřena.
+\CS{} implementace nebyla portována a nebyla tedy ani měřena.
 
 Kolegové měřili dva dotazy o~poloměrech \num{0.15} a \num{0.25} a vyhledávaly \num{100} objektů.
 Vzhledem k~tomu, že jsem pro své měření používal poloměr \num{0.15}, zvolil jsem pouze toto porovnání.
@@ -644,7 +644,7 @@ Java JVM1 & \num{500} &  \SI{3500}{\ms} \\ \hline
 V~tomto porovnání implementace v~\CC{} provedla \emph{Range Query} v~\SI{1.6}{$\times$} menším čase než Java s~parametry JVM1.
 Toto je také očekávaný výsledek.
 Důvodem je zřejmě \uv{masivní používání}\cite{Kmunicek2011thesis} polí a použití ukazatelové aritmetiky v~implementaci \MIndex{u} v~\CC{}.
-Implementace v~Java a C\# využívají možnosti knihoven pro daný jazyk, např. kolekcí a zaměřily se na objektově orientovaný návrh.
+Implementace v~Java a \CS{} využívají možnosti knihoven pro daný jazyk, např. kolekcí a zaměřily se na objektově orientovaný návrh.
 Používání kolekcí umožňuje rychlejší vývoj, ale v~některých případech je toto penalizováno menší výkonností výsledného kódu.
 
 Zajímavý je i výsledek dosažený povolením větších optimalizací -- parametry \cmd{-O3} a \cmd{-march=native} pro kompilátor.
