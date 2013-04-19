@@ -422,7 +422,7 @@ Složitější optimalizace jsou většinou spojeny se smyčkami -- \emph{loop u
 Když jsou tyto optimalizace hotovy, další modul vezme danou IR a převede ji do strojové podoby. Zde nastávají další optimalizace v~podobě přiřazování hodnot do registrů procesoru, výběr vhodných instrukcí atd\ldots{}
 
 \subsubsection{Kdy JIT překládá do strojového kódu\label{subsub:whenJIT}}
-JIT nepřekládá každou instrukci v~\bytecode{} ihned do strojového kódu. Většina instrukcí je na začátku interpretována. Až v~okamžiku, kdy daná instrukce se stane \emph{hot}, JIT ji zařadí pro překlad. JVM totiž udržuje u~každé metody čítač volání. Pokud daná metoda je volána vícekrát, stane se \emph{hot} a tím se vyvolá i její překlad. Hranice překladu je ve výchozím nastavení 10.000.\footnote{Parametr pro Oracle JVM, který ovlivňuje toto nastavení je \cmd{-XX:CompileThreshold=}} Zjednodušeně řečeno: aby došlo k~překladu libovolné metody do strojového kódu, musí být daná metoda volána aspoň 10.000krát.
+JIT nepřekládá každou instrukci v~\bytecode{} ihned do strojového kódu. Většina instrukcí je na začátku interpretována. Až v~okamžiku, kdy daná instrukce se stane \emph{hot}, JIT ji zařadí pro překlad. JVM totiž udržuje u~každé metody čítač volání. Pokud daná metoda je volána vícekrát, stane se \emph{hot} a tím se vyvolá i její překlad. Hranice překladu je ve výchozím nastavení \num{10000}.\footnote{Parametr pro Oracle JVM, který ovlivňuje toto nastavení je \cmd{-XX:CompileThreshold=}} Zjednodušeně řečeno: aby došlo k~překladu libovolné metody do strojového kódu, musí být daná metoda volána aspoň $\num{10000}\times$.
 
 Níže jsou uvedeny optimalizace, které ovlivňují výkonnost kódu.
 
@@ -719,7 +719,7 @@ Java JVM1 & \num{500} &  \SI{3500}{\ms} \\ \hline
 \caption{Srovnání {\protect\CC} a Java}
 \end{table}
 
-V~tomto porovnání implementace v~\CC{} provedla \emph{Range Query} v~\SI{1.6}{$\times$} menším čase než Java s~parametry JVM1.
+V~tomto porovnání implementace v~\CC{} provedla \emph{Range Query} v~$\num{1.6}\times$ menším čase než Java s~parametry JVM1.
 Toto je také očekávaný výsledek.
 Důvodem je zřejmě \uv{masivní používání}\cite{Kmunicek2011thesis} polí a použití ukazatelové aritmetiky v~implementaci \MIndex{u} v~\CC{}.
 Implementace v~Java a \CS{} využívají možnosti knihoven pro daný jazyk, např. kolekcí a zaměřily se na objektově orientovaný návrh.
@@ -728,7 +728,7 @@ Používání kolekcí umožňuje rychlejší vývoj, ale v~některých případ
 Zajímavý je i výsledek dosažený povolením větších optimalizací -- parametry \cmd{-O3} a \cmd{-march=native} pro kompilátor.
 Volba \cmd{-O3} povoluje všechny optimalizace obsažené v~\cmd{-O2}, navíc povoluje ještě tyto optimalizace: \cmd{-finline-functions}, \cmd{-funswitch-loops}, \cmd{-fpredictive-commoning}, \cmd{-fgcse-after-reload}, \cmd{-ftree-vectorize}, \cmd{-fvect-cost-model}, \cmd{-ftree-partial-pre} a \linebreak \cmd{-fipa-cp-clone}\cite{gccoptions}.
 Volbou \cmd{-march=native} kompilátor používá všechny dostupné instrukce na dané architektuře.
-Při kombinaci obou dvou voleb byl výsledný čas 6krát menší než s~výchozími volbami kompilátoru (\cmd{-O2 -g}).
+Při kombinaci obou dvou voleb byl výsledný čas $\num{6}\times$ menší než s~výchozími volbami kompilátoru (\cmd{-O2 -g}).
 Je to pravděpodobně využitím vektorových instrukcí při zpracovávání polí a v~nich uložených dat.
 Nezkoumal jsem do detailů, jakým způsobem se navzájem liší kód generovaný kompilátorem \CC.
 
