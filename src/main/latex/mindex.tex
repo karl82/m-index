@@ -138,8 +138,8 @@ reprezentace $key$ \@.
 
 \section{Range Query\label{sec:Range-Query}}
 
-Zde popíšeme algoritmus \emph{range~query} $R(q,r)$ jako základní
-dotaz podobnosti.
+Zde popíšeme algoritmus \emph{range~query} $R(q,r)$ jako základní dotaz podobnosti, kde $q$ je objekt v~jehož blízkosti se má hledat a $r$ je poloměr vzdálenosti. Objekt $q$ nemusí existovat v~\MIndex{u}. 
+
 
 V~prvním kroku se spočítají vzdálenosti $d(p_{i},q),\, i=1,\ldots,n$,
 všech $n$~pivotů k~dotazovanému prvku (objektu)\@. Algoritmus
@@ -180,6 +180,18 @@ $key_{l}$ rovnic \prettyref{eq:M-Index-key} nebo \prettyref{eq:M-Index-key-max-l
 Tento mechanismus je \uv{vypůjčen} \linebreak z~iDistance a je přímou aplikací
 \emph{Object-Pivot Distance Constraint}\cite{similaritysearch2006}.
 
+Počítání vzdálenosti $d$ je ve většině metrických prostorů časově náročná operace.
+Snahou je proto minimalizovat její kalkulaci i za cenu uložení některých metadat k~objektům.
+Ke každému prvku  $o\in X$ může být uložena vzdálenost toho objektu od pivotů $d(p_0,o),\ldots,(p_{n-1},o)$, které je nutné  spočítat během vložení prvku do \MIndex{u}.
+Tyto vzdálenosti lze využít k~tzv.~\emph{Pivot Filtering}\cite{similaritysearch2006} a zamezit kalkulaci $d(q,o)$ pokud
+\[
+\max_{i \in \{0,\ldots,n-1\}} |d(p_i,q)-d(p_i,o)| > r.
+\]
+
+Nakonec se vzdálenost $d(q,o)$ spočítá pro všechny neodfiltrované objekty. Pokud vzdálenost mezi prvky je v~požadovaném poloměru dotazu, objekt se vrátí:
+\[
+d(q,o) < r.
+\]
 \section{Architektura \MIndex{u}}
 
 V~předchozích sekcích byly uvedeny algoritmy a mechanismy, které
