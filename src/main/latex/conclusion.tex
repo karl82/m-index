@@ -18,22 +18,22 @@ Volbu \cmd{-XX:+AggressiveOpts} lze doporučit zapínat, ovšem s~tím, že jej�
 V~práci byly také popsány úskalí spojené se správným měřením výkonnosti v~JVM -- interpretovaný kód, dynamický překlad \bytecode{} za běhu aplikace, možné optimalizace výsledného kódu kompilátorem, zavádění tříd a automatický úklid paměti v~Java.
 Byl uveden i návod na minimalizování ovlivnění měření \uv{zahřátím} JVM.
 
-Další možný směr výzkumu \MIndex{u} lze vidět v:
-\begin{itemize}
-\item Paralelní implementaci \emph{Range Query}, která by se dala uplatnit u~velmi velkých množin objektů v~metrickém prostoru a využít potenciál dnešních více-jádrových a více-vláknových procesorů. V~této implementaci se již paralelismus využívá při výpočtu maximální vzdálenosti v~množině prvků mezi sebou a při výpočtu vzdáleností objektů k~pivotům \MIndex{u}.
-\item Zaměření na využití vektorových instrukcí procesorů při řešení prokletí dimensionality, i když zde je zřejmě nemožné využít jazyk Java, protože nemá zabudovanou podporu pro vektorové instrukce.
-\item Jakým způsobem ovlivňují velikosti struktur výpadky CPU cache a popsat způsob pro určení optimálních velikostí.
-\item Implementovat distribuovanou hašovací mapu místo \BPTree{}, která by měla obdobně jako paralelní výpočty uplatnění při vyhledávání ve velmi velkých množinách objektů.
-\item Implementace vyhledání nejbližších $n$-prvků k~danému bodu
- \end{itemize}
- 
 Při vypracovávání této práce jsem využil všech znalostí a zkušeností nabytých nejen během studia na VŠFS, ale také zkušeností z~předchozího nedokončeného studia na ČVUT a z~praxe.
 Tyto znalosti a zkušenosti mi dovolují zapochybovat nad praktickým uplatněním mé implementace \MIndex{u}.
 Důvodem je nutnost spočítání maximální vzdálenosti mezi objekty pro vyhledávání na začátku.
 Použitý naivní způsob výpočtu maximální vzdálenosti mezi prvky v~množině má složitost \BigO{n^2}.
 Pro velké množiny objektů v~řádu miliónů, resp. při přidání objektu do této množiny, je nutné znovu spočítat maximální vzdálenost a většinu času by zabral tento výpočet i pokud by byl paralelní.
-Efektivnější způsob vyhledání maximální vzdálenosti je za použití \emph{konvexního obalu}, který je popsán v \cite{Cormen:2001:IA:580470}.
-\footnote{V anj. \emph{convex hull}.}
+Efektivnější způsob vyhledání maximální vzdálenosti je za použití \emph{konvexního obalu}, který je popsán v \cite{Cormen:2001:IA:580470}.\footnote{V anj. \emph{convex hull}.}
 Tento algoritmus má již složitost \BigO{n \log{n}}.
 Dále by bylo nutné upravit \MIndex{} tak, aby se přepočítala maximální vzdálenost při vložení nového objektu.
 Pokud by byla nalezená maximální vzdálenost větší než současná, \MIndex{} by znovu vytvořil svoji strukturu.
+
+Další možný směr výzkumu \MIndex{u} lze vidět v:
+\begin{itemize}
+\item Detailním porovnání a analýze implementací v~\CC{} a Java do úrovně strojového kódu a jednoznačného určení rozdílů, které způsobují rychlejší zpracování v~\CC{}.
+\item Paralelní implementaci \emph{Range Query}, která by se dala uplatnit u~velmi velkých množin objektů v~metrickém prostoru a využít potenciál dnešních vícejádrových a vícevláknových procesorů. V~této implementaci se již paralelismus využívá při výpočtu maximální vzdálenosti v~množině prvků mezi sebou a při výpočtu vzdáleností objektů k~pivotům \MIndex{u}.
+\item Zaměření na využití vektorových instrukcí procesorů při řešení prokletí dimensionality, i když zde je zřejmě nemožné využít jazyk Java, protože nemá zabudovanou podporu pro vektorové instrukce.
+\item Jakým způsobem ovlivňují velikosti struktur výpadky CPU cache a popsat způsob pro určení optimálních velikostí.
+\item Implementovat distribuovanou hašovací mapu místo \BPTree{}, která by měla obdobně jako paralelní výpočty uplatnění při vyhledávání ve velmi velkých množinách objektů.
+\item Implementace vyhledání nejbližších $n$-prvků k~danému bodu
+ \end{itemize}
