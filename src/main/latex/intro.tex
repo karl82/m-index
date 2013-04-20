@@ -1,20 +1,13 @@
 \chapter{Úvod}
 
 V~posledních několika dekádách došlo ke~změně v~potřebách vyhledávání.
-Už se nepožaduje/nestačí pouze exaktní nebo přibližné vyhledání řetězce
-v~textu. S~příchodem masivního ukládání obrázků, zvukových záznamů
-a videí nelze používat \uv{klasické} postupy pro indexování a následné
-vyhledávání, ale musí se používat podobnostní vyhledávání. Praktické
-použití je např.~rozpoznávání řeči, rozpoznávání tváří, atd\ldots{}
+Už se nepožaduje/nestačí pouze exaktní nebo přibližné vyhledání řetězce v~textu.
+S~příchodem masivního ukládání obrázků, zvukových záznamů a videí nelze používat \uv{klasické} postupy pro indexování a následné vyhledávání, ale musí se používat vyhledávání podobnosti.
+Praktické použití je např.~při rozpoznávání řeči, rozpoznávání tváří, atd\ldots{}
 
-Jednou z~metod pro indexování a vyhledávání v~multimediálních databázích
-je \MIndex{}\cite{Novak:2009:MIE:1637863.1638184}\@. Autoři této
-metody, vycházející z~indexovací metody iDistance\cite{Jagadish:2005:IAB:1071610.1071612},
-jsou David Novák a Michal Baťko z~Masarykovi univerzity Brno\@.
-\MIndex{} podstatným způsobem vylepšuje výkon při vyhledávání, použitím
-jiných metod rozdělení datové prostoru i samotného vyhledávání pomocí
-základních metod range query a hledání K~nejbližších sousedů (KNN
-search)\@.
+Jednou z~metod pro indexování a vyhledávání v~multimediálních databázích je \MIndex{}\cite{Novak:2009:MIE:1637863.1638184}.
+Autoři této metody, vycházející z~indexovací metody iDistance\cite{Jagadish:2005:IAB:1071610.1071612}, jsou David Novák a Michal Baťko z~Masarykovi univerzity v~Brně.
+\MIndex{} podstatným způsobem vylepšuje výkon při vyhledávání použitím jiných metod rozdělení datového prostoru i samotného vyhledávání pomocí základních metod \emph{Range Query} a hledání $K$~nejbližších sousedů (\emph{KNN search})\@.
 
 Metrický index definuje \emph{univerzální mapovací schéma} z~obecného metrického prostoru do reálných čísel.
 Co je nejdůležitější, toto schéma zachovává blízkost dat, tedy mapuje podobné metrické prvky do~blízkých čísel.
@@ -22,13 +15,10 @@ Indexovací a vyhledávací mechanismus \MIndex{u} používá množinu referenč
 
 Charakter mapy \MIndex{u} umožňuje použít dobře známé techniky jako je \BPTree\cite{Cormen:2001:IA:580470} nebo distribuované hašovací tabulky.
 
-V~této práci detailně vysvětluji principy \MIndex{u}, jeho implementaci
-v~jazyce Java a porovnávám výkonnost implementací \MIndex{} v~jazycích
-Java, \CC{} a \CS{}. Předpokladem je, že na stejném stroji a na stejné
-množině dat, implementace v~\CC{} zpracuje požadavky v~nejkratším
-čase. Následována implementací v~\CS{} nebo v~Java. Podle mého názoru,
-lze zrychlit běh programu v~jazyce Java tím, že se dodatečně povolí
-agresivní optimalizace a provede \uv{zahřátí} JVM.
+V~této práci detailně vysvětluji principy \MIndex{u}, jeho implementaci v~jazyce Java a porovnávám výkonnost implementací \MIndex{u} v~jazycích
+Java, \CC{} a \CS{}.
+Předpokladem je, že na stejném stroji a na stejné množině dat implementace v~\CC{} zpracuje požadavky v~nejkratším čase, následována implementací v~\CS{} nebo v~Java.
+Podle mého názoru lze zrychlit běh programu v~jazyce Java tím, že se dodatečně povolí agresivní optimalizace a provede \uv{zahřátí} JVM.
 
 \section{Multimediální databáze}
 
