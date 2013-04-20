@@ -1,21 +1,21 @@
 \chapter{Závěr}
 
 Cílem této práce bylo ověřit předpoklad, že implementace \MIndex{u} v~jazyce \CC{} bude rychlejší než implementace v~jazycích Java a \CS{}.
-Toto se potvrdilo, i když nebylo k~dispozici původní prostředí, v~kterém měřili kolegové Kmuníček a Koman a bylo nutné portovat původní zdrojové kódy \CC{} z~Windows na Linux.
-Implementace v~Java je pomalejší než v~\CC, ale je rychlejší než v~\CS{}.
+To se potvrdilo i když nebylo k~dispozici původní prostředí, v~kterém měřili A.~Kmuníček a P.~Koman a bylo nutné portovat původní zdrojové kódy \CC{} z~Windows na Linux.
+Implementace v~jazyce Java je pomalejší než v~\CC{}, ale je rychlejší než v~\CS{}.
 
-Jazyk \CC{} umožňuje mít správu paměť pod větší kontrolou než Java, ale vyžaduje také větší disciplínu od programátora.
+Jazyk \CC{} umožňuje mít správu paměti pod větší kontrolou než Java, ale vyžaduje také větší disciplínu programátora.
 Při nedodržení všech pravidel pro práci s~alokací a uvolňováním paměti dochází k~jejím únikům.
 Příkladem byla statická analýza provedená na implementaci v~\CC{} od A.~Kmuníčka.
 
-Z~uskutečněných měření vyplynulo, že \MIndex{} není závislý jen parametrech, jako je počet pivotů rozdělujících množinu objektů a jeho maximální úroveň dělení, ale také na parametrech použitých pomocných struktur.
+Z~uskutečněných měření vyplynulo, že \MIndex{} není závislý jen na parametrech, jako je počet pivotů rozdělujících množinu objektů a jeho maximální úroveň dělení, ale také na parametrech použitých pomocných struktur.
 V~tomto případě na stupni \BPTree.
 Měření proběhlo více jak \num{5000}, což je už dostatečný reprezentační vzorek pro podložení závěrů této práce.
 
-\MIndex{} nebyl zkoumán na průběh ořezávání clusterů, ale větší důraz byl kladen na praktičnost implementace a na parametry JVM, které ovlivňují výkonnost programu běžícím v~JVM.
-Z~těchto měření lze doporučit nevypínat volbu \cmd{-XX:+UseCompressedOops} v~64bitové JVM neboť má zásadní význam na celkový výkon aplikace.
+\MIndex{} nebyl zkoumán na průběh ořezávání clusterů, ale větší důraz byl kladen na praktičnost implementace a na parametry JVM, které ovlivňují výkonnost programu běžícího v~JVM.
+Z~těchto měření lze doporučit nevypínat volbu \cmd{-XX:+UseCompressedOops} v~64bitové JVM, neboť má zásadní význam na celkový výkon aplikace.
 Volbu \cmd{-XX:+AggressiveOpts} lze doporučit zapínat, ovšem s~tím, že její dopad na výkon se může lišit s~verzemi JVM a je tedy nutné si ověřit (změřit) výkon s~každou novou verzí JVM.
-V~práci byly také popsány úskalí spojené se správným měřením výkonnosti v~JVM -- interpretovaný kód, dynamický překlad \bytecode{} za běhu aplikace, možné optimalizace výsledného kódu kompilátorem, zavádění tříd a automatický úklid paměti v~Java.
+V~práci byly také popsána úskalí spojená se správným měřením výkonnosti v~JVM -- interpretovaný kód, dynamický překlad \bytecode{} za běhu aplikace, možné optimalizace výsledného kódu kompilátorem, zavádění tříd a automatický úklid paměti v~jazyce Java.
 Byl uveden i návod na minimalizování ovlivnění měření \uv{zahřátím} JVM.
 
 Při vypracovávání této práce jsem využil všech znalostí a zkušeností nabytých nejen během studia na VŠFS, ale také zkušeností z~předchozího nedokončeného studia na ČVUT a z~praxe.
@@ -30,10 +30,11 @@ Pokud by byla nalezená maximální vzdálenost větší než současná, \MInde
 
 Další možný směr výzkumu \MIndex{u} lze vidět v:
 \begin{itemize}
-\item Detailním porovnání a analýze implementací v~\CC{} a Java do úrovně strojového kódu a jednoznačného určení rozdílů, které způsobují rychlejší zpracování v~\CC{}.
-\item Paralelní implementaci \emph{Range Query}, která by se dala uplatnit u~velmi velkých množin objektů v~metrickém prostoru a využít potenciál dnešních vícejádrových a vícevláknových procesorů. V~této implementaci se již paralelismus využívá při výpočtu maximální vzdálenosti v~množině prvků mezi sebou a při výpočtu vzdáleností objektů k~pivotům \MIndex{u}.
-\item Zaměření na využití vektorových instrukcí procesorů při řešení prokletí dimensionality, i když zde je zřejmě nemožné využít jazyk Java, protože nemá zabudovanou podporu pro vektorové instrukce.
-\item Jakým způsobem ovlivňují velikosti struktur výpadky CPU cache a popsat způsob pro určení optimálních velikostí.
-\item Implementovat distribuovanou hašovací mapu místo \BPTree{}, která by měla obdobně jako paralelní výpočty uplatnění při vyhledávání ve velmi velkých množinách objektů.
-\item Implementace vyhledání nejbližších $n$-prvků k~danému bodu
+\item Detailním porovnání a analýze implementací v~jazycích \CC{} a Java do úrovně strojového kódu a jednoznačného určení rozdílů, které způsobují rychlejší zpracování v~\CC{}.
+\item Paralelní implementaci \emph{Range Query}, která by se dala uplatnit u~velmi velkých množin objektů v~metrickém prostoru a využít potenciál dnešních vícejádrových a vícevláknových procesorů.
+V~této implementaci se již paralelismus využívá při výpočtu maximální vzdálenosti v~množině prvků mezi sebou a při výpočtu vzdáleností objektů k~pivotům \MIndex{u}.
+\item Zaměření na využití vektorových instrukcí procesorů při řešení prokletí dimensionality, i když zde je zřejmě nemožné využít jazyku Java, protože nemá zabudovanou podporu pro vektorové instrukce.
+\item Analyzování, jakým způsobem ovlivňují velikosti struktur výpadky CPU cache a popsaní způsobu pro určení optimálních velikostí.
+\item Implementaci distribuované hašovací mapy místo \BPTree{}, která by měla obdobně, jako paralelní výpočty, uplatnění při vyhledávání ve velmi velkých množinách objektů.
+\item Doplněním implementace o~vyhledávání nejbližších $K$-prvků k~danému bodu -- \emph{KNN search}.
  \end{itemize}
