@@ -283,7 +283,7 @@ Cluster tree je tvořen třídami, které implementují rozhraní \linebreak \ty
 \item[RootCluster] Je použit pro kořen celého clusteru, protože vyžaduje speciální zacházení s~indexem a také při akceptování \type{ClusterVisitor}.
 \end{description}
 
-Pro změření rozdílu použití více-stupňového \MIndex{u} a \MIndex{u} s~dynamickými stupni jsou implementovány dvě třídy -- \linebreak \type{cz.rank.vsfs.mindex.MultiLevelClusterTreeBuilder} a \linebreak \type{cz.rank.vsfs.mindex.DynamicClusterTreeBuilder}. Tyto třídy jsou použity v~\type{cz.rank.vsfs.mindex.MultiLevelMIndex}, \linebreak resp. \type{cz.rank.vsfs.mindex.DynamicMIndex} ke konstrukci specifického \MIndex{u}.
+Pro změření rozdílu použití vícestupňového \MIndex{u} a \MIndex{u} s~dynamickými stupni jsou implementovány dvě třídy -- \linebreak \type{cz.rank.vsfs.mindex.MultiLevelClusterTreeBuilder} a \linebreak \type{cz.rank.vsfs.mindex.DynamicClusterTreeBuilder}. Tyto třídy jsou použity v~\type{cz.rank.vsfs.mindex.MultiLevelMIndex}, \linebreak resp. \type{cz.rank.vsfs.mindex.DynamicMIndex} ke konstrukci specifického \MIndex{u}.
 Obě třídy mají téměř totožný konstruktor, pouze \linebreak u~\type{DynamicClusterTreeBuilder} je navíc parametr pro maximální zaplnění koncového clusteru. Více viz \prettyref{sec:Dynamic-Cluster-Tree}.
 
 \subsubsection{Range Query}
@@ -505,7 +505,7 @@ Volba je označena jako experimentální a rozsah optimalizací může být jin�
 \item[UseCompressedOops] Tato volba je dostupná pouze pro 64bitovou verzi JVM a je ve výchozím stavu zapnuta, pokud není vynuceno její vypnutí při startu JVM.
 V~JVM jsou všechny ukazatele na objekty shodné se strojovými ukazateli, tzn. na 64bitové architektuře jsou 64bitové, na 32bitové architektuře jsou 32bitové.
 Obecně je používání 64bitových instrukcí pomalejší oproti ekvivalentním 32bitovým instrukcím -- pro práci vyžadují totiž i odpovídající registry atd\ldots{}
-Při zapnuté volbě \emph{UseCompressedOops} JVM komprimuje ukazatele na 32 bitů a umožňuje používat 64 bitové registry pro jiné operace, čímž snižuje penalizaci za 64 bitové instrukce.\footnote{Toto je velmi jednoduché přiblížení. Více viz \cite{hunt2011java}}
+Při zapnuté volbě \emph{UseCompressedOops} JVM komprimuje ukazatele na 32 bitů a umožňuje používat 64bitové registry pro jiné operace, čímž snižuje penalizaci za 64bitové instrukce.\footnote{Toto je velmi jednoduché přiblížení. Více viz \cite{hunt2011java}}
 \end{description}
 
 
@@ -614,12 +614,13 @@ JVM4 & Vypnuto & Vypnuto \\ \hline
 
 \subsection{Výsledky měření}
 Nejlepšího výsledku, tzn.~v~nejkratším čase, bylo dosaženo s~dynamickým \MIndex{em} s~následujícími parametry: počet pivotů \num{10}, maximální úrovní clusteru \num{4}, maximálním počtem objektů v~listech \num{10} a stupněm \BPTree{} \num{500}.
-Výsledný čas byl \SI{3485}{\ms} pro parametry JVM1.
-Tato konfigurace dosáhla nejkratšího času i s~ostatními parametry JVM, pouze pro JVM2 byla až \uv{druhá}.
-Rozdíl časů mezi maximálně optimalizovaným JVM a nejméně (JVM1 vs JVM4) s~těmito parametry byl více jak \SI{200}{\ms}.
+Výsledný čas byl \SI{3090}{\ms} pro parametry JVM1.
+Tato konfigurace dosáhla nejkratšího času i s~ostatními parametry JVM, pouze pro JVM4 byla až \uv{pátá}.
+Pro JVM4 byla nejlepší konfigurace s~počtem pivotů \num{10}, maximální úrovní clusteru \num{4}, maximálním počtem objektů v~listech \num{20} a stupněm \BPTree{} \num{500}.
+Rozdíl časů mezi maximálně optimalizovaným JVM a nejméně (JVM1 vs JVM4) s~těmito parametry byl více jak \SI{325}{\ms}.
 
 Nejdelší zpracování dotazů bylo u~vícestupňového \MIndex{u} pro JVM4 s~parametry: počet pivotů \num{50}, maximální úrovní clusteru \num{4} a stupněm \BPTree{} \num{10}.
-Výsledný čas je \SI{5201}{\ms} a rozdíl oproti nejkratší konfiguraci je více jak \SI{1700}{\ms}.
+Výsledný čas je \SI{4988}{\ms} a rozdíl oproti nejkratší konfiguraci téměř \SI{1900}{\ms}.
 
 \prettyref{fig:jvm1p50} zobrazuje nejrychlejší vyhledání v~závislosti na stupni \BPTree{}.
 Jsou zobrazeny časy pro jednotlivé nejlepší parametry \MIndex{ů} z~jednotlivých nastavení JVM.
@@ -634,7 +635,7 @@ Pro zobrazení zásadního vlivu nastavení JVM je i zobrazen vícestupňový \M
 
 Z~výsledků měření vyplývá, že parametry JVM zásadním způsobem ovlivňují výslednou efektivitu kódu.
 \prettyref{tab:jvmavgtime} zobrazuje průměrnou dobu jednoho měření.\footnote{Hodnoty jsou spíše orientační pro posouzení vlivu parametrů JVM.}
-Volba \cmd{-XX:+UseCompressedOops} je zásadní pro běh JVM v~64 bitovém prostředí.
+Volba \cmd{-XX:+UseCompressedOops} je zásadní pro běh JVM v~64bitovém prostředí.
 Rozhodně není doporučeno tuto volbu vypínat.
 Jak bylo uvedeno v~\prettyref{sec:measurementmethod}, volba \cmd{-XX:+AggressiveOpts} je experimentální a její efekt na výkon se může měnit mezi verzemi JVM, ale lze ji doporučit jako možný způsob zrychlení běhu programu.
 
@@ -644,10 +645,10 @@ Jak bylo uvedeno v~\prettyref{sec:measurementmethod}, volba \cmd{-XX:+Aggressive
 \hline
 Konfigurace JVM & Průměrný čas měření \\ \hline
 \hline
-JVM1 & \SI{3961}{\ms} \\ \hline
-JVM2 & \SI{4205}{\ms} \\ \hline
-JVM3 & \SI{4206}{\ms} \\ \hline
-JVM4 & \SI{4524}{\ms} \\ \hline
+JVM1 & \SI{3571}{\ms} \\ \hline
+JVM2 & \SI{3870}{\ms} \\ \hline
+JVM3 & \SI{3872}{\ms} \\ \hline
+JVM4 & \SI{4270}{\ms} \\ \hline
 \end{tabular}
 \caption{Průměrný čas měření}
 \label{tab:jvmavgtime}
@@ -674,8 +675,8 @@ Jak jsem uvedl výše, toto je má domněnka, která musí být potvrzena odpov�
 \end{figure}
 
 \prettyref{fig:jvm1cl4_bt500} zobrazuje, jakým způsobem ovlivňuje maximální počet objektů v~listech dynamického \MIndex{u}.
-Pro porovnání jsou zobrazeny i časy více-stupňového \MIndex{u}.
-Ty jsou zaneseny jako vodorovné čáry.
+Pro porovnání jsou zobrazeny i časy vícestupňového \MIndex{u}.
+Ty jsou v~grafu zaneseny jako vodorovné čáry.
 Pro nižší počet pivotů (\num{10} a \num{20}) mají výsledné časy se zvyšujícím se počtem maximálních počtů objektů v~listech téměř lineární stoupající tendenci.
 U~vyššího počtu pivotů je průběh jiný.
 Není lineární a se snižujícím se max. počtem objektů v~listech (\num{10}) se dokonce zvyšuje.
@@ -699,33 +700,33 @@ Kolegové měřili dva dotazy o~poloměrech \num{0.15} a \num{0.25} a vyhledáva
 Vzhledem k~tomu, že jsem pro své měření používal poloměr \num{0.15}, zvolil jsem pouze toto porovnání.
 Parametry \MIndex{u} byly: vícestupňový cluster \num{3}, počet pivotů \num{10} a stupeň \BPTree{} \num{50}.
 
-Rozhodl jsem se pro porovnání použít konfiguraci s~nejlepším časem dosaženým v~Java -- dynamický \MIndex{} s~maximálním počtem \num{10} objektů v~listu a JVM1, a také s~nejlepším výsledkem při použit stupně \BPTree{} \num{500}.
+Rozhodl jsem se pro porovnání použít konfiguraci s~nejlepším časem dosaženým v~Java -- dynamický \MIndex{} s~maximálním počtem \num{300} objektů v~listu a JVM1, a také s~nejlepším výsledkem při použití stupně \BPTree{} \num{500} s~maximálním počtem \num{10} objektů v~listu.
 
 Měření probíhala s~různými parametry kompilátoru GNU\nomenclature{GNU}{GNU's Not Unix\!} \CC.
 Verze kompilátoru byla (Debian 4.7.2-5) 4.7.2.
 
 \begin{table}[h]
 \center
-\begin{tabular}{| l  | r | r |}
+\begin{tabular}{| l  | r | r | r |}
 \hline
-Implementace & Stupeň \BPTree & Čas (\si{\ms}) \\ \hline
+Implementace & Max.~objektů v~listu & Stupeň \BPTree & Čas (\si{\ms}) \\ \hline
 \hline
-\CC{} & \num{50} & \SI{2432}{\ms} \\ \hline
-\CC{} (\cmd{-O3}) & \num{50} & \SI{697}{\ms} \\ \hline
-\CC{} (\cmd{-O3 -march=native}) & \num{50} & \SI{408}{\ms} \\ \hline
-Java JVM1 & \num{50} &  \SI{3979}{\ms} \\ \hline
-Java JVM1 & \num{500} &  \SI{3500}{\ms} \\ \hline
+\CC{} & &\num{50} & \SI{2432}{\ms} \\ \hline
+\CC{} (\cmd{-O3}) & & \num{50} & \SI{697}{\ms} \\ \hline
+\CC{} (\cmd{-O3 -march=native}) & & \num{50} & \SI{408}{\ms} \\ \hline
+Java JVM1 &  \num{300} & \num{50} & \SI{3235}{\ms} \\ \hline
+Java JVM1 & \num{10} & \num{500} & \SI{3116}{\ms} \\ \hline
 \end{tabular}
 \caption{Srovnání {\protect\CC} a Java}
 \end{table}
 
-V~tomto porovnání implementace v~\CC{} provedla \emph{Range Query} v~$\num{1.6}\times$ menším čase než Java s~parametry JVM1.
+V~tomto porovnání implementace v~\CC{} provedla \emph{Range Query} v~$\num{1.33}\times$ menším čase než Java s~parametry JVM1.
 Toto je také očekávaný výsledek.
 Důvodem je zřejmě \uv{masivní používání}\cite{Kmunicek2011thesis} polí a použití ukazatelové aritmetiky v~implementaci \MIndex{u} v~\CC{}.
 Implementace v~Java a \CS{} využívají možnosti knihoven pro daný jazyk, např. kolekcí a zaměřily se na objektově orientovaný návrh.
 Používání kolekcí umožňuje rychlejší vývoj, ale v~některých případech je toto penalizováno menší výkonností výsledného kódu.
 
-Zajímavý je i výsledek dosažený povolením větších optimalizací -- parametry \cmd{-O3} a \cmd{-march=native} pro kompilátor.
+Zajímavý je i výsledek dosažený povolením větších optimalizací -- parametry \cmd{-O3} a \cmd{-march=native} pro kompilátor \CC{}.
 Volba \cmd{-O3} povoluje všechny optimalizace obsažené v~\cmd{-O2}, navíc povoluje ještě tyto optimalizace: \cmd{-finline-functions}, \cmd{-funswitch-loops}, \cmd{-fpredictive-commoning}, \cmd{-fgcse-after-reload}, \cmd{-ftree-vectorize}, \cmd{-fvect-cost-model}, \cmd{-ftree-partial-pre} a \linebreak \cmd{-fipa-cp-clone}\cite{gccoptions}.
 Volbou \cmd{-march=native} kompilátor používá všechny dostupné instrukce na dané architektuře.
 Při kombinaci obou dvou voleb byl výsledný čas $\num{6}\times$ menší než s~výchozími volbami kompilátoru (\cmd{-O2 -g}).

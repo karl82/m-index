@@ -11,7 +11,7 @@ plot \
 "jvm1_p20_leaf.dat" using 1:10 title 'p20cl4bt500'with linespoints, \
 "jvm1_p30_leaf.dat" using 1:10 title 'p30cl4bt500'with linespoints, \
 "jvm1_p50_leaf.dat" using 1:10 title 'p50cl4bt500'with linespoints, \
-"jvm1_cl4_bt500.dat" using 1:2 title 'p10cl4'with lines, \
-"jvm1_cl4_bt500.dat" using 1:3 title 'p20cl4'with lines, \
-"jvm1_cl4_bt500.dat" using 1:4 title 'p30cl4'with lines, \
-"jvm1_cl4_bt500.dat" using 1:5 title 'p40cl4'with lines
+"jvm1_cl4_bt500.dat" using 1:2 title 'p10cl4bt500'with lines, \
+"jvm1_cl4_bt500.dat" using 1:3 title 'p20cl4bt500'with lines, \
+"jvm1_cl4_bt500.dat" using 1:4 title 'p30cl4bt500'with lines, \
+"jvm1_cl4_bt500.dat" using 1:5 title 'p40cl4bt500'with lines
