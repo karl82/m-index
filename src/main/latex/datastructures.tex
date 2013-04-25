@@ -4,15 +4,10 @@
 \section{B-tree}
 
 B-tree\cite{Cormen:2001:IA:580470} je zobecněný binární strom s~možností
-mít více jak 2 potomky. Jeho optimalizován pro čtení a zápis velkého
+mít více jak 2 potomky.
+Je optimalizován pro čtení a zápis velkého
 objemu dat, takže je se hojně používá v~databázích a souborových
 systémech.
-
-\begin{figure}[t]
-\centering{}\caption{B-tree}
-\end{figure}
-
-
 
 \subsection{Definice}
 
@@ -27,8 +22,7 @@ vlastnostmi:
 \item $leaf[x]$ typu boolean, který je TRUE pokud $x$ je list a FALSE
 pokud je $x$ interní uzel\@.
 \end{enumerate}
-\item Každý vnitřní uzel $x$ obsahuje $n[x]+1$ ukazatelů
-\footnote{v~případě jazyka Java \emph{referencí}
+\item Každý vnitřní uzel $x$ obsahuje $n[x]+1$ ukazatelů\footnote{v~případě jazyka Java \emph{referencí}
 } $c_{1}[x],c_{2}[x],\ldots{},c_{n[x]+1}[x]$ na jeho potomky (\emph{children}).
 Uzly listů nemají žádné potomky -- jejich $c_{i}$ prvky jsou nedefinovány.
 \item Klíče $key_{i}[x]$ oddělují rozsahy klíčů uložených v~každém podstromu:
@@ -75,19 +69,13 @@ Prohledávání B-tree je velmi podobné jako prohledávání binárního stromu
 Pouze místo binárního větvení v~každém uzlu, se provádí vícecestné
 větvení podle počtu potomků uzlu\@.
 
-Vstupem je ukazatel na kořenový uzel podstromu $x$ a klíč $k$, který
-má být prohledán v~podstromu\@. První volání je tedy B-Tree-Search($root[T],k$).
-Pokud je $k$ v~B-tree, pak vyhledávání vrátí uspořádanou dvojici
-$(y,i)$, kde $y$ je ukazatel na uzel a $i$ je pozice, takže $key_{i}[y]=k$\@.
-Jinak je vrácena \uv{prázdná} dvojice.
-\footnote{Původně je v~\cite{Cormen:2001:IA:580470} NIL, jenže obecně vracení
-NIL, NULL a 0 ukazatelů/referencí komplikuje pozdější práci s~návratovou
-hodnotou metody. Robert~C.~Martin doporučuje místo prázdné
-reference, vracet \uv{prázdný} objekt\cite{martin2009clean}.
-V~praxi často dochází ke zneužívání návratové hodnoty v~podobě
-\type{NULL}, jako dalšího stavu. Místo předpokladu na existující objekt,
-je nutno dělat kontrolu na neexistující objekt. Jaký je rozdíl mezi
-vrácením prázdné kolekce/kontejneru nebo nulového ukazatele?
+Vstupem je ukazatel na kořenový uzel podstromu $x$ a klíč $k$, který má být prohledán v~podstromu\@. První volání je tedy B-Tree-Search($root[T],k$).
+Pokud je $k$ v~B-tree, pak vyhledávání vrátí uspořádanou dvojici $(y,i)$, kde $y$ je ukazatel na uzel a $i$ je pozice, takže $key_{i}[y]=k$.
+Jinak je vrácena \uv{prázdná} dvojice.\footnote{Původně je v~\cite{Cormen:2001:IA:580470} NIL, jenže obecně vracení
+NIL, NULL a 0 ukazatelů/referencí komplikuje pozdější práci s~návratovou hodnotou metody.
+Robert~C.~Martin doporučuje místo prázdné reference, vracet \uv{prázdný} objekt\cite{martin2009clean}.
+V~praxi často dochází ke zneužívání návratové hodnoty v~podobě \type{NULL}, jako dalšího stavu.
+Místo předpokladu na existující objekt, je nutno dělat kontrolu na neexistující objekt. Jaký je rozdíl mezi vrácením prázdné kolekce/kontejneru nebo nulového ukazatele?
 }
 
 \begin{algorithm}[t]
@@ -258,13 +246,13 @@ Pro \BPTree{} se stupněm $t$ a počtem klíčů $n$ platí:
 Operace & Asymptotická složitost \\
 \hline 
 \hline 
-SEARCH & \BigO{\log_b n} \\
+SEARCH & \BigO{\log_t n} \\
 \hline 
-SEARCH pro rozsah ($k$ je počet prvků nacházejících se v dotazu) & $\mathcal{O}(\log_b n + k)$ \\
+SEARCH pro rozsah ($k$ je počet prvků nacházejících se v dotazu) & $\mathcal{O}(\log_t n + k)$ \\
 \hline 
-INSERT & \BigO{\log_b n} \\
+INSERT & \BigO{\log_t n} \\
 \hline 
-DELETE & \BigO{\log_b n} \\
+DELETE & \BigO{\log_t n} \\
 \hline 
 \end{tabular}
 \end{center}
