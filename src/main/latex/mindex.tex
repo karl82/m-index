@@ -163,7 +163,7 @@ Znalostí minimální a maximální vzdáleností mezi pivoty v~clusteru
 Distance Constraint}\cite{similaritysearch2006} a nemusíme přistupovat
 ke clusteru $C_{p,*}$ pokud
 \[
-d(p,q)+r<r_{min} \wedge d(p,q)-r>r_{max}
+d(p,q)+r<r_{min} \quad \vee \quad d(p,q)-r>r_{max}
 \]
 kde $r_{min}$ a $r_{max}$ je minimální a maximální vzdálenost prvků
 v~daném clusteru\@.
@@ -199,7 +199,7 @@ nutí k~použití různých specifických datových struktur\@. Obecně,
 datové prvky mohou být uloženy v~jakékoliv struktuře, která je indexuje
 podle jejich \MIndex{} klíčů. Ideální je efektivní vyhodnocování přes
 intervalové dotazy -- \BPTree{}\cite{Cormen:2001:IA:580470}%
-\footnote{detailní popis \BPTree{} viz \prettyref{sub:B-plus-tree}%
+\footnote{detailní popis \BPTree{} viz \prettyref{sec:B-plus-tree}
 } je typickým představitelem takovéto struktury\@.
 
 Implementace stromu clusterů (\emph{cluster tree}) je jednoduchá\@.
