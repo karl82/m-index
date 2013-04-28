@@ -213,10 +213,15 @@ link(inheritance)(pathStepY(D.n,B.s,10));
 \end{figure}
 
 \begin{description}
-\item[ParallelPivotDistanceTable] Rozdělí úlohu na menší části podle objektů pomocí \emph{rozděl a panuj} a výpočet je paralelizován za použití všech dostupných jader systému. Tato třída je využita při konstrukci samotného \MIndex{}.
-\item[SimplePivotDistanceTable] Podobně jako \type{ParallelPivotDistanceTable} vypočte vzdálenosti objektu od pivotů, ale pouze pro jeden objekt a výpočet není paralelní. Tato třída se používá v~samotném \emph{Range Query} dotazu. Pokud by se použil \type{ParallelPivotDistanceTable}, tak čas spojený s~vytvářením úloh pro exekutory a vytvářením vláken, by byl výrazně vyšší než samotný výpočet vzdáleností jednoho objektu.
+\item[ParallelPivotDistanceTable] Rozdělí úlohu na menší části podle objektů pomocí \emph{rozděl a panuj} a výpočet je paralelizován za použití všech dostupných jader systému.
+Tato třída je využita při konstrukci samotného \MIndex{}.
+\item[SimplePivotDistanceTable] Podobně jako \type{ParallelPivotDistanceTable} vypočte vzdálenosti objektu od pivotů, ale pouze pro jeden objekt a výpočet není paralelní.
+Tato třída se používá v~samotném \emph{Range Query} dotazu.
+Pokud by se použil \type{ParallelPivotDistanceTable}, tak čas spojený s~vytvářením úloh pro exekutory a vytvářením vláken, by byl výrazně vyšší než samotný výpočet vzdáleností jednoho objektu.
 \item[AbstractPivotDistanceTable] Je společným předkem obou výše uvedených tříd a obsahuje společný kód, který potomci využívají.
 \end{description}
+
+Pokud by byl výpočet vzdálenosti náročný, pak by v~\emph{} mělo význam použít paralelní \type{ParallelPivotDistanceTable}.
 
 \subsubsection{Cluster tree}
 \begin{figure}
@@ -569,6 +574,9 @@ Měření probíhalo v~tomto prostředí(\prettyref{tab:environment}):
 \end{table}
 
 \subsection{Parametry měření}
+
+\prettyref{tab:parameters} obsahuje parametry všech provedených měření.
+
 \begin{table}[h]
 \center
 \begin{tabular}{|l|c|}
@@ -585,12 +593,14 @@ vzdálenost & \numlist{0.15} \\ \hline
 počet objektů pro porovnání & \num{68040} \\ \hline
 dimenze objektů & \num{32} \\ \hline
 \end{tabular}
+\caption{Parametry měření}
+\label{tab:parameters}
 \end{table}
 
 Původním záměrem bylo změřit více hodnot, např. počet pivotů \num{100} s~max. počtem objektů v~listech \num{10} a úrovní clusteru \num{5}.
 Při těchto parametrech byl ovšem počet clusterů extrémně velký -- $100 \times 99 \times 98 \times 97 \times 96 = \num{9034502400}$, a docházelo k~přetečení typu \type{Integer} v~kolekcích a k~nesmyslným výsledkům.\footnote{V~Java je typ \type{Integer} 4 bajtový celočíselný typ se znaménkem a může mít maximálně hodnotu $2^{31}-1$}
 
-Při tomto množství je celkový počet kombinací parametrů \num{252} pro dynamický cluster a \num{36} pro vícestupňový cluster.
+Při tomto množství parametrů je celkový počet kombinací parametrů \num{252} pro dynamický cluster a \num{36} pro vícestupňový cluster.
 Jelikož počet měření je \num{20} pro každý parametr, bylo celkově vykonáno \num{5760} měření.
 
 Každá série měření byla spouštěna s~JVM s~různými kombinacemi parametrů, které byly uvedeny v~\prettyref{sec:measurementmethod}.
@@ -726,7 +736,7 @@ Implementace v~Java a \CS{} využívají možnosti knihoven pro daný jazyk, nap
 Používání kolekcí umožňuje rychlejší vývoj, ale v~některých případech je toto penalizováno menší výkonností výsledného kódu.
 
 Zajímavý je i výsledek dosažený povolením větších optimalizací -- parametry \cmd{-O3} a \cmd{-march=native} pro kompilátor \CC{}.
-Volba \cmd{-O3} povoluje všechny optimalizace obsažené v~\cmd{-O2}, navíc povoluje ještě tyto optimalizace: \cmd{-finline-functions}, \cmd{-funswitch-loops}, \cmd{-fpredictive-commoning}, \cmd{-fgcse-after-reload}, \cmd{-ftree-vectorize}, \cmd{-fvect-cost-model}, \cmd{-ftree-partial-pre} a \linebreak \cmd{-fipa-cp-clone}\cite{gccoptions}.
+Volba \cmd{-O3} povoluje všechny optimalizace obsažené v~\cmd{-O2}, navíc povoluje ještě tyto optimalizace: \cmd{-finline-functions}, \cmd{-funswitch-loops}, \cmd{-fpredictive-commoning}, \cmd{-fgcse-after-reload}, \cmd{-ftree-vectorize}, \cmd{-fvect-cost-model}, \linebreak \cmd{-ftree-partial-pre} a \cmd{-fipa-cp-clone}\cite{gccoptions}.
 Volbou \cmd{-march=native} kompilátor používá všechny dostupné instrukce na dané architektuře.
 Při kombinaci obou dvou voleb byl výsledný čas $\num{6}\times$ menší než s~výchozími volbami kompilátoru (\cmd{-O2 -g}).
 Je to pravděpodobně využitím vektorových instrukcí při zpracovávání polí a v~nich uložených dat.
