@@ -26,7 +26,7 @@
 
 package cz.rank.vsfs.mindex;
 
-import cz.rank.vsfs.btree.BPlusTreeMultiMap;
+import cz.rank.vsfs.btree.BPlusTreeMultiDoubleObjectMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,9 +39,9 @@ public class MultiLevelClusterTreeBuilder<D extends Distanceable<D>> extends Abs
     private final List<D> objects;
     private final Cluster<D> clusterRoot;
     private final PivotDistanceTable<D> pivotDistanceTable;
-    private final BPlusTreeMultiMap<Double, D> btreemap;
+    private final BPlusTreeMultiDoubleObjectMap<D> btreemap;
 
-    public MultiLevelClusterTreeBuilder(List<D> objects, Cluster<D> clusterRoot, PivotDistanceTable<D> pivotDistanceTable, BPlusTreeMultiMap<Double, D> btreemap) {
+    public MultiLevelClusterTreeBuilder(List objects, Cluster clusterRoot, PivotDistanceTable pivotDistanceTable, BPlusTreeMultiDoubleObjectMap<D> btreemap) {
 
         this.objects = objects;
         this.clusterRoot = clusterRoot;
@@ -72,7 +72,7 @@ public class MultiLevelClusterTreeBuilder<D extends Distanceable<D>> extends Abs
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Inserting into B+Tree key: {}; obj: {}; cluster: {}", objectKey, object,
-                             currentCluster.getIndex());
+                        currentCluster.getIndex());
             }
 
             btreemap.insert(objectKey, object);

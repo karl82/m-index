@@ -26,7 +26,7 @@
 
 package cz.rank.vsfs.mindex;
 
-import cz.rank.vsfs.btree.BPlusTreeMultiMap;
+import cz.rank.vsfs.btree.BPlusTreeMultiDoubleObjectMap;
 import org.apache.commons.math3.util.FastMath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +48,7 @@ public abstract class MIndex<D extends Distanceable<D>> {
     protected final List<Pivot<D>> pivots;
     protected final List<D> objects;
     protected final Cluster<D> clusterRoot;
-    protected final BPlusTreeMultiMap<Double, D> btreemap;
+    protected final BPlusTreeMultiDoubleObjectMap<D> btreemap;
     protected final int pivotsSize;
     protected double maximumDistance = Double.MIN_VALUE;
     protected PivotDistanceTable<D> pivotDistanceTable = null;
@@ -67,7 +67,7 @@ public abstract class MIndex<D extends Distanceable<D>> {
         // Save reallocation
         objects = new ArrayList<>(50000);
         clusterRoot = new RootCluster<>(maxLevel, pivotsSize);
-        btreemap = new BPlusTreeMultiMap<>(btreeLevel);
+        btreemap = new BPlusTreeMultiDoubleObjectMap<>(btreeLevel);
     }
 
     protected MIndex(int maxLevel, int btreeLevel, List<Pivot<D>> pivots, double maximumDistance) {
@@ -84,7 +84,7 @@ public abstract class MIndex<D extends Distanceable<D>> {
         // Save reallocation
         objects = new ArrayList<>(50000);
         clusterRoot = new RootCluster<>(maxLevel, pivotsSize);
-        btreemap = new BPlusTreeMultiMap<>(btreeLevel);
+        btreemap = new BPlusTreeMultiDoubleObjectMap<>(btreeLevel);
     }
 
     protected void checkParams() {
@@ -242,12 +242,12 @@ public abstract class MIndex<D extends Distanceable<D>> {
             final double keyMinFloor = FastMath.floor(keyMin);
             final List<D> objects = btreemap
                     .rangeSearch(keyMinFloor + firstPivotDistance - normalizedRange,
-                                 keyMinFloor + firstPivotDistance + normalizedRange);
+                            keyMinFloor + firstPivotDistance + normalizedRange);
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Range search from {} to {} returned {} objects",
-                             keyMinFloor + firstPivotDistance - normalizedRange,
-                             keyMinFloor + firstPivotDistance + normalizedRange, objects.size());
+                        keyMinFloor + firstPivotDistance - normalizedRange,
+                        keyMinFloor + firstPivotDistance + normalizedRange, objects.size());
             }
 
             return objects;
@@ -275,9 +275,9 @@ public abstract class MIndex<D extends Distanceable<D>> {
 
         private PivotDistanceTable<D> calculateDistanceFor(D queryObject) {
             final PivotDistanceTable<D> queryObjectPivotDistance = new SimplePivotDistanceTable<>(maximumDistance,
-                                                                                                  pivots,
-                                                                                                  Arrays.asList(
-                                                                                                          queryObject));
+                    pivots,
+                    Arrays.asList(
+                            queryObject));
             queryObjectPivotDistance.calculate();
 
             return queryObjectPivotDistance;
@@ -309,7 +309,7 @@ public abstract class MIndex<D extends Distanceable<D>> {
             final int currentLevel = node.getLevel();
 
             return currentLevel > 0 && doDoublePivotDistanceConstraint(node, queryObjectPivotDistance, queryObject,
-                                                                       range);
+                    range);
         }
 
         private boolean doDoublePivotDistanceConstraint(Cluster<D> node, PivotDistanceTable<D> queryObjectPivotDistance, D queryObject, double range) {
