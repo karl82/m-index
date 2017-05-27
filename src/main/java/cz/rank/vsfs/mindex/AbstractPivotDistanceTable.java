@@ -92,7 +92,7 @@ public abstract class AbstractPivotDistanceTable<D extends Distanceable<D>> impl
         return pivotDistanceAt(object, index).getPivot();
     }
 
-    protected void storeResult(PivotDistanceResult result) {
+    protected void storeResult(PivotDistanceResult<D> result) {
         distancesSortedByDistance.putAll(result.distancesSortedByDistance);
         distancesSortedByPivot.putAll(result.distancesSortedByPivot);
     }
@@ -107,7 +107,7 @@ public abstract class AbstractPivotDistanceTable<D extends Distanceable<D>> impl
 
     protected class PivotDistanceSolver implements Callable<ParallelPivotDistanceTable.PivotDistanceResult> {
         private final int objectIndex;
-        private final PivotDistanceResult result = new PivotDistanceResult();
+        private final PivotDistanceResult<D> result = new PivotDistanceResult<>();
 
         public PivotDistanceSolver(int objectIndex) {
             this.objectIndex = objectIndex;
