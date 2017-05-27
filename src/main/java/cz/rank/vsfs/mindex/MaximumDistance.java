@@ -31,15 +31,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Calculates maximum distance between distanceable objects
@@ -54,99 +51,92 @@ public class MaximumDistance<D extends Distanceable<D>> {
      */
     public static final int SOLVER_GRANULARITY = 10000;
     private static final Logger logger = LoggerFactory.getLogger(MaximumDistance.class);
+
     private final List<D> objects;
+
     private final int parallelism;
+
     /**
      * Use all available cores.
      */
     private final int objectsSize;
-    private final AtomicInteger submittedSolvers = new AtomicInteger();
+
     private double maximum = 0d;
-    private volatile boolean submittedAllSolvers = false;
 
     public MaximumDistance(List<D> objects) {
         this.objects = objects;
         objectsSize = objects.size();
-        parallelism = Runtime.getRuntime().availableProcessors();
+        parallelism = Runtime.getRuntime()
+                             .availableProcessors();
     }
 
-    public MaximumDistance(List<D> objects, int parallelism) {
+    public MaximumDistance(List<D> objects,
+                           int parallelism) {
         this.objects = objects;
         objectsSize = objects.size();
         this.parallelism = parallelism;
     }
 
     public double calculate() {
-        final CyclicBarrier cyclicBarrier = new CyclicBarrier(2);
-
         final ExecutorService ecsPool = Executors.newFixedThreadPool(parallelism);
         final ExecutorCompletionService<Double> ecs = new ExecutorCompletionService<>(ecsPool);
-        final ExecutorService es = Executors.newSingleThreadExecutor();
-        es.execute(new Runnable() {
-            @Override
-            public void run() {
-                int takenSolvers = 0;
-                while (takenSolvers++ != submittedSolvers.get() || !submittedAllSolvers) {
-                    try {
-                        Future<Double> result = ecs.take();
-                        maximum = FastMath.max(result.get(), maximum);
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                    } catch (ExecutionException e) {
-                        logger.error("Error during calculation maximum distance!", e);
-                    }
-                }
+        int submittedSolvers = submitSolvers(ecs);
+        int takenSolvers = 0;
 
-                waitForCalculation(cyclicBarrier);
+        logger.info("Submitted {} solvers", submittedSolvers)
+        ;
+        while (takenSolvers++ < submittedSolvers) {
+            try {
+                Future<Double> result = ecs.take();
+                maximum = FastMath.max(result.get(), maximum);
+            } catch (InterruptedException e) {
+                Thread.currentThread()
+                      .interrupt();
+            } catch (ExecutionException e) {
+                throw new RuntimeException("Error during calculation maximum distance!", e);
             }
-        });
+        }
 
-        submitSolvers(ecs);
-
-        waitForCalculation(cyclicBarrier);
-
-        es.shutdown();
         ecsPool.shutdown();
 
         return maximum;
     }
 
-    private void waitForCalculation(CyclicBarrier cyclicBarrier) {
-        try {
-            cyclicBarrier.await();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } catch (BrokenBarrierException e) {
-            logger.error("Error during calculation maximum distance!", e);
-        }
-    }
-
-    private void submitSolvers(ExecutorCompletionService<Double> ecs) {
+    private int submitSolvers(ExecutorCompletionService<Double> ecs) {
+        int submittedSolvers = 0;
         for (int i = 0; i < objectsSize; i++) {
             final D object = objects.get(i);
             for (int j = i + 1; j < objectsSize; j += SOLVER_GRANULARITY) {
+                logger.debug("Submitting {} for object {} with granularity {}", j, i, SOLVER_GRANULARITY);
                 ecs.submit(new DistanceSolver(j, object));
-                submittedSolvers.incrementAndGet();
+                submittedSolvers++;
             }
         }
-        submittedAllSolvers = true;
+        return submittedSolvers;
     }
 
-    private class DistanceSolver implements Callable<Double> {
+    private class DistanceSolver
+            implements Callable<Double> {
         private final int j;
+
+        private final int maxJ;
+
         private final D object;
 
-        public DistanceSolver(int j, D object) {
+        public DistanceSolver(int j,
+                              D object) {
             this.j = j;
+            maxJ = FastMath.min(j + SOLVER_GRANULARITY, objectsSize);
             this.object = object;
         }
 
         @Override
         public Double call() throws Exception {
             double tempMaximum = 0;
-            for (int jj = j; jj < j + SOLVER_GRANULARITY && jj < objectsSize; ++jj) {
+            for (int jj = j; jj < maxJ; ++jj) {
                 tempMaximum = FastMath.max(object.distance(objects.get(jj)), tempMaximum);
             }
+            logger.debug("Finished object {} with {} ", j - 1, maxJ);
             return tempMaximum;
         }
     }
