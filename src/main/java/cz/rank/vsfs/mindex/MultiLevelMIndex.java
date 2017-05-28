@@ -48,8 +48,8 @@ public class MultiLevelMIndex<D extends Distanceable<D>> extends MIndex<D> {
         calculateMaximumDistance();
         calculateDistances();
 
-        final ClusterTreeBuilder builder = new MultiLevelClusterTreeBuilder(objects, clusterRoot, pivotDistanceTable,
-                                                                            btreemap);
+        final ClusterTreeBuilder builder = new MultiLevelClusterTreeBuilder<>(objects, clusterRoot, pivotDistanceTable,
+                                                                              btreemap);
 
         builder.build();
         clusterStats = builder.getClusterStats();
