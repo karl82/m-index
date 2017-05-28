@@ -83,8 +83,8 @@ public class MaximumDistance<D extends Distanceable<D>> {
         int submittedSolvers = submitSolvers(ecs);
         int takenSolvers = 0;
 
-        logger.info("Submitted {} solvers", submittedSolvers)
-        ;
+        logger.info("Submitted {} solvers", submittedSolvers);
+
         while (takenSolvers++ < submittedSolvers) {
             try {
                 Future<Double> result = ecs.take();
@@ -94,6 +94,10 @@ public class MaximumDistance<D extends Distanceable<D>> {
                       .interrupt();
             } catch (ExecutionException e) {
                 throw new RuntimeException("Error during calculation maximum distance!", e);
+            }
+
+            if (takenSolvers % 10000 == 0) {
+                logger.info("{} solvers finished so far", takenSolvers);
             }
         }
 
