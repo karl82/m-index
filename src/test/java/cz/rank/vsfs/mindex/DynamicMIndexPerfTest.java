@@ -26,17 +26,12 @@
 
 package cz.rank.vsfs.mindex;
 
-import cz.rank.vsfs.mindex.util.Generators;
-import cz.rank.vsfs.mindex.util.PerfLogger;
-import org.perf4j.StopWatch;
-import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -58,11 +53,19 @@ public class DynamicMIndexPerfTest extends MIndexPerfTest {
     @Override
     protected void warmUp() {
         logger.info("Performing JVM warm up...");
-        final Slf4JStopWatch stopWatch = new Slf4JStopWatch(PerfLogger.LOGGER);
-        performTest(new TestParams(10, 5000, 3, 1, 500, 0.15d, 50), 1, stopWatch, "WARMUP");
-        performTest(new TestParams(10, 5000, 3, 1, 250, 0.1d, 50), 1, stopWatch, "WARMUP");
-        performTest(new TestParams(20, 5000, 3, 1, 1000, 0.1d, 50), 1, stopWatch, "WARMUP");
+        DynamicTestParams params = new DynamicTestParams(50, 5000, 3, 20, 500, 0.15d, 50);
+        performTest(params, "WARMUP", createIndex(params));
+        performTest(params, "WARMUP", createIndex(params));
+        performTest(params, "WARMUP", createIndex(params));
+        performTest(params, "WARMUP", createIndex(params));
         logger.info("JVM warm up done...");
+    }
+
+    private MIndex<Vector> createIndex(DynamicTestParams params) {
+        return new DynamicMIndex<>(params.clusterMaxLevel, params.btreeLevel,
+                                   createPivots(params),
+                                   maximumDistance,
+                                   params.leafObjectsCount);
     }
 
 /*
@@ -78,7 +81,7 @@ public class DynamicMIndexPerfTest extends MIndexPerfTest {
 
     @DataProvider(name = "clusterTreeParams")
     public Object[][] clusterTreeParams() {
-        List<TestParams[]> params = new ArrayList<>();
+        List<DynamicTestParams[]> params = new ArrayList<>();
 
         for (Integer dimension : PIVOTS_COUNT) {
             for (Integer objectsCount : CLUSTER_MAX_LEVEL) {
@@ -87,9 +90,14 @@ public class DynamicMIndexPerfTest extends MIndexPerfTest {
                         for (Integer leafObjectsCount : LEAF_OBJECTS_COUNT) {
                             for (Integer btreeLevel : BTREE_LEVEL) {
                                 params.add(
-                                        new TestParams[]{new TestParams(dimension, queryObjects, objectsCount,
-                                                                        DEFAULT_TEST_INVOCATIONS, leafObjectsCount,
-                                                                        range, btreeLevel)});
+                                        new DynamicTestParams[]{new DynamicTestParams(
+                                                dimension,
+                                                queryObjects,
+                                                objectsCount,
+                                                DEFAULT_TEST_INVOCATIONS,
+                                                leafObjectsCount,
+                                                range,
+                                                btreeLevel)});
                             }
                         }
                     }
@@ -100,53 +108,26 @@ public class DynamicMIndexPerfTest extends MIndexPerfTest {
     }
 
     @Test(groups = "perf", dataProvider = "clusterTreeParams")
-    public void testClusterTree(TestParams params) throws InterruptedException {
-        final Slf4JStopWatch stopWatch = new Slf4JStopWatch(PerfLogger.LOGGER);
+    public void testClusterTree(DynamicTestParams params) throws InterruptedException {
         for (int i = 1; i < params.invocations + 1; i++) {
-            performTest(params, i, stopWatch, params.toString());
+            performTest(params, params.toString(), createIndex(params));
             performGc();
         }
     }
 
-    private void performTest(TestParams params, int invocation, StopWatch stopWatch, String prefix) {
-
-        List<Pivot<Vector>> pivots = Generators.createPivots(objects.subList(0, params.pivotsCount));
-
-        final MIndex<Vector> mindex = new DynamicMIndex<>(params.clusterMaxLevel, params.btreeLevel, pivots,
-                                                          maximumDistance,
-                                                          params.leafObjectsCount);
-        mindex.addAll(objects);
-        stopWatch.start(prefix + ".build", Integer.toString(invocation));
-        mindex.build();
-        stopWatch.stop(prefix + ".build", Integer.toString(invocation));
-
-        final List<Vector> queryObjects = objects.subList(params.pivotsCount, params.pivotsCount + params.queryObjects);
-        stopWatch.start(prefix + ".rangeQuery", Integer.toString(invocation));
-        for (Vector queryObject : queryObjects) {
-            final Collection<Vector> foundObjects = mindex.rangeQuery(queryObject, params.range);
-        }
-        stopWatch.stop(prefix + ".rangeQuery", Integer.toString(invocation));
-        logger.info(mindex.getQueryStats().toString());
-        logger.info(mindex.getClusterStats().toString());
-    }
-
-    private static class TestParams {
-        private final int pivotsCount;
-        private final int queryObjects;
-        private final int clusterMaxLevel;
-        private final int invocations;
+    private static class DynamicTestParams
+            extends TestParams {
         private final int leafObjectsCount;
-        private final double range;
-        private final int btreeLevel;
 
-        public TestParams(int pivotsCount, int queryObjects, int clusterMaxLevel, int invocations, int leafObjectsCount, double range, int btreeLevel) {
-            this.pivotsCount = pivotsCount;
-            this.queryObjects = queryObjects;
-            this.clusterMaxLevel = clusterMaxLevel;
-            this.invocations = invocations;
+        public DynamicTestParams(int pivotsCount,
+                                 int queryObjects,
+                                 int clusterMaxLevel,
+                                 int invocations,
+                                 int leafObjectsCount,
+                                 double range,
+                                 int btreeLevel) {
+            super(pivotsCount, queryObjects, clusterMaxLevel, invocations, range, btreeLevel);
             this.leafObjectsCount = leafObjectsCount;
-            this.range = range;
-            this.btreeLevel = btreeLevel;
         }
 
         @Override

@@ -27,12 +27,6 @@
 <configuration>
     <timestamp key="bySecond" datePattern="yyyyMMdd'T'HHmmss"/>
 
-    <appender name="PERF" class="ch.qos.logback.core.FileAppender">
-        <file>logs/perflog-${bySecond}.txt</file>
-        <encoder>
-            <pattern>%r [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
-    </appender>
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
         <file>logs/log-${bySecond}.txt</file>
         <encoder>
@@ -51,8 +45,4 @@
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
     </root>
-
-    <logger name="performance.logger" level="info">
-        <appender-ref ref="PERF"/>
-    </logger>
 </configuration>

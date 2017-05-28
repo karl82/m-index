@@ -26,17 +26,12 @@
 
 package cz.rank.vsfs.mindex;
 
-import cz.rank.vsfs.mindex.util.Generators;
-import cz.rank.vsfs.mindex.util.PerfLogger;
-import org.perf4j.StopWatch;
-import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -49,11 +44,18 @@ public class MultiLevelMIndexPerfTest extends MIndexPerfTest {
     @Override
     protected void warmUp() {
         logger.info("Performing JVM warm up...");
-        final Slf4JStopWatch stopWatch = new Slf4JStopWatch(PerfLogger.LOGGER);
-        performTest(new TestParams(10, 5000, 3, 1, 0.15d, 5), 1, stopWatch, "WARMUP");
-        performTest(new TestParams(10, 5000, 3, 1, 0.1d, 5), 1, stopWatch, "WARMUP");
-        performTest(new TestParams(20, 5000, 3, 1, 0.1d, 5), 1, stopWatch, "WARMUP");
+        final TestParams params = new TestParams(50, 5000, 3, 20, 0.15d, 5);
+        performTest(params, "WARMUP", createIndex(params));
+        performTest(params, "WARMUP", createIndex(params));
+        performTest(params, "WARMUP", createIndex(params));
+        performTest(params, "WARMUP", createIndex(params));
+        performTest(params, "WARMUP", createIndex(params));
         logger.info("JVM warm up done...");
+    }
+
+    private MIndex<Vector> createIndex(TestParams params) {
+        return new MultiLevelMIndex<>(params.clusterMaxLevel, params.btreeLevel, createPivots(params),
+                                      maximumDistance);
     }
 
 /*
@@ -89,61 +91,11 @@ public class MultiLevelMIndexPerfTest extends MIndexPerfTest {
 
     @Test(groups = "perf", dataProvider = "clusterTreeParams")
     public void testClusterTree(TestParams params) throws InterruptedException {
-        final Slf4JStopWatch stopWatch = new Slf4JStopWatch(PerfLogger.LOGGER);
         for (int i = 1; i < params.invocations + 1; i++) {
-            performTest(params, i, stopWatch, params.toString());
+            performTest(params, params.toString(),
+                        createIndex(params));
             performGc();
         }
     }
 
-    private void performTest(TestParams params, int invocation, StopWatch stopWatch, String prefix) {
-
-        List<Pivot<Vector>> pivots = Generators.createPivots(objects.subList(0, params.pivotsCount));
-
-        final MIndex<Vector> mindex = new MultiLevelMIndex<>(params.clusterMaxLevel, params.btreeLevel, pivots,
-                                                             maximumDistance);
-        mindex.addAll(objects);
-        stopWatch.start(prefix + ".build", Integer.toString(invocation));
-        mindex.build();
-        stopWatch.stop(prefix + ".build", Integer.toString(invocation));
-
-        final List<Vector> queryObjects = objects.subList(params.pivotsCount, params.pivotsCount + params.queryObjects);
-        stopWatch.start(prefix + ".rangeQuery", Integer.toString(invocation));
-        for (Vector queryObject : queryObjects) {
-            final Collection<Vector> foundObjects = mindex.rangeQuery(queryObject, params.range);
-        }
-        stopWatch.stop(prefix + ".rangeQuery", Integer.toString(invocation));
-        logger.info(mindex.getQueryStats().toString());
-        logger.info(mindex.getClusterStats().toString());
-    }
-
-    private static class TestParams {
-        private final int pivotsCount;
-        private final int queryObjects;
-        private final int clusterMaxLevel;
-        private final int invocations;
-        private final double range;
-        private final int btreeLevel;
-
-        public TestParams(int pivotsCount, int queryObjects, int clusterMaxLevel, int invocations, double range, int btreeLevel) {
-            this.pivotsCount = pivotsCount;
-            this.queryObjects = queryObjects;
-            this.clusterMaxLevel = clusterMaxLevel;
-            this.invocations = invocations;
-            this.range = range;
-            this.btreeLevel = btreeLevel;
-        }
-
-        @Override
-        public String toString() {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("{pivotsCount=").append(pivotsCount);
-            sb.append(", queryObjects=").append(queryObjects);
-            sb.append(", clusterMaxLevel=").append(clusterMaxLevel);
-            sb.append(", range=").append(range);
-            sb.append(", btreeLevel=").append(btreeLevel);
-            sb.append('}');
-            return sb.toString();
-        }
-    }
 }

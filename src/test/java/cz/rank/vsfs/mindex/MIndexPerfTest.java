@@ -26,9 +26,13 @@
 
 package cz.rank.vsfs.mindex;
 
+import cz.rank.vsfs.mindex.util.Generators;
 import cz.rank.vsfs.mindex.util.PerfLogger;
+import org.perf4j.GroupedTimingStatistics;
+import org.perf4j.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
 import java.io.File;
@@ -37,6 +41,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -89,11 +94,14 @@ public abstract class MIndexPerfTest {
     protected final List<Vector> objects = new ArrayList<>();
     protected double maximumDistance;
 
-    public void logJvmInfo() {
+
+    GroupedTimingStatistics testsStatistics = new GroupedTimingStatistics();
+
+    private void logJvmInfo() {
         PerfLogger.logJvmInfo();
     }
 
-    protected void performGc() throws InterruptedException {
+    void performGc() throws InterruptedException {
         logger.info("Performing GC...");
         System.gc();
         TimeUnit.SECONDS.sleep(2);
@@ -115,6 +123,11 @@ public abstract class MIndexPerfTest {
 
         calculateMaximumDistance();
         warmUp();
+    }
+
+    @AfterClass
+    public void logTestsStatistics() {
+        logger.info("{}", testsStatistics);
     }
 
     private void calculateMaximumDistance() {
@@ -144,5 +157,32 @@ public abstract class MIndexPerfTest {
         }
 
         return doubleValues;
+    }
+
+    protected List<Pivot<Vector>> createPivots(TestParams params) {
+        return Generators.createPivots(objects.subList(0, params.pivotsCount));
+    }
+
+    protected void performTest(TestParams params,
+                               String prefix,
+                               MIndex<Vector> mIndex) {
+
+        final StopWatch stopWatch = new StopWatch();
+        mIndex.addAll(objects);
+        stopWatch.start(prefix + ".build");
+        mIndex.build();
+        stopWatch.stop(prefix + ".build");
+        testsStatistics.addStopWatch(stopWatch);
+
+        final List<Vector> queryObjects = objects.subList(params.pivotsCount, params.pivotsCount + params.queryObjects);
+        stopWatch.start(prefix + ".rangeQuery");
+        for (Vector queryObject : queryObjects) {
+            final Collection<Vector> foundObjects = mIndex.rangeQuery(queryObject, params.range);
+        }
+        stopWatch.stop(prefix + ".rangeQuery");
+        testsStatistics.addStopWatch(stopWatch);
+
+        logger.info("{}", mIndex.getQueryStats());
+        logger.info("{}", mIndex.getClusterStats());
     }
 }
